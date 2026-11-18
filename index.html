@@ -1,1 +1,226 @@
-LOGIKIDS
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LOGIKIDS - Gestion de garderie</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f7fb;color:#243449}
+header{background:#176b91;color:white;padding:22px}
+header h1{margin:0;font-size:29px}
+header p{margin:6px 0 0}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:14px;background:white}
+button{border:0;border-radius:9px;padding:12px 15px;cursor:pointer;background:#e5eff5;color:#16445b;font-weight:bold}
+button:hover{background:#cce5f1}
+button.active,.primary{background:#176b91;color:white}
+main{max-width:1050px;margin:auto;padding:20px}
+section{display:none}
+section.active{display:block}
+.card{background:white;padding:20px;border-radius:13px;margin:15px 0;box-shadow:0 2px 8px #0001}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.stat{font-size:30px;color:#176b91;font-weight:bold}
+input,textarea,select{width:100%;padding:12px;margin:7px 0 14px;border:1px solid #ccd5dd;border-radius:8px;font:inherit}
+textarea{min-height:90px}
+label{font-weight:bold}
+.item{padding:12px;border-bottom:1px solid #e7edf2}
+small{color:#64748b}
+.notice{background:#fff4d6;padding:12px;border-radius:8px}
+footer{text-align:center;padding:25px;color:#667}
+</style>
+</head>
+<body>
+<header>
+<h1>🌈 LOGIKIDS</h1>
+<p>La gestion de votre garderie simplifiée</p>
+</header>
+
+<nav>
+<button class="active" onclick="ouvrir('accueil',this)">🏠 Accueil</button>
+<button onclick="ouvrir('enfants',this)">👶 Enfants</button>
+<button onclick="ouvrir('journal',this)">📋 Journal</button>
+<button onclick="ouvrir('menus',this)">🍎 Menus</button>
+<button onclick="ouvrir('parents',this)">👨‍👩‍👧 Parents</button>
+</nav>
+
+<main>
+<section id="accueil" class="active">
+<h2>Bienvenue dans LOGIKIDS</h2>
+<p>Tableau de bord de votre service de garde</p>
+<div class="grid">
+<div class="card"><div class="stat" id="total">0</div>Enfants inscrits</div>
+<div class="card"><div class="stat" id="nbmenus">0</div>Menus enregistrés</div>
+<div class="card"><div class="stat" id="nbjournaux">0</div>Journaux remplis</div>
+</div>
+<div class="card">
+<h3>Garderie pilote : Faveur Grâce</h3>
+<p>Bienvenue dans votre espace de gestion.</p>
+<p>Vous pouvez commencer par ajouter un enfant fictif, créer un menu et remplir un journal quotidien.</p>
+</div>
+</section>
+
+<section id="enfants">
+<h2>Gestion des enfants</h2>
+<div class="card">
+<h3>Ajouter un enfant</h3>
+<label>Prénom</label>
+<input id="prenom" placeholder="Prénom fictif">
+<label>Âge</label>
+<input id="age" type="number" min="0" max="5" placeholder="Âge">
+<button class="primary" onclick="ajouterEnfant()">Ajouter l'enfant</button>
+</div>
+<div class="card">
+<h3>Liste des enfants</h3>
+<div id="listeEnfants"></div>
+</div>
+</section>
+
+<section id="journal">
+<h2>Journal quotidien</h2>
+<div class="card">
+<label>Enfant</label>
+<select id="enfantJournal"></select>
+<label>Date</label>
+<input type="date" id="dateJournal">
+<label>Repas</label>
+<textarea id="repas" placeholder="Ce que l'enfant a mangé"></textarea>
+<label>Sieste</label>
+<input id="sieste" placeholder="Ex. : 12 h 30 à 14 h">
+<label>Activités et observations</label>
+<textarea id="activites" placeholder="Activités de la journée"></textarea>
+<button class="primary" onclick="ajouterJournal()">Enregistrer le journal</button>
+</div>
+<div class="card">
+<h3>Journaux enregistrés</h3>
+<div id="listeJournaux"></div>
+</div>
+</section>
+
+<section id="menus">
+<h2>Répertoire des menus alimentaires</h2>
+<div class="card">
+<h3>Créer un menu</h3>
+<label>Nom du plat</label>
+<input id="plat" placeholder="Ex. : Poulet aux légumes">
+<label>Ingrédients</label>
+<textarea id="ingredients" placeholder="Liste des ingrédients"></textarea>
+<label>Préparation</label>
+<textarea id="preparation" placeholder="Étapes de préparation"></textarea>
+<button class="primary" onclick="ajouterMenu()">Enregistrer le menu</button>
+</div>
+<div class="card">
+<h3>Mes menus enregistrés</h3>
+<div id="listeMenus"></div>
+</div>
+<div class="card">
+<h3>🤖 Assistant alimentaire</h3>
+<p>Une prochaine version pourra proposer des menus avec intelligence artificielle, en tenant compte des allergies et des besoins alimentaires.</p>
+</div>
+</section>
+
+<section id="parents">
+<h2>Portail parents — Démonstration</h2>
+<div class="notice">Prototype seulement : aucun véritable compte parent n'est encore connecté.</div>
+<div class="grid">
+<div class="card">📋 Journal quotidien</div>
+<div class="card">💬 Messagerie</div>
+<div class="card">📸 Photos et activités</div>
+<div class="card">📄 Contrats et documents</div>
+<div class="card">💳 Paiements et reçus</div>
+<div class="card">📅 Calendrier</div>
+<div class="card">🏠 Signaler une absence</div>
+</div>
+</section>
+</main>
+
+<footer>LOGIKIDS © 2026 — Prototype gratuit</footer>
+
+<script>
+const cle="logikids_demo_v1";
+let donnees;
+try {
+ donnees=JSON.parse(localStorage.getItem(cle))||{};
+} catch(e) {
+ donnees={};
+}
+donnees.enfants=donnees.enfants||[];
+donnees.menus=donnees.menus||[];
+donnees.journaux=donnees.journaux||[];
+
+function sauver(){
+ localStorage.setItem(cle,JSON.stringify(donnees));
+ afficher();
+}
+function nettoyer(texte){
+ return String(texte).replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",
+ '"':"&quot;","'":"&#39;"
+ })[c]);
+}
+function ouvrir(id,bouton){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ bouton.classList.add("active");
+}
+function ajouterEnfant(){
+ const prenom=document.getElementById("prenom").value.trim();
+ const age=document.getElementById("age").value;
+ if(!prenom||age===""||Number(age)<0||Number(age)>5){
+ alert("Entrez un prénom et un âge entre 0 et 5 ans.");
+ return;
+ }
+ donnees.enfants.push({id:Date.now(),prenom,age});
+ document.getElementById("prenom").value="";
+ document.getElementById("age").value="";
+ sauver();
+}
+function ajouterMenu(){
+ const plat=document.getElementById("plat").value.trim();
+ const ingredients=document.getElementById("ingredients").value.trim();
+ const preparation=document.getElementById("preparation").value.trim();
+ if(!plat){alert("Entrez le nom du plat.");return;}
+ donnees.menus.push({plat,ingredients,preparation});
+ ["plat","ingredients","preparation"].forEach(id=>document.getElementById(id).value="");
+ sauver();
+}
+function ajouterJournal(){
+ const enfant=document.getElementById("enfantJournal").value;
+ const date=document.getElementById("dateJournal").value;
+ if(!enfant||!date){alert("Choisissez un enfant et une date.");return;}
+ donnees.journaux.push({
+ enfant,date,
+ repas:document.getElementById("repas").value,
+ sieste:document.getElementById("sieste").value,
+ activites:document.getElementById("activites").value
+ });
+ ["repas","sieste","activites"].forEach(id=>document.getElementById(id).value="");
+ sauver();
+}
+function afficher(){
+ document.getElementById("total").textContent=donnees.enfants.length;
+ document.getElementById("nbmenus").textContent=donnees.menus.length;
+ document.getElementById("nbjournaux").textContent=donnees.journaux.length;
+
+ document.getElementById("listeEnfants").innerHTML=
+ donnees.enfants.map(e=>`<div class="item">👶 ${nettoyer(e.prenom)} — ${nettoyer(e.age)} ans</div>`).join("")||"Aucun enfant inscrit.";
+
+ document.getElementById("enfantJournal").innerHTML=
+ '<option value="">Choisir un enfant</option>'+
+ donnees.enfants.map(e=>`<option value="${e.id}">${nettoyer(e.prenom)}</option>`).join("");
+
+ document.getElementById("listeMenus").innerHTML=
+ donnees.menus.map(m=>`<div class="item"><strong>🍽️ ${nettoyer(m.plat)}</strong><p>${nettoyer(m.ingredients)}</p><small>${nettoyer(m.preparation)}</small></div>`).join("")||"Aucun menu enregistré.";
+
+ document.getElementById("listeJournaux").innerHTML=
+ donnees.journaux.map(j=>{
+ const e=donnees.enfants.find(x=>String(x.id)===String(j.enfant));
+ return `<div class="item"><strong>${nettoyer(e?e.prenom:"Enfant")} — ${nettoyer(j.date)}</strong><p>Repas : ${nettoyer(j.repas)}</p><p>Sieste : ${nettoyer(j.sieste)}</p><p>Activités : ${nettoyer(j.activites)}</p></div>`;
+ }).join("")||"Aucun journal enregistré.";
+}
+document.getElementById("dateJournal").value=new Date().toLocaleDateString("en-CA");
+afficher();
+</script>
+</body>
+</html>
