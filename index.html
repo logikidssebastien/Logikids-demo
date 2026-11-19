@@ -329,5 +329,37 @@ function afficher(){
 document.getElementById("dateJournal").value=new Date().toLocaleDateString("en-CA");
 afficher();
 </script>
+<style>
+  .logikids-bouton {
+  background: linear-gradient(145deg, #fff, #e3eaf5);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 5px 6px 0 #a8b5c7;
+  font-weight: bold;
+  cursor: pointer;
+}
+.logikids-bouton {
+  background: linear-gradient(145deg, #ffffff, #e3eaf5);
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 5px 6px 0 #a8b5c7;
+  color: #243047;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.logikids-bouton:hover {
+  transform: translateY(2px);
+  box-shadow: 3px 4px 0 #a8b5c7;
+}
+
+.logikids-bouton:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 #a8b5c7;
+}
+</style>
 </body>
 </html>
