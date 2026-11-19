@@ -330,36 +330,44 @@ document.getElementById("dateJournal").value=new Date().toLocaleDateString("en-C
 afficher();
 </script>
 <style>
-  .logikids-bouton {
-  background: linear-gradient(145deg, #fff, #e3eaf5);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 5px 6px 0 #a8b5c7;
-  font-weight: bold;
-  cursor: pointer;
-}
+  
 .logikids-bouton {
-  background: linear-gradient(145deg, #ffffff, #e3eaf5);
-  border: 1px solid #cbd5e1;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 5px 6px 0 #a8b5c7;
-  color: #243047;
-  font-size: 16px;
-  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 115px;
+  padding: 18px;
+  background: linear-gradient(145deg, #ffffff, #e8eef7);
+  color: #253b59;
+  border: 1px solid #d5dfec;
+  border-bottom: 6px solid #aabbd0;
+  border-radius: 17px;
+  box-shadow: 0 6px 12px rgba(30, 50, 80, 0.15);
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.15s;
+  transition: all 0.18s ease;
 }
 
 .logikids-bouton:hover {
-  transform: translateY(2px);
-  box-shadow: 3px 4px 0 #a8b5c7;
+  transform: translateY(-3px);
+  background: linear-gradient(145deg, #ffffff, #e0ebfa);
+  box-shadow: 0 9px 15px rgba(30, 50, 80, 0.18);
 }
 
 .logikids-bouton:active {
-  transform: translateY(6px);
-  box-shadow: 0 0 0 #a8b5c7;
+  transform: translateY(4px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 5px rgba(30, 50, 80, 0.15);
 }
+
+.logikids-bouton .icone {
+  font-size: 34px;
+  line-height: 1;
+}
+
 </style>
 </body>
 </html>
