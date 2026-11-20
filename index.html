@@ -34,10 +34,21 @@
 <section id="depenses" class="page"><h2>💰 Comptabilité et dépenses</h2><div class="hint">Saisie manuelle pour le prototype. La lecture automatique des factures et l'export fiscal seront ajoutés ultérieurement.</div><div class="card"><form id="formDepense"><label>Date</label><input type="date" name="date" required><label>Fournisseur</label><input name="fournisseur" required><label>Catégorie</label><select name="categorie"><option>Alimentation</option><option>Entretien</option><option>Matériel éducatif</option><option>Autres dépenses</option></select><label>Montant ($ CA)</label><input name="montant" type="number" min="0" step="0.01" required><button class="action">Enregistrer la dépense</button></form></div><div class="card"><h3>Totaux cumulés</h3><div id="totauxDepenses"></div><h3>Historique</h3><div id="listeDepenses"></div></div></section>
 <section id="inscriptions" class="page"><h2>📝 Inscriptions et liste d'attente</h2><div class="card"><form id="formAttente"><label>Nom fictif</label><input name="nom" required><label>Statut</label><select name="statut"><option>En attente</option><option>À contacter</option><option>Place offerte</option></select><label>Notes facultatives</label><textarea name="notes"></textarea><button class="action">Ajouter à la liste</button></form></div><div class="card"><div id="listeAttente"></div></div></section>
 <section id="parametres" class="page"><h2>⚙️ Paramètres</h2><div class="card"><h3>Prototype LOGIKIDS</h3><p>Version locale gratuite en français. Les informations de démonstration restent dans le navigateur où elles ont été créées.</p><button class="action secondary" id="exporter" type="button">Exporter mes données de démonstration (JSON)</button><p class="muted">Attention : vider les données du navigateur peut supprimer les informations sauvegardées localement.</p></div></section>
-</main><footer>LOGIKIDS © 2026 — Prototype de démonstration</footer>
+<section id="contact" class="page">
+  <h2>📞 Contact</h2>
+  <div class="card">
+    <h3>Nous joindre</h3>
+    <p>📞 Téléphone</p>
+    <p>🟢 WhatsApp</p>
+    <p>🔵 Messenger</p>
+    <p>✉️ Courriel</p>
+  </div>
+</section></main><footer>LOGIKIDS © 2026 — Prototype de démonstration</footer>
 <script>
 'use strict';
 const sections=[['accueil','🏠','Accueil'],['enfants','👶','Enfants'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres']];
+,['contact','📞','Contact']];
+
 const cle='logikids_demo_v2';
 const base=()=>({enfants:[],menus:[],journaux:[],evenements:[],depenses:[],attente:[]});
 let data=base();try{const x=JSON.parse(localStorage.getItem(cle)||'null');if(x&&typeof x==='object'){for(const k of Object.keys(data))if(Array.isArray(x[k]))data[k]=x[k]}}catch(e){console.warn('Données locales illisibles',e)}
