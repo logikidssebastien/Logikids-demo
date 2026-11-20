@@ -38,16 +38,21 @@
   <h2>📞 Contact</h2>
   <div class="card">
     <h3>Nous joindre</h3>
-    <p>📞 Téléphone</p>
-    <p>🟢 WhatsApp</p>
-    <p>🔵 Messenger</p>
-    <p>✉️ Courriel</p>
+    <p class="muted">Configurez vos coordonnées professionnelles ci-dessous. Les liens seront activés dès que vous les aurez renseignées.</p>
+    <form id="formContact">
+      <label>Numéro de téléphone professionnel</label><input name="telephone" type="tel" placeholder="Ex. : 418 555-0123">
+      <label>Numéro WhatsApp (avec indicatif du pays)</label><input name="whatsapp" type="tel" placeholder="Ex. : +1 418 555-0123">
+      <label>Lien de votre profil ou page Messenger</label><input name="messenger" type="url" placeholder="https://m.me/votrepage">
+      <label>Adresse courriel professionnelle</label><input name="courriel" type="email" placeholder="contact@exemple.ca">
+      <button class="action" type="submit">Enregistrer mes coordonnées</button>
+    </form>
+    <div class="grid" id="liensContact" aria-live="polite"></div>
+    <p class="muted">Ces coordonnées sont enregistrées uniquement dans ce navigateur. Pour les rendre publiques sur votre site, il faudra ensuite les intégrer au code.</p>
   </div>
 </section></main><footer>LOGIKIDS © 2026 — Prototype de démonstration</footer>
 <script>
 'use strict';
-const sections=[['accueil','🏠','Accueil'],['enfants','👶','Enfants'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres']];
-,['contact','📞','Contact']];
+const sections=[['accueil','🏠','Accueil'],['enfants','👶','Enfants'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres'],['contact','📞','Contact']];
 
 const cle='logikids_demo_v2';
 const base=()=>({enfants:[],menus:[],journaux:[],evenements:[],depenses:[],attente:[]});
@@ -80,5 +85,17 @@ function brancher(id,collection,transform){$(id).addEventListener('submit',e=>{e
 brancher('formEnfant','enfants',v=>({prenom:v.prenom.trim(),age:Number(v.age)}));brancher('formMenu','menus');brancher('formJournal','journaux',v=>({...v,activites:selections('choixActivites'),comportements:selections('choixComportements')}));brancher('formEvenement','evenements');brancher('formDepense','depenses',v=>({...v,montant:Number(v.montant)}));brancher('formAttente','attente');
 $('apercuParents').innerHTML=['😊 Humeur du jour','📖 Journal quotidien','📸 Photos et souvenirs','🏠 Signaler une absence','💬 Messages','📄 Documents et contrats','💳 Paiements et reçus','📅 Calendrier','🎒 Sac à dos et rappels','🏅 Petites victoires','🍎 Repas et allergènes','🏡 Activités à la maison'].map(t=>`<div class="card"><strong>${t}</strong><p class="muted">Fonction à développer — aperçu seulement.</p></div>`).join('');
 $('exporter').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='logikids-demonstration.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+// Coordonnées de contact locales : aucune donnée personnelle préremplie.
+const contactCle='logikids_contact_demo_v1';
+let contact={telephone:'',whatsapp:'',messenger:'',courriel:''};
+try{const c=JSON.parse(localStorage.getItem(contactCle)||'null');if(c&&typeof c==='object')for(const k of Object.keys(contact))if(typeof c[k]==='string')contact[k]=c[k]}catch(e){}
+function afficherContact(){
+  const f=$('formContact');for(const k of Object.keys(contact))f.elements[k].value=contact[k];
+  const numero=s=>s.replace(/[^+\d]/g,'');
+  const choix=[['📞 Téléphone',contact.telephone?'tel:'+numero(contact.telephone):''],['🟢 WhatsApp',contact.whatsapp?'https://wa.me/'+numero(contact.whatsapp).replace(/^\+/,''):''],['🔵 Messenger',/^https:\/\/(m\.me|www\.messenger\.com|messenger\.com)\//i.test(contact.messenger)?contact.messenger:''],['✉️ Courriel',contact.courriel?'mailto:'+contact.courriel:'']];
+  $('liensContact').innerHTML=choix.map(([titre,lien])=>'<div class="card">'+(lien?'<a class="action" style="display:inline-block;text-decoration:none;padding:12px 17px;background:#176b91;border-radius:9px;color:white" href="'+safe(lien)+'" target="_blank" rel="noopener noreferrer">'+titre+'</a>':'<strong>'+titre+'</strong><p class="muted">À configurer</p>')+'</div>').join('');
+}
+$('formContact').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget;for(const k of Object.keys(contact))contact[k]=f.elements[k].value.trim();try{localStorage.setItem(contactCle,JSON.stringify(contact));afficherContact();alert('Coordonnées enregistrées dans ce navigateur.')}catch(e){alert('Impossible d’enregistrer les coordonnées.')}});
+afficherContact();
 $('dateJournal').value=new Date().toLocaleDateString('en-CA');afficher();
 </script></body></html>
