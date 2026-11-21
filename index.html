@@ -5,6 +5,51 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LOGIKIDS — Gestion de garderie</title>
 <style>
+/* LOGIKIDS — interface bleu marine et or retenue le 20 novembre */
+:root{--marine:#0c2248;--marine2:#173a6e;--gold:#c99b42;--goldlite:#f8ebc9;--ink:#1c3557;--canvas:#edf2f8}
+body{background:var(--canvas)!important;color:var(--ink)!important}
+.app-shell{display:flex;min-height:100vh;align-items:stretch}
+.side{width:260px;min-width:260px;background:linear-gradient(180deg,#081e43 0%,#123360 65%,#061b3b 100%);color:#fff;padding:20px 13px;box-shadow:5px 0 20px #0a214329;position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;z-index:2}
+.brand-box{padding:14px;background:#fff;border:2px solid #d4a84e;border-radius:18px;box-shadow:0 5px 0 #9b7938}
+.brand-box img{width:100%;max-height:84px;object-fit:contain;display:block}
+.brand-caption{color:#e8dcbf;font-size:13px;text-align:center;margin:14px 5px 25px;line-height:1.5}
+.side-label{text-transform:uppercase;letter-spacing:.11em;font-weight:800;font-size:11px;color:#e3ba6a;margin:18px 8px 9px}
+.side-footer{font-size:11px;line-height:1.5;color:#bdd0e7;text-align:center;padding:18px 6px}
+.workspace{flex:1;min-width:0}
+.topbar{background:linear-gradient(110deg,#0f2b58,#1d5181)!important;box-shadow:0 3px 10px #0f2d5e38;padding:15px 24px!important;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:4px solid var(--gold)}
+.topbar h1{margin:0;font-size:25px;color:#fff;font-weight:850;letter-spacing:.01em}
+.topbar p{font-size:13px;color:#ecf2fd;margin:3px 0 0}
+.topbar .button-outline{background:transparent;border:1px solid #efd49b;color:white;padding:9px 12px;border-radius:10px;cursor:pointer}
+main{max-width:1300px!important;padding:24px 30px!important}
+main h2{color:#102f60;font-size:25px;margin:24px 0 16px;padding-bottom:11px;border-bottom:3px solid #d4a84e}
+main h3{color:#133866}
+.menu{display:flex!important;flex-direction:column;gap:9px!important;margin:0!important}
+.key{min-height:53px!important;padding:11px 13px!important;display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-size:13px!important;background:linear-gradient(160deg,#fff,#e4eaf5)!important;border:1px solid #c7d2e3!important;border-bottom:4px solid #91a6c4!important;border-radius:13px!important;box-shadow:0 3px 0 #607c9e,0 6px 10px #00163636!important;color:#112e5b!important}
+.key .emoji{display:inline-block!important;margin:0!important;min-width:28px;font-size:24px!important}
+.key[aria-current="page"]{background:linear-gradient(155deg,#fff7dd,#e8d6a0)!important;border-color:#b48b3c!important;border-bottom-color:#94702e!important;outline:2px solid #e5bc66!important}
+.key:active{transform:translateY(3px)!important;box-shadow:0 1px 0 #607c9e!important}
+.card{border:1px solid #dbe4f1;box-shadow:0 4px 15px #0d2b5720!important;border-radius:17px!important}
+.card h3{margin-top:0}.parent-card{border-top:4px solid #bd9748}
+button.action,.linkaction{background:linear-gradient(180deg,#26639b,#123b6f)!important;box-shadow:0 3px 0 #0a2140;border:1px solid #173d70!important}
+button.action.secondary{background:linear-gradient(180deg,#657d9d,#475e7d)!important}
+button.action:active{transform:translateY(2px);box-shadow:0 1px 0 #0a2140}
+.metric{color:#bd9136!important}.hint{border-left-color:#c99b42!important}.pill{background:#f4f0e6}
+.secure-banner{background:#e9f3ff;border-left:4px solid #24729f;border-radius:10px;padding:13px;margin:12px 0;color:#244969}
+.secure-banner.warning{background:#fff0d7;border-color:#d7a349;color:#594a29}
+.secure-banner.good{background:#e5f4ed;border-color:#289273;color:#145139}
+.auth-flex{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.auth-flex>*{flex:1;min-width:190px}
+.auth-buttons{display:flex;gap:8px;flex-wrap:wrap}.auth-buttons button{margin:5px 0!important}
+.chat-layout{display:grid;grid-template-columns: minmax(210px,300px) minmax(0,1fr);gap:14px}
+.chat-list{border:1px solid #d4deeb;border-radius:13px;padding:10px;background:#f5f8fc;max-height:460px;overflow:auto}
+.chat-thread{background:#fff;border:1px solid #ccd8ea;color:#1a3c64;padding:11px;border-radius:10px;margin:6px 0;width:100%;text-align:left;cursor:pointer;font:inherit;font-weight:650}
+.chat-thread[aria-pressed="true"]{background:#fff3d3;border:2px solid #b79042}
+.chat-messages{border:1px solid #d4deeb;border-radius:12px;background:#f4f8fd;padding:13px;min-height:220px;max-height:430px;overflow:auto}
+.chat-msg{padding:11px 12px;background:white;border-radius:12px;margin:10px 0;box-shadow:0 2px 5px #09224417;max-width:90%;overflow-wrap:anywhere}
+.chat-msg.mine{background:#e5effb;margin-left:auto}.chat-meta{font-size:11px;color:#4d6279;margin-bottom:4px}
+#authNotice{white-space:pre-wrap}.badge-status{background:#fff0cd;color:#61460f;padding:5px 9px;border-radius:15px;font-size:12px;font-weight:800}
+@media(max-width:980px){.side{width:205px;min-width:205px}.key{font-size:12px!important}main{padding:20px!important}}
+@media(max-width:700px){.app-shell{display:block}.side{position:relative;height:auto;width:100%;min-width:0;padding:12px}.brand-box{max-width:210px;padding:6px}.brand-caption,.side-label,.side-footer{display:none}.menu{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px!important;margin-top:12px!important}.key{display:flex;flex-direction:column;text-align:center;justify-content:center;min-height:80px!important;padding:7px!important;gap:5px;font-size:11px!important}.key .emoji{font-size:20px!important}main{padding:12px!important}.topbar{padding:13px!important}.topbar h1{font-size:19px}.chat-layout{grid-template-columns:1fr}}
+
 :root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#24354b;background:#f3f7fc}
 *{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#102b55,#176b91);color:white;padding:25px max(20px,calc((100vw - 1100px)/2))}header p{margin:6px 0}
 main{max-width:1100px;margin:auto;padding:22px}.hint{background:#fff3d7;border-left:4px solid #e7a72e;padding:12px;border-radius:9px;font-size:14px;line-height:1.5}
@@ -19,18 +64,65 @@ button.action,.linkaction{display:inline-block;padding:12px 17px;background:#176
 .delete-btn{background:#fff1f1;border:1px solid #e5aaaa;color:#a21d1d;border-radius:8px;padding:7px 10px;cursor:pointer;margin:4px;font-weight:700}.delete-btn:hover{background:#ffdede}.item-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .parent-card{display:flex;flex-direction:column;justify-content:space-between;min-height:156px}.parent-card strong{font-size:16px}.module-parent{display:none;scroll-margin-top:20px}.module-parent.active{display:block}.module-title{border-bottom:1px solid #e4eaf2;padding-bottom:12px;margin-top:0}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}.mini{font-size:12px}.photo{max-height:190px;width:auto;max-width:100%;border-radius:10px;display:block;margin:8px 0}.status{color:#166543;font-weight:700}.notes{white-space:pre-wrap;overflow-wrap:anywhere}.tiny{font-size:13px}.inline-check{width:auto;vertical-align:middle}.row-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.notice{background:#e5f4f0;border-left:4px solid #2f8f74;padding:10px;border-radius:8px}.hidden{display:none!important}
 @media(max-width:600px){.menu{grid-template-columns:repeat(2,1fr);gap:10px}.key{min-height:100px}header{padding:20px}main{padding:13px}.card{padding:15px}}
+
+/* LOGIKIDS — module de présences (prototype local uniquement) */
+.presence-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-weight:850;font-size:13px;border:1px solid transparent;white-space:nowrap}
+.presence-present{background:#e2f5ea;color:#14683b;border-color:#a3ddbb}
+.presence-parti{background:#ffeaeb;color:#a5212c;border-color:#e5a1a7}
+.presence-non_arrive{background:#edf0f5;color:#4d6077;border-color:#ccd4df}
+.presence-row{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:15px 4px;border-bottom:1px solid #e4ebf3;flex-wrap:wrap}
+.presence-row:last-child{border-bottom:0}
+.presence-name{font-weight:850;font-size:17px;color:#163862}
+.presence-row-right{display:flex;gap:9px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.presence-btns{display:flex;gap:7px;flex-wrap:wrap}
+.presence-btn{font:inherit;font-size:13px;font-weight:800;border-radius:10px;padding:10px 12px;cursor:pointer;border:1px solid #c3d1e2;background:#fff;box-shadow:0 2px 0 #a8b8cc}
+.presence-btn:disabled{cursor:not-allowed;opacity:.4;box-shadow:none}
+.presence-btn.arrivee:not(:disabled){color:#126b3b;border-color:#79caa1;background:#ebf9f1}
+.presence-btn.depart:not(:disabled){color:#a5212c;border-color:#df9aa0;background:#fff0f0}
+.presence-summaries{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.presence-stat{text-align:center;border-radius:13px;padding:12px 8px;background:#f4f7fb;border:1px solid #d8e2ed}
+.presence-stat strong{display:block;font-size:29px;color:#163862}
+.presence-parent-preview{margin-top:12px;border:1px solid #d9e4f0;border-radius:14px;padding:17px;background:#f7fafd}
+.presence-history{padding:5px 0 5px 17px;margin:8px 0;font-size:14px}
+.presence-history li{margin-bottom:7px}
+.presence-history small{color:#63748b}
+.request-pending{border-left:4px solid #b78d37;padding:10px 12px;margin:10px 0;background:#fff8ea;border-radius:8px}
+.request-done{border-left:4px solid #55987b;padding:10px 12px;margin:10px 0;background:#f0f7f4;border-radius:8px}
+#module-presenceparent .parent-guidance{background:#fff6df;border-radius:10px;padding:12px;line-height:1.5}
+@media(max-width:600px){.presence-summaries{gap:5px}.presence-stat{padding:9px 4px}.presence-stat strong{font-size:23px}.presence-row-right{justify-content:flex-start}}
 </style></head>
 <body>
-<header><img src="Image%20ChatGPT%2019%20nov.%202026%2C%2023_53_09.png" alt="LOGIKIDS" style="width:300px;max-width:100%;height:auto"><p>La gestion de votre garderie simplifiée</p></header>
-<main>
-<div class="hint"><strong>Prototype de démonstration :</strong> les données restent dans ce navigateur seulement. Ne saisissez aucune donnée personnelle réelle concernant des enfants, parents ou familles. Aucun compte parent sécurisé, paiement bancaire, transmission de messages ou notification entre appareils n'est activé. Les fonctionnalités du portail parents sont des simulations locales.</div>
+<div class="app-shell">
+<aside class="side">
+<div class="brand-box"><img src="Image%20ChatGPT%2019%20nov.%202026%2C%2023_53_09.png" alt="LOGIKIDS — logo original" ></div>
+<div class="brand-caption">La gestion de votre garderie simplifiée</div>
+<div class="side-label">Navigation LOGIKIDS</div>
 <nav class="menu" aria-label="Navigation principale" id="menu"></nav>
-<section id="accueil" class="page active"><h2>🏠 Tableau de bord</h2><div class="grid"><div class="card"><div class="metric" id="statEnfants">0</div>Enfants</div><div class="card"><div class="metric" id="statMenus">0</div>Menus</div><div class="card"><div class="metric" id="statJournaux">0</div>Journaux</div><div class="card"><div class="metric" id="statDepenses">0 $</div>Dépenses</div></div><div class="card"><h3>Garderie pilote — Faveur Grâce</h3><p>Bienvenue dans LOGIKIDS. Utilisez les touches 3D pour ouvrir les sections.</p><p class="muted">Le Portail parents comprend maintenant 12 modules interactifs de démonstration.</p></div></section>
+<div class="side-footer">LOGIKIDS • Ensemble pour leur avenir !</div>
+</aside>
+<div class="workspace"><header class="topbar"><div><h1>LOGIKIDS</h1><p>Tableau de bord • Garderie pilote</p></div><div class="auth-buttons"><span id="sessionLabel" class="badge-status">Mode démonstration</span><button id="topAccount" class="button-outline" type="button">🔐 Mon compte</button></div></header>
+<main>
+<div class="hint"><strong>Prototype en cours de développement :</strong> les modules enfants, journal, photos, dépenses et Portail parents restent des démonstrations locales. Même après la connexion Supabase, <strong>ces modules ne sont PAS encore sécurisés ni synchronisés</strong>. Utilisez des renseignements et photos fictifs. Seule la future messagerie privée utilisera la base sécurisée après configuration et tests.</div>
+<section id="accueil" class="page active"><h2>🏠 Tableau de bord</h2><div class="grid"><div class="card"><div class="metric" id="statEnfants">0</div>Enfants</div><div class="card"><div class="metric" id="statMenus">0</div>Menus</div><div class="card"><div class="metric" id="statJournaux">0</div>Journaux</div><div class="card"><div class="metric" id="statDepenses">0 $</div>Dépenses</div></div><div class="card"><h3>🟢 Présences aujourd’hui</h3><div id="presenceDashboard"></div><button type="button" class="action" data-go="presences">Gérer les arrivées et les départs</button></div><div class="card"><h3>Garderie pilote — Faveur Grâce</h3><p>Bienvenue dans LOGIKIDS. Utilisez les touches 3D pour ouvrir les sections.</p><p class="muted">Le Portail parents comprend maintenant 13 modules interactifs de démonstration.</p></div></section>
 <section id="enfants" class="page"><h2>👶 Enfants</h2><div class="card"><form id="formEnfant"><label>Prénom fictif</label><input name="prenom" required maxlength="60" placeholder="Ex. : Alex"><label>Âge (0 à 5 ans)</label><input name="age" type="number" min="0" max="5" required><button class="action">Ajouter</button></form></div><div class="card"><h3>Liste des enfants</h3><div id="listeEnfants"></div></div></section>
+<section id="presences" class="page"><h2>🟢🔴 Suivi des présences</h2>
+<div class="hint"><strong>Démonstration locale, sans comptes sécurisés :</strong> les arrivées et départs sont enregistrés uniquement dans ce navigateur. Le statut ne se transmet pas encore aux familles sur un autre appareil. N'utilisez pas ce suivi pour surveiller de vrais enfants avant la mise en service sécurisée.</div>
+<div class="card"><h3>Présences — <span id="presenceDate"></span></h3><div class="presence-summaries" id="presenceSummary"></div><p class="muted">🟢 Présent = arrivé à la garderie · 🔴 Parti = départ confirmé · ⚪ Non arrivé = aucune arrivée confirmée aujourd'hui.</p><div id="presenceStaffList"></div></div>
+<div class="card"><h3>📋 Demandes de correction des parents</h3><p class="muted">Le parent peut demander une correction. Seule la garderie applique le changement de statut dans ce prototype.</p><div id="presenceRequestsStaff"></div></div>
+<div class="card"><h3>🕓 Historique des présences (démonstration)</h3><div id="presenceHistoryStaff"></div></div>
+</section>
 <section id="journal" class="page"><h2>📖 Journal quotidien</h2><div class="card"><form id="formJournal"><label>Enfant</label><select name="enfant" id="enfantJournal" required></select><label>Date</label><input name="date" type="date" id="dateJournal" required><label>Repas enregistré</label><select name="repas" id="repasJournal"></select><label>Sieste</label><input name="sieste" placeholder="Ex. : 12 h 30 à 14 h"><label>Activités (plusieurs choix possibles)</label><div class="checks" id="choixActivites"></div><label>Humeur</label><select name="humeur"><option>😊 Heureux</option><option>😌 Calme</option><option>😴 Fatigué</option><option>😢 Triste</option><option>😟 Inquiet</option></select><label>Comportements observés</label><div class="checks" id="choixComportements"></div><label>Notes facultatives</label><textarea name="notes"></textarea><label>Visibilité (démonstration)</label><select name="visibilite"><option>Journal de fin de journée</option><option>Notification aux parents — non connectée</option><option>Note interne — démonstration locale</option></select><button class="action">Enregistrer le journal</button></form></div><div class="card"><h3>Journaux enregistrés</h3><div id="listeJournaux"></div></div></section>
 <section id="menus" class="page"><h2>🍎 Menus et repas</h2><div class="card"><form id="formMenu"><label>Nom du plat</label><input name="plat" required><label>Ingrédients</label><textarea name="ingredients"></textarea><label>Préparation</label><textarea name="preparation"></textarea><label>Allergènes à vérifier</label><input name="allergenes"><button class="action">Enregistrer le menu</button></form></div><div class="card"><h3>Répertoire de menus</h3><div id="listeMenus"></div></div></section>
-<section id="parents" class="page"><h2>👨‍👩‍👧 Portail parents</h2><div class="hint">12 modules de démonstration : cliquez sur <strong>Ouvrir</strong> sous une icône. Les données ne sont visibles que sur cet appareil, sans authentification parent réelle.</div><div class="grid" id="apercuParents"></div>
+<section id="parents" class="page"><h2>👨‍👩‍👧 Portail parents</h2><div class="hint">13 modules de démonstration : cliquez sur <strong>Ouvrir</strong> sous une icône. Les données ne sont visibles que sur cet appareil, sans authentification parent réelle.</div><div class="grid" id="apercuParents"></div>
 <div class="card module-parent" id="module-humeur"><h3 class="module-title">😊 Humeur du jour</h3><p class="muted">D'après les journaux quotidiens enregistrés (simulation).</p><div id="humeursParent"></div><button class="action secondary" data-go="journal" type="button">Enregistrer une humeur dans le journal</button></div>
+<div class="card module-parent" id="module-presenceparent"><h3 class="module-title">🟢🔴 Présence à la garderie</h3>
+<p class="parent-guidance"><strong>Contrôle recommandé :</strong> seule la garderie valide les arrivées et les départs. Les parents consultent le statut et peuvent demander une correction, sans double approbation obligatoire.</p>
+<p class="hint">Mode démonstration : ce choix d'enfant ne vérifie pas l'identité du parent. Les informations sont locales et ne se synchronisent pas entre appareils. Seuls les comptes sécurisés permettront de limiter chaque parent à son enfant.</p>
+<label for="presenceChildParent">Enfant fictif dont vous consultez le statut</label><select id="presenceChildParent"><option value="">Choisir un enfant fictif</option></select>
+<div id="presenceParentStatus" aria-live="polite"></div>
+<form id="presenceCorrectionForm"><h4>Demander une correction à la garderie</h4><label for="presenceCorrectionStatus">Statut souhaité</label><select id="presenceCorrectionStatus" name="statut" required><option value="present">🟢 Présent</option><option value="parti">🔴 Parti</option><option value="non_arrive">⚪ Non arrivé</option></select><label for="presenceCorrectionText">Explication (facultative)</label><textarea id="presenceCorrectionText" name="explication" maxlength="300" placeholder="Ex. : l'arrivée a été oubliée"></textarea><button type="submit" class="action">Envoyer la demande (simulation)</button></form>
+<h4>Mes demandes de correction</h4><div id="presenceParentRequests"></div>
+</div>
 <div class="card module-parent" id="module-journalparent"><h3 class="module-title">📖 Journaux consultables</h3><p class="muted">Les notes internes sont exclues de cet aperçu; aucune confidentialité réelle n'est appliquée entre comptes.</p><div id="journauxParent"></div></div>
 <div class="card module-parent" id="module-photos"><h3 class="module-title">📸 Photos et souvenirs</h3><form id="formPhoto"><label>Enfant fictif (facultatif)</label><select name="enfant" class="selectEnfantOption"></select><label>Photo de démonstration (petit fichier image)</label><input id="photoFichier" type="file" accept="image/png,image/jpeg,image/webp" required><label>Légende</label><input name="legende" maxlength="130" placeholder="Ex. : Notre bricolage du jour"><button class="action">Ajouter la photo</button></form><p class="muted tiny">La photo est réduite automatiquement et conservée uniquement dans ce navigateur. Ne mettez aucune photo d'un véritable enfant.</p><div id="photosParent"></div></div>
 <div class="card module-parent" id="module-absence"><h3 class="module-title">🏠 Signaler une absence</h3><p class="hint">Simulation locale seulement : aucun avis n’est transmis à la garderie ni à un parent. Utilisez uniquement des noms fictifs.</p><form id="formAbsence"><label for="enfantAbsence">Enfant fictif</label><select id="enfantAbsence" name="enfant" required></select><label for="dateAbsence">Date de l'absence</label><input id="dateAbsence" name="date" type="date" required><label>Motif (facultatif)</label><select name="motif"><option value="Non précisé">Non précisé</option><option>Maladie</option><option>Rendez-vous</option><option>Vacances</option><option>Raison familiale</option><option>Autre</option></select><label>Précisions facultatives (fictives)</label><textarea name="notes" maxlength="500"></textarea><button class="action">Enregistrer l'absence</button></form><h4>Absences enregistrées</h4><div id="listeAbsences"></div></div>
@@ -47,14 +139,31 @@ button.action,.linkaction{display:inline-block;padding:12px 17px;background:#176
 <section id="depenses" class="page"><h2>💰 Comptabilité et dépenses</h2><div class="hint">Saisie manuelle pour le prototype. La lecture automatique des factures et l'export fiscal ne sont pas connectés.</div><div class="card"><form id="formDepense"><label>Date</label><input type="date" name="date" required><label>Fournisseur</label><input name="fournisseur" required><label>Catégorie</label><select name="categorie"><option>Alimentation</option><option>Entretien</option><option>Matériel éducatif</option><option>Autres dépenses</option></select><label>Montant ($ CA)</label><input name="montant" type="number" min="0" step="0.01" required><button class="action">Enregistrer la dépense</button></form></div><div class="card"><h3>Totaux cumulés</h3><div id="totauxDepenses"></div><h3>Historique</h3><div id="listeDepenses"></div></div></section>
 <section id="inscriptions" class="page"><h2>📝 Inscriptions et liste d'attente</h2><div class="card"><form id="formAttente"><label>Nom fictif</label><input name="nom" required><label>Statut</label><select name="statut"><option>En attente</option><option>À contacter</option><option>Place offerte</option></select><label>Notes facultatives</label><textarea name="notes"></textarea><button class="action">Ajouter à la liste</button></form></div><div class="card" id="listeAttente"></div></section>
 <section id="parametres" class="page"><h2>⚙️ Paramètres</h2><div class="card"><h3>Prototype LOGIKIDS</h3><p>Version locale gratuite. Les données de démonstration restent dans ce navigateur. Un compte parent réel et une base de données sécurisée seront nécessaires avant de travailler avec des renseignements réels.</p><button class="action secondary" id="exporter" type="button">Exporter les données de démonstration (JSON)</button></div></section>
-<section id="contact" class="page"><h2>📞 Contact et messagerie</h2><div class="card"><h3>Coordonnées de la garderie</h3><p class="muted">Les informations de cette démonstration sont locales à cet appareil.</p><form id="formContact"><label>Téléphone professionnel</label><input name="telephone" type="tel" placeholder="Ex. : 418 555-0123"><label>WhatsApp (avec indicatif)</label><input name="whatsapp" type="tel" placeholder="Ex. : +1 418 555-0123"><label>Lien Messenger</label><input name="messenger" type="url" placeholder="https://m.me/votrepage"><label>Courriel professionnel</label><input name="courriel" type="email" placeholder="contact@exemple.ca"><button class="action">Enregistrer mes coordonnées</button></form><div class="grid" id="liensContact"></div></div>
+<section id="contact" class="page"><h2>💬 Contacts et messagerie</h2>
+<div class="card"><h3>🔐 Messagerie privée LOGIKIDS</h3><p>Échanges réels entre parents et éducatrices autorisés, après activation du compte sécurisé et de Supabase.</p><div id="contactAuthStatus" class="secure-banner warning">Pas encore configuré : ne communique pas entre appareils.</div><button class="action" type="button" id="goSecureMessaging">Accéder aux messages privés</button></div>
+<h3>Coordonnées et essais locaux</h3><div class="card"><h3>Coordonnées de la garderie</h3><p class="muted">Les informations de cette démonstration sont locales à cet appareil.</p><form id="formContact"><label>Téléphone professionnel</label><input name="telephone" type="tel" placeholder="Ex. : 418 555-0123"><label>WhatsApp (avec indicatif)</label><input name="whatsapp" type="tel" placeholder="Ex. : +1 418 555-0123"><label>Lien Messenger</label><input name="messenger" type="url" placeholder="https://m.me/votrepage"><label>Courriel professionnel</label><input name="courriel" type="email" placeholder="contact@exemple.ca"><button class="action">Enregistrer mes coordonnées</button></form><div class="grid" id="liensContact"></div></div>
 <div class="card"><h3>👨‍👩‍👧 Répertoire des parents (fictifs)</h3><form id="formParent"><label>Nom du parent fictif</label><input name="nom" required maxlength="80" placeholder="Ex. : Parent de Alex"><label>Enfant associé (facultatif)</label><select name="enfant" id="enfantParent"></select><label>Téléphone</label><input name="telephone" type="tel"><label>WhatsApp</label><input name="whatsapp" type="tel"><label>Messenger (lien)</label><input name="messenger" type="url"><label>Courriel</label><input name="courriel" type="email"><button class="action">Ajouter le parent</button></form><div id="listeParentsContact"></div></div>
 <div class="card"><h3>💬 Messagerie LOGIKIDS — simulation locale</h3><p class="hint">Les messages sont des essais visibles seulement sur cet appareil. Ils ne sont ni transmis aux parents ni privés entre comptes réels.</p><form id="formMessage"><label>Conversation avec</label><select name="parentId" id="parentMessage" required></select><label>Expéditeur simulé</label><select name="expediteur"><option value="Garderie">Garderie → Parent</option><option value="Parent">Parent → Garderie</option></select><label>Message d'essai</label><textarea name="texte" required maxlength="2000" placeholder="Écrivez un message fictif..."></textarea><button class="action">Ajouter au fil de démonstration</button></form><h3>Historique de la conversation</h3><div id="listeMessages"></div></div></section>
-</main><footer>LOGIKIDS © 2026 — Prototype de démonstration</footer>
+
+<section id="compte" class="page"><h2>🔐 Comptes et messagerie privée</h2>
+<div class="secure-banner warning" id="authNotice" role="status">Préparation du compte sécurisé…</div>
+<div class="card" id="authCard"><h3>Connexion à LOGIKIDS</h3>
+<p class="muted">Les comptes doivent être approuvés et reliés à une garderie avant de pouvoir échanger des messages. Aucune information concernant un véritable enfant ne doit être saisie dans les modules de démonstration.</p>
+<div class="auth-buttons"><button type="button" class="action secondary" id="showLogin">Se connecter</button><button type="button" class="action secondary" id="showSignup">Créer un compte</button><button type="button" class="action secondary" id="showReset">Mot de passe oublié</button></div>
+<form id="authForm"><div id="fullNameWrap" class="hidden"><label>Nom complet</label><input name="fullName" maxlength="100" autocomplete="name"></div><label>Courriel</label><input type="email" name="email" autocomplete="email" required maxlength="255"><div id="passwordWrap"><label>Mot de passe (au moins 12 caractères pour un nouveau compte)</label><input type="password" name="password" autocomplete="current-password" minlength="6"></div><button class="action" type="submit" id="authSubmit">Connexion</button></form>
+</div>
+<div class="card hidden" id="signedCard"><h3>Mon compte</h3><p id="signedIdentity"></p><button class="action secondary" type="button" id="signOut">Se déconnecter</button></div>
+<div class="card hidden" id="recoverCard"><h3>Choisir un nouveau mot de passe</h3><form id="recoverForm"><label>Nouveau mot de passe (au moins 12 caractères)</label><input name="password" type="password" minlength="12" autocomplete="new-password" required><button class="action">Mettre à jour mon mot de passe</button></form></div>
+<div class="card hidden" id="realChatCard"><h3>💬 Conversations sécurisées</h3><div id="chatStatus" class="secure-banner">Chargement…</div>
+<div class="hidden" id="educatorNewChat"><label>Parent autorisé dans votre garderie</label><select id="parentStartChat"><option value="">Sélectionner</option></select><button type="button" class="action" id="startConversation">Démarrer une conversation</button></div>
+<div class="chat-layout"><div class="chat-list" id="threadList"><p class="muted">Aucune conversation.</p></div><div><div class="chat-messages" id="chatMessages" aria-live="polite"><p class="muted">Choisissez une conversation.</p></div><form id="sendRealMessage"><label for="realMessage">Votre message</label><textarea id="realMessage" name="message" required maxlength="2000" placeholder="Écrivez un message à un parent ou à une éducatrice autorisé(e)…"></textarea><button class="action" id="sendRealButton">Envoyer de façon privée</button></form></div></div>
+</div>
+</section>
+</main><footer>LOGIKIDS © 2026 — Prototype de démonstration</footer></div></div>
 <script>
 'use strict';
-const sections=[['accueil','🏠','Accueil'],['enfants','👶','Enfants'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres'],['contact','📞','Contact']];
-const cle='logikids_demo_v2',absenceCle='logikids_absences_demo_v1',contactCle='logikids_contact_demo_v1',messCle='logikids_messages_demo_v1',portailCle='logikids_portail_demo_v1';
+const sections=[['accueil','🏠','Accueil'],['enfants','👶','Enfants'],['presences','🟢','Présences'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres'],['contact','💬','Contacts'],['compte','🔐','Compte sécurisé']];
+const cle='logikids_demo_v2',absenceCle='logikids_absences_demo_v1',contactCle='logikids_contact_demo_v1',messCle='logikids_messages_demo_v1',portailCle='logikids_portail_demo_v1',presenceCle='logikids_presences_demo_v1';
 const base=()=>({enfants:[],menus:[],journaux:[],evenements:[],depenses:[],attente:[]});
 const $=id=>document.getElementById(id),safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),money=n=>new Intl.NumberFormat('fr-CA',{style:'currency',currency:'CAD'}).format(Number(n)||0),uid=()=>String(Date.now())+Math.random().toString(36).slice(2,7),get=f=>Object.fromEntries(new FormData(f)),today=()=>new Date().toLocaleDateString('en-CA');
 function load(key,fallback){try{const d=JSON.parse(localStorage.getItem(key)||'null');return d&&typeof d==='object'?d:fallback}catch{return fallback}}
@@ -63,9 +172,11 @@ let absences=load(absenceCle,[]);if(!Array.isArray(absences))absences=[];
 let contact={telephone:'',whatsapp:'',messenger:'',courriel:''};const c=load(contactCle,{});for(const k of Object.keys(contact))if(typeof c[k]==='string')contact[k]=c[k];
 let mess=load(messCle,{parents:[],messages:[]});if(!Array.isArray(mess.parents))mess.parents=[];if(!Array.isArray(mess.messages))mess.messages=[];
 let portail=load(portailCle,{});for(const k of ['photos','documents','paiements','sac','victoires','activites'])if(!Array.isArray(portail[k]))portail[k]=[];
+let presence=load(presenceCle,{historique:[],demandes:[]});
+if(!presence||!Array.isArray(presence.historique)||!Array.isArray(presence.demandes))presence={historique:[],demandes:[]};
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){alert('Le navigateur ne peut plus enregistrer ces données. Exportez les données dans Paramètres et libérez de la place.');return false}}
 $('menu').innerHTML=sections.map(([id,emoji,label])=>`<button class="key" type="button" data-page="${id}" aria-current="${id==='accueil'?'page':'false'}"><span class="emoji">${emoji}</span>${label}</button>`).join('');
-function ouvrir(id){if(!$(id))return;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page===id?'page':'false'));if(id==='parents')afficherPortail();window.scrollTo({top:0,behavior:'smooth'})}
+function ouvrir(id){if(!$(id))return;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page===id?'page':'false'));if(id==='parents')afficherPortail();if(id==='presences'||id==='parents'||id==='accueil')afficherPresences();window.scrollTo({top:0,behavior:'smooth'})}
 $('menu').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)ouvrir(b.dataset.page)});
 const activites=['Jeux libres','Bricolage','Lecture','Chansons','Jeux extérieurs','Motricité','Peinture','Jeux éducatifs'],comportements=['Participation','Entraide','Partage','Besoin de réconfort','Difficulté à attendre','Conflit observé'];
 function checks(id,items){$(id).innerHTML=items.map((s,i)=>`<label><input type="checkbox" value="${safe(s)}" name="choix${id}${i}"> ${safe(s)}</label>`).join('')};checks('choixActivites',activites);checks('choixComportements',comportements);
@@ -85,12 +196,12 @@ lister('listeJournaux',data.journaux,j=>`<div class="item"><button type="button"
 lister('listeEvenements',data.evenements.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),e=>`<div class="item"><button type="button" class="delete-btn" data-delete="evenements" data-id="${safe(e.id)}">🗑️ Supprimer</button> 📅 ${safe(e.date)} — ${safe(e.titre)}</div>`);
 const totaux={};for(const d of data.depenses)totaux[d.categorie]=(totaux[d.categorie]||0)+Number(d.montant||0);$('totauxDepenses').innerHTML='<strong>Total : '+money(data.depenses.reduce((s,d)=>s+Number(d.montant||0),0))+'</strong><div>'+Object.entries(totaux).map(([k,v])=>`<span class="pill">${safe(k)} : ${money(v)}</span>`).join('')+'</div>';
 lister('listeDepenses',data.depenses,d=>`<div class="item"><button type="button" class="delete-btn" data-delete="depenses" data-id="${safe(d.id)}">🗑️ Supprimer</button> ${safe(d.date)} — ${safe(d.fournisseur)} (${safe(d.categorie)}) : <strong>${money(d.montant)}</strong></div>`);
-lister('listeAttente',data.attente,a=>`<div class="item"><button type="button" class="delete-btn" data-delete="attente" data-id="${safe(a.id)}">🗑️ Supprimer</button> ${safe(a.nom)} — <strong>${safe(a.statut)}</strong><p>${safe(a.notes)}</p></div>`);afficherPortail();}
+lister('listeAttente',data.attente,a=>`<div class="item"><button type="button" class="delete-btn" data-delete="attente" data-id="${safe(a.id)}">🗑️ Supprimer</button> ${safe(a.nom)} — <strong>${safe(a.statut)}</strong><p>${safe(a.notes)}</p></div>`);afficherPortail();afficherPresences();}
 function afficherAbsences(){lister('listeAbsences',absences.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))),a=>`<div class="item"><div class="item-head"><strong>🏠 ${safe(nomEnfant(a.enfant))} — ${safe(a.date)}</strong><button type="button" class="delete-btn" data-delete-absence="${safe(a.id)}">🗑️ Supprimer</button></div><p>Motif : ${safe(a.motif||'Non précisé')}</p>${a.notes?`<p class="notes">${safe(a.notes)}</p>`:''}<small class="muted">Enregistré uniquement dans ce navigateur</small></div>`)}
 $('formAbsence').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,v=get(f);if(!data.enfants.some(x=>String(x.id)===String(v.enfant)))return alert('Choisissez un enfant fictif.');if(!v.date)return;absences.push({id:uid(),...v,notes:(v.notes||'').trim()});if(persist(absenceCle,absences)){afficherAbsences();f.reset();$('dateAbsence').value=today();alert('Absence enregistrée dans la démonstration. Aucun avis n’a été envoyé.')}});
 function brancher(id,collection,transform){$(id).addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,v=get(f),obj=transform?transform(v):v;if(!obj)return;data[collection].push({id:uid(),...obj});if(save()){f.reset();if(id==='formJournal')$('dateJournal').value=today()}})}
 brancher('formEnfant','enfants',v=>({prenom:v.prenom.trim(),age:Number(v.age)}));brancher('formMenu','menus');brancher('formJournal','journaux',v=>({...v,activites:selections('choixActivites'),comportements:selections('choixComportements')}));brancher('formEvenement','evenements');brancher('formDepense','depenses',v=>({...v,montant:Number(v.montant)}));brancher('formAttente','attente');
-const parentModules=[['humeur','😊 Humeur du jour'],['journalparent','📖 Journal quotidien'],['photos','📸 Photos et souvenirs'],['absence','🏠 Signaler une absence'],['messages','💬 Messages'],['documents','📄 Documents et contrats'],['paiements','💳 Paiements et reçus'],['calendrierparent','📅 Calendrier'],['sac','🎒 Sac à dos et rappels'],['victoires','🏅 Petites victoires'],['repasparent','🍎 Repas et allergènes'],['activites','🏡 Activités à la maison']];
+const parentModules=[['humeur','😊 Humeur du jour'],['presenceparent','🟢🔴 Présence'],['journalparent','📖 Journal quotidien'],['photos','📸 Photos et souvenirs'],['absence','🏠 Signaler une absence'],['messages','💬 Messages'],['documents','📄 Documents et contrats'],['paiements','💳 Paiements et reçus'],['calendrierparent','📅 Calendrier'],['sac','🎒 Sac à dos et rappels'],['victoires','🏅 Petites victoires'],['repasparent','🍎 Repas et allergènes'],['activites','🏡 Activités à la maison']];
 $('apercuParents').innerHTML=parentModules.map(([id,title])=>`<div class="card parent-card"><strong>${title}</strong><p class="muted">Module interactif de démonstration</p><button type="button" class="action" data-module="${id}">Ouvrir</button></div>`).join('');
 $('apercuParents').addEventListener('click',e=>{const b=e.target.closest('button[data-module]');if(!b)return;document.querySelectorAll('.module-parent').forEach(m=>m.classList.remove('active'));const target=$('module-'+b.dataset.module);if(target){target.classList.add('active');afficherPortail();target.scrollIntoView({behavior:'smooth',block:'start'})}});
 document.addEventListener('click',e=>{const b=e.target.closest('button[data-go]');if(b)ouvrir(b.dataset.go)});
@@ -111,12 +222,81 @@ lister('victoiresParent',portail.victoires.slice().reverse(),v=>itemPortail('vic
 lister('repasParent',data.menus,m=>`<div class="item"><strong>${safe(m.plat)}</strong><p class="notes">Ingrédients : ${safe(m.ingredients||'À compléter')}</p><p><strong>Allergènes déclarés : ${safe(m.allergenes||'À vérifier')}</strong></p></div>`);
 lister('activitesParent',portail.activites.slice().reverse(),a=>itemPortail('activites',a,`<strong>🏡 ${safe(a.titre)}</strong> <span class="pill">${safe(a.age)}</span><p class="notes">${safe(a.consignes)}</p>`));
 }
+
+// Suivi des présences — interface locale fictive, PAS un système de garde sécurisé.
+const presenceStatuts={non_arrive:{classe:'non_arrive',icone:'⚪',titre:'Non arrivé'},present:{classe:'present',icone:'🟢',titre:'Présent'},parti:{classe:'parti',icone:'🔴',titre:'Parti'}};
+function presenceEtat(enfant,date=today()){
+ const rev=presence.historique.slice().reverse().find(h=>String(h.enfant)===String(enfant)&&h.jour===date);
+ return rev?rev.statut:'non_arrive';
+}
+function presencePill(statut){const d=presenceStatuts[statut]||presenceStatuts.non_arrive;return `<span class="presence-badge presence-${d.classe}">${d.icone} ${d.titre}</span>`;}
+const presenceHeure=horodate=>{const d=new Date(horodate);return Number.isNaN(d.getTime())?'Heure inconnue':d.toLocaleString('fr-CA',{dateStyle:'medium',timeStyle:'short'});};
+function presenceEnregistrer(enfant,statut,source='Garderie',raison=''){
+ if(!data.enfants.some(e=>String(e.id)===String(enfant)))return false;
+ if(!Object.hasOwn(presenceStatuts,statut))return false;
+ const precedent=presenceEtat(enfant);
+ if(precedent===statut)return true;
+ const event={id:uid(),enfant:String(enfant),jour:today(),statut,avant:precedent,source,raison,horodate:new Date().toISOString()};
+ presence.historique.push(event);
+ if(!persist(presenceCle,presence)){presence.historique.pop();return false;}
+ afficherPresences();return true;
+}
+function afficherPresences(){
+ const filtres={present:0,parti:0,non_arrive:0};for(const e of data.enfants)filtres[presenceEtat(e.id)]++;
+ $('presenceDate').textContent=new Date().toLocaleDateString('fr-CA',{dateStyle:'long'});
+ $('presenceSummary').innerHTML=`<div class="presence-stat">${presencePill('present')}<strong>${filtres.present}</strong></div><div class="presence-stat">${presencePill('parti')}<strong>${filtres.parti}</strong></div><div class="presence-stat">${presencePill('non_arrive')}<strong>${filtres.non_arrive}</strong></div>`;
+ $('presenceDashboard').innerHTML=`<div class="presence-summaries"><div class="presence-stat">${presencePill('present')}<strong>${filtres.present}</strong></div><div class="presence-stat">${presencePill('parti')}<strong>${filtres.parti}</strong></div><div class="presence-stat">${presencePill('non_arrive')}<strong>${filtres.non_arrive}</strong></div></div><p class="muted">Aucune notification en temps réel entre appareils dans cette démonstration.</p>`;
+ $('presenceStaffList').innerHTML=data.enfants.length?data.enfants.map(e=>{
+  const st=presenceEtat(e.id),dernier=presence.historique.slice().reverse().find(h=>String(h.enfant)===String(e.id)&&h.jour===today());
+  return `<div class="presence-row"><div><div class="presence-name">👶 ${safe(e.prenom)}</div><div class="muted">${dernier?'Dernière modification : '+safe(presenceHeure(dernier.horodate)):'Aucune arrivée confirmée aujourd’hui'}</div></div><div class="presence-row-right">${presencePill(st)}<div class="presence-btns"><button type="button" class="presence-btn arrivee" data-presence-enfant="${safe(e.id)}" data-presence-statut="present" ${st==='present'?'disabled':''}>🟢 Confirmer l’arrivée</button><button type="button" class="presence-btn depart" data-presence-enfant="${safe(e.id)}" data-presence-statut="parti" ${st!=='present'?'disabled':''}>🔴 Confirmer le départ</button></div></div></div>`;
+ }).join(''):'<p class="muted">Ajoutez d’abord un enfant fictif dans la rubrique Enfants.</p>';
+ const demandes=presence.demandes.slice().reverse();
+ $('presenceRequestsStaff').innerHTML=demandes.length?demandes.map(r=>`<div class="${r.etat==='en_attente'?'request-pending':'request-done'}"><strong>${safe(nomEnfant(r.enfant))}</strong> — demande : ${presencePill(r.souhaite)}<div class="muted">${safe(presenceHeure(r.horodate))} · ${safe(r.explication||'Aucune explication')}</div>${r.etat==='en_attente'?`<div class="presence-btns"><button type="button" class="presence-btn arrivee" data-presence-approve="${safe(r.id)}">Approuver et appliquer</button><button type="button" class="presence-btn depart" data-presence-reject="${safe(r.id)}">Refuser</button></div>`:`<small>${r.etat==='approuvee'?'✅ Approuvée par la garderie':'❌ Refusée par la garderie'}${r.traiteeLe?' — '+safe(presenceHeure(r.traiteeLe)):''}</small>`}</div>`).join(''):'<p class="muted">Aucune demande de correction.</p>';
+ const hist=presence.historique.slice().reverse().slice(0,35);
+ $('presenceHistoryStaff').innerHTML=hist.length?`<ol class="presence-history">${hist.map(h=>`<li>${presencePill(h.statut)} <strong>${safe(nomEnfant(h.enfant))}</strong><br><small>${safe(presenceHeure(h.horodate))} · ${safe(h.source||'Garderie')}${h.raison?' · '+safe(h.raison):''}</small></li>`).join('')}</ol>`:'<p class="muted">Aucun changement de présence enregistré.</p>';
+ const choix=$('presenceChildParent'),ancien=choix.value;
+ choix.innerHTML='<option value="">Choisir un enfant fictif</option>'+data.enfants.map(e=>`<option value="${safe(e.id)}">${safe(e.prenom)}</option>`).join('');
+ if(data.enfants.some(e=>String(e.id)===ancien))choix.value=ancien;
+ const enfant=choix.value;
+ $('presenceCorrectionForm').classList.toggle('hidden',!enfant);
+ if(!enfant){$('presenceParentStatus').innerHTML='<p class="muted">Choisissez un enfant fictif pour voir son statut.</p>';$('presenceParentRequests').innerHTML='<p class="muted">Aucun enfant sélectionné.</p>';return;}
+ const st=presenceEtat(enfant),last=presence.historique.slice().reverse().find(h=>String(h.enfant)===enfant&&h.jour===today()),history=presence.historique.filter(h=>String(h.enfant)===enfant&&h.jour===today()).slice().reverse();
+ $('presenceParentStatus').innerHTML=`<div class="presence-parent-preview"><h4>Statut de ${safe(nomEnfant(enfant))} aujourd’hui</h4>${presencePill(st)}<p class="muted">${last?'Actualisé localement : '+safe(presenceHeure(last.horodate)):'Aucun pointage confirmé aujourd’hui'}</p>${history.length?`<strong>Arrivées, départs et corrections :</strong><ul class="presence-history">${history.map(h=>`<li>${presencePill(h.statut)} — ${safe(presenceHeure(h.horodate))}</li>`).join('')}</ul>`:''}</div>`;
+ const prs=presence.demandes.filter(r=>String(r.enfant)===enfant).slice().reverse();
+ $('presenceParentRequests').innerHTML=prs.length?prs.map(r=>`<div class="item">${presencePill(r.souhaite)} <span class="muted">${safe(presenceHeure(r.horodate))}</span><div>${r.etat==='en_attente'?'⏳ En attente de la garderie':r.etat==='approuvee'?'✅ Approuvée':'❌ Refusée'}</div>${r.explication?`<p class="muted">${safe(r.explication)}</p>`:''}</div>`).join(''):'<p class="muted">Aucune demande.</p>';
+}
+$('presenceStaffList').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-presence-enfant]');if(!b)return;
+ const id=b.dataset.presenceEnfant,statut=b.dataset.presenceStatut;
+ if(statut==='parti'&&!confirm('Confirmer que cet enfant a physiquement quitté la garderie ?'))return;
+ presenceEnregistrer(id,statut);
+});
+$('presenceChildParent').addEventListener('change',afficherPresences);
+$('presenceCorrectionForm').addEventListener('submit',e=>{
+ e.preventDefault();const enfant=$('presenceChildParent').value, v=get(e.currentTarget);
+ if(!data.enfants.some(x=>String(x.id)===enfant)||!Object.hasOwn(presenceStatuts,v.statut))return;
+ const demande={id:uid(),enfant,jour:today(),souhaite:v.statut,explication:String(v.explication||'').trim(),etat:'en_attente',horodate:new Date().toISOString()};
+ presence.demandes.push(demande);if(!persist(presenceCle,presence)){presence.demandes.pop();return;}
+ e.currentTarget.reset();afficherPresences();alert('Demande enregistrée sur cet appareil seulement. Aucun message n’a été envoyé à une garderie réelle.');
+});
+$('presenceRequestsStaff').addEventListener('click',e=>{
+ const appr=e.target.closest('button[data-presence-approve]'),rej=e.target.closest('button[data-presence-reject]');if(!appr&&!rej)return;
+ const id=(appr?.dataset.presenceApprove||rej?.dataset.presenceReject);
+ const demande=presence.demandes.find(r=>r.id===id&&r.etat==='en_attente');if(!demande)return;
+ if(appr){
+   if(!confirm(`Approuver la demande et appliquer le statut « ${presenceStatuts[demande.souhaite].titre} » pour ${nomEnfant(demande.enfant)} ?`))return;
+   if(!presenceEnregistrer(demande.enfant,demande.souhaite,'Correction approuvée par la garderie',demande.explication))return;
+   demande.etat='approuvee';
+ }else{if(!confirm('Refuser cette demande de correction ?'))return;demande.etat='refusee';}
+ demande.traiteeLe=new Date().toISOString();if(persist(presenceCle,presence))afficherPresences();
+});
+
 function portailForm(id,key,transform){$(id).addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,v=get(f),val=transform?transform(v):v;if(!val)return;portail[key].push({id:uid(),...val});if(savePortail()){f.reset();document.querySelectorAll('#parents input[type="date"]').forEach(i=>{if(!i.value)i.value=today()})}})}
 portailForm('formDocument','documents');portailForm('formPaiement','paiements',v=>({...v,montant:Number(v.montant)}));portailForm('formSac','sac',v=>({...v,pret:false}));portailForm('formVictoire','victoires');portailForm('formActiviteMaison','activites');
 $('formPhoto').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,file=$('photoFichier').files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024)return alert('Choisissez une image JPEG, PNG ou WebP de moins de 8 Mo.');
 try{const image=await createImageBitmap(file);const scale=Math.min(1,700/image.width,700/image.height),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0,canvas.width,canvas.height);image.close();const imageData=canvas.toDataURL('image/jpeg',.62);if(imageData.length>220000)return alert('Photo encore trop grande : essayez une autre image.');const v=get(f),entry={id:uid(),enfant:v.enfant,legende:v.legende,image:imageData};portail.photos.push(entry);if(savePortail())f.reset();else portail.photos.pop();}catch(err){alert('Cette image ne peut pas être traitée.')}});
 function telecharger(nom,contenu,type='text/plain;charset=utf-8'){const blob=new Blob([contenu],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=nom;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
-$('exporter').addEventListener('click',()=>telecharger('logikids-demonstration.json',JSON.stringify({donnees:data,contacts:contact,messagerie:mess,absences,portail},null,2),'application/json'));
+$('exporter').addEventListener('click',()=>telecharger('logikids-demonstration.json',JSON.stringify({donnees:data,contacts:contact,messagerie:mess,absences,portail,presences:presence},null,2),'application/json'));
 const numero=s=>String(s||'').replace(/[^+\d]/g,''),urlMessenger=s=>/^https:\/\/(m\.me|www\.messenger\.com|messenger\.com)\//i.test(s||'')?s:'';
 function liens(obj){const choix=[['📞 Téléphone',obj.telephone?'tel:'+numero(obj.telephone):''],['🟢 WhatsApp',obj.whatsapp?'https://wa.me/'+numero(obj.whatsapp).replace(/^\+/,''):''],['🔵 Messenger',urlMessenger(obj.messenger)],['✉️ Courriel',obj.courriel?'mailto:'+obj.courriel:'']];return choix.map(([titre,lien])=>lien?`<a class="linkaction" href="${safe(lien)}" target="_blank" rel="noopener noreferrer">${titre}</a>`:`<span class="pill">${titre} — À configurer</span>`).join(' ')}
 function afficherContact(){const f=$('formContact');for(const k of Object.keys(contact))f.elements[k].value=contact[k];$('liensContact').innerHTML='<div class="card">'+liens(contact)+'</div>'}
@@ -131,11 +311,124 @@ document.addEventListener('click',e=>{
 let b=e.target.closest('button[data-download-document]');if(b){const d=portail.documents.find(x=>String(x.id)===b.dataset.downloadDocument);if(d)telecharger('LOGIKIDS-document-fictif.txt',d.type+'\n'+d.titre+'\n\n'+d.texte+'\n\nDocument de démonstration sans validité contractuelle.');return}
 b=e.target.closest('button[data-recu]');if(b){const p=portail.paiements.find(x=>String(x.id)===b.dataset.recu);if(p)telecharger('LOGIKIDS-recu-fictif.txt',`REÇU FICTIF — DÉMONSTRATION UNIQUEMENT\nEnfant fictif : ${nomEnfant(p.enfant)}\nDate : ${p.date}\nDescription : ${p.description}\nMontant fictif : ${money(p.montant)}\nStatut simulé : ${p.statut}\nAucun paiement réel n'a été effectué.\nCe document n'est pas un reçu fiscal officiel.`);return}
 b=e.target.closest('button[data-delete],button[data-delete-parent],button[data-delete-message],button[data-delete-absence],button[data-delete-portail]');if(!b)return;if(!confirm('Voulez-vous vraiment supprimer cet élément ?'))return;
-if(b.dataset.delete){const k=b.dataset.delete,id=b.dataset.id;if(!Object.prototype.hasOwnProperty.call(data,k))return;data[k]=data[k].filter(x=>String(x.id)!==id);save();if(k==='enfants')afficherMess()}
+if(b.dataset.delete){const k=b.dataset.delete,id=b.dataset.id;if(!Object.prototype.hasOwnProperty.call(data,k))return;data[k]=data[k].filter(x=>String(x.id)!==id);save();if(k==='enfants'){presence.historique=presence.historique.filter(r=>String(r.enfant)!==String(id));presence.demandes=presence.demandes.filter(r=>String(r.enfant)!==String(id));persist(presenceCle,presence);afficherMess();afficherPresences()}}
 else if(b.dataset.deleteParent){const id=b.dataset.deleteParent;mess.parents=mess.parents.filter(x=>String(x.id)!==id);mess.messages=mess.messages.filter(x=>String(x.parentId)!==id);saveMess()}
 else if(b.dataset.deleteAbsence){absences=absences.filter(x=>String(x.id)!==b.dataset.deleteAbsence);if(persist(absenceCle,absences))afficherAbsences()}
 else if(b.dataset.deleteMessage){mess.messages=mess.messages.filter(x=>String(x.id)!==b.dataset.deleteMessage);saveMess()}
 else if(b.dataset.deletePortail){const k=b.dataset.deletePortail;if(!Array.isArray(portail[k]))return;portail[k]=portail[k].filter(x=>String(x.id)!==b.dataset.id);savePortail()}
 });
-$('dateJournal').value=today();$('dateAbsence').value=today();document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());afficher();afficherAbsences();afficherContact();afficherMess();
+$('dateJournal').value=today();$('dateAbsence').value=today();document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());afficher();afficherAbsences();afficherContact();afficherMess();afficherPresences();
+
+// ================================================================
+// Connexion Supabase (à activer après la création du projet privé).
+// URL et clé « publishable » PUBLIQUES seulement — JAMAIS secret/service_role.
+// ================================================================
+const SUPABASE_URL = '';
+const SUPABASE_PUBLISHABLE_KEY = '';
+const hasSupabaseConfig = /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(SUPABASE_URL) && /^(sb_publishable_|eyJ)/.test(SUPABASE_PUBLISHABLE_KEY);
+let sb=null, chatUser=null, activeThread=null, myThreads=[],chatRealtime=null, secureRoles=[], authMode='login';
+const chatStatus=(txt,kind='warning')=>{ $('chatStatus').textContent=txt;$('chatStatus').className='secure-banner '+kind; };
+const authStatus=(txt,kind='warning')=>{ $('authNotice').textContent=txt;$('authNotice').className='secure-banner '+kind;$('contactAuthStatus').textContent=txt;$('contactAuthStatus').className='secure-banner '+kind; };
+function setAuthMode(mode){authMode=mode;$('fullNameWrap').classList.toggle('hidden',mode!=='signup');$('passwordWrap').classList.toggle('hidden',mode==='reset');$('authSubmit').textContent=mode==='signup'?'Créer mon compte':mode==='reset'?'Envoyer le lien de réinitialisation':'Se connecter';$('authForm').elements.password.required=mode!=='reset';$('authForm').elements.password.minLength=mode==='signup'?12:6;}
+$('showLogin').addEventListener('click',()=>setAuthMode('login'));
+$('showSignup').addEventListener('click',()=>setAuthMode('signup'));
+$('showReset').addEventListener('click',()=>setAuthMode('reset'));
+$('topAccount').addEventListener('click',()=>ouvrir('compte'));
+$('goSecureMessaging').addEventListener('click',()=>ouvrir('compte'));
+const authError=e=>{const m=String(e?.message||'Une erreur est survenue.');return /invalid login credentials/i.test(m)?'Courriel ou mot de passe incorrect.':/email not confirmed/i.test(m)?'Vérifie ton courriel et confirme ton inscription.':/email rate limit/i.test(m)?'Trop de demandes : réessaie plus tard.':m;};
+$('authForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!sb)return authStatus('Connexion non activée. Il faut d’abord configurer le projet Supabase.');
+ const f=e.currentTarget,v=get(f),email=String(v.email||'').trim().toLowerCase(),password=String(v.password||'');
+ $('authSubmit').disabled=true;
+ try{
+  let r;
+  if(authMode==='signup'){
+    if(password.length<12)return authStatus('Choisis un mot de passe de 12 caractères ou plus.');
+    if(!String(v.fullName||'').trim())return authStatus('Indique ton nom complet.');
+    r=await sb.auth.signUp({email,password,options:{data:{full_name:String(v.fullName).trim()},emailRedirectTo:location.origin+location.pathname}});
+    if(!r.error)authStatus('Compte demandé. Consulte le courriel de confirmation. Une autorisation de la garderie sera aussi nécessaire avant de communiquer.','good');
+  }else if(authMode==='reset'){
+    r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+    if(!r.error)authStatus('Si le courriel correspond à un compte, tu recevras un lien de réinitialisation.','good');
+  }else{
+    r=await sb.auth.signInWithPassword({email,password});if(!r.error){ f.reset();await refreshAuthUI(); }
+  }
+  if(r.error)authStatus(authError(r.error));
+ }catch(err){authStatus('Impossible de joindre le service. Vérifie la connexion internet.');}
+ finally{$('authSubmit').disabled=false;}
+});
+$('recoverForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb)return;const pw=e.target.elements.password.value;if(pw.length<12)return authStatus('12 caractères minimum.');const {error}=await sb.auth.updateUser({password:pw});if(error){authStatus(authError(error));return;}$('recoverCard').classList.add('hidden');e.target.reset();authStatus('Mot de passe mis à jour.','good');});
+$('signOut').addEventListener('click',async()=>{if(sb){await sb.auth.signOut();await refreshAuthUI();}});
+function stopLive(){if(sb&&chatRealtime)sb.removeChannel(chatRealtime);chatRealtime=null;}
+function participantName(id){return id===chatUser?.id?'Moi':id?('Compte '+id.slice(0,7)):'Autre membre';}
+async function refreshAuthUI(){
+ if(!sb)return;const {data:{user},error}=await sb.auth.getUser();chatUser=error?null:user;
+ $('authCard').classList.toggle('hidden',!!chatUser);$('signedCard').classList.toggle('hidden',!chatUser);$('realChatCard').classList.toggle('hidden',!chatUser);
+ $('sessionLabel').textContent=chatUser?'Compte connecté':'Compte déconnecté';
+ if(!chatUser){$('signedIdentity').textContent='';myThreads=[];secureRoles=[];activeThread=null;stopLive();authStatus('Comptes sécurisés disponibles. Connecte-toi pour utiliser la messagerie privée.','good');return;}
+ $('signedIdentity').textContent='Connecté : '+(chatUser.email||'');
+ authStatus('Connexion active. Les messages privés sont limités aux membres autorisés de chaque garderie. Les autres modules restent en mode démonstration.','good');
+ await reloadRealChat();
+}
+async function memberships(){const {data,error}=await sb.from('daycare_memberships').select('daycare_id,role,active').eq('user_id',chatUser.id).eq('active',true);if(error)throw error;return data||[];}
+const displayName=(r,p)=>r.parent_id===chatUser?.id?(p.get(r.educator_id)||'Éducatrice'):(p.get(r.parent_id)||'Parent');
+async function reloadRealChat(){
+ if(!sb||!chatUser)return;
+ try{
+  secureRoles=await memberships();$('educatorNewChat').classList.toggle('hidden',!secureRoles.some(m=>m.role==='educator'));
+  if(!secureRoles.length){chatStatus('Ton compte est créé, mais il attend encore l’approbation et le rattachement à une garderie. Aucun message ne peut être échangé pour le moment.');$('threadList').innerHTML='<p class="muted">Aucune garderie associée à ce compte.</p>';$('chatMessages').innerHTML='<p class="muted">Accès en attente.</p>';return;}
+  const {data:threads,error}=await sb.from('conversations').select('id,daycare_id,parent_id,educator_id,created_at').order('created_at',{ascending:false});if(error)throw error;
+  myThreads=threads||[];
+  let ids=[...new Set(myThreads.flatMap(t=>[t.parent_id,t.educator_id]))];
+  const teacherRoles=secureRoles.filter(m=>m.role==='educator');
+  const parentChoices=[];
+  for(const role of teacherRoles){const {data:members,error:memErr}=await sb.from('daycare_memberships').select('user_id,daycare_id,role,active').eq('daycare_id',role.daycare_id).eq('role','parent').eq('active',true);if(memErr)throw memErr;for(const m of members||[])parentChoices.push(m);}
+  ids=ids.concat(parentChoices.map(m=>m.user_id));
+  let profiles=new Map();if(ids.length){const {data:people,error:pe}=await sb.from('profiles').select('id,full_name').in('id',[...new Set(ids)]);if(pe)throw pe;profiles=new Map((people||[]).map(p=>[p.id,p.full_name]));}
+  $('parentStartChat').innerHTML='<option value="">Choisir un parent autorisé</option>'+parentChoices.map(m=>`<option value="${safe(m.daycare_id)}|${safe(m.user_id)}">${safe(profiles.get(m.user_id)||'Parent autorisé')}</option>`).join('');
+  $('threadList').innerHTML=myThreads.length?myThreads.map(t=>`<button type="button" class="chat-thread" data-chat-thread="${safe(t.id)}" aria-pressed="${activeThread===t.id?'true':'false'}">💬 ${safe(displayName(t,profiles))}</button>`).join(''):'<p class="muted">Aucune conversation pour le moment.</p>';
+  chatStatus('Les messages sont transmis uniquement aux participants approuvés.','good');
+  const selected=myThreads.some(t=>t.id===activeThread)?activeThread:(myThreads[0]?.id||null);
+  if(selected)await showThread(selected);else {$('chatMessages').innerHTML='<p class="muted">Aucune conversation. Une éducatrice autorisée peut en créer une.</p>';}
+ }catch(err){chatStatus('Impossible de charger les conversations. Vérifie la configuration des autorisations de Supabase.');$('threadList').innerHTML='<p class="muted">Chargement impossible.</p>';}
+}
+async function showThread(id){if(!myThreads.some(t=>t.id===id))return;activeThread=id;
+ document.querySelectorAll('[data-chat-thread]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.chatThread===id)));
+ stopLive();await loadThreadMessages();
+ if(!sb)return; chatRealtime=sb.channel('logikids-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},()=>{loadThreadMessages();}).subscribe();
+}
+async function loadThreadMessages(){if(!activeThread||!sb)return;let current=activeThread;const {data,error}=await sb.from('chat_messages').select('id,sender_id,content,created_at').eq('conversation_id',current).order('created_at',{ascending:true}).limit(200);if(error){chatStatus('Impossible de lire les messages. Autorisation manquante.');return;}if(current!==activeThread)return;
+ $('chatMessages').innerHTML=(data||[]).length?(data||[]).map(m=>`<div class="chat-msg ${m.sender_id===chatUser.id?'mine':''}"><div class="chat-meta">${m.sender_id===chatUser.id?'Moi':'Correspondant'} · ${safe(new Date(m.created_at).toLocaleString('fr-CA'))}</div><div class="notes">${safe(m.content)}</div></div>`).join(''):'<p class="muted">Aucun message dans cette conversation.</p>';
+ $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+}
+$('threadList').addEventListener('click',e=>{const b=e.target.closest('[data-chat-thread]');if(b)showThread(b.dataset.chatThread);});
+$('startConversation').addEventListener('click',async()=>{
+ if(!sb||!chatUser)return;let value=$('parentStartChat').value;const [daycare_id,parent_id]=value.split('|');if(!daycare_id||!parent_id)return alert('Choisis un parent autorisé.');
+ const {data,error}=await sb.from('conversations').upsert({daycare_id,parent_id,educator_id:chatUser.id},{onConflict:'daycare_id,parent_id,educator_id'}).select('id').single();
+ if(error)return alert('Conversation non créée : vérifie que les deux comptes sont autorisés.');activeThread=data.id;await reloadRealChat();
+});
+$('sendRealMessage').addEventListener('submit',async e=>{
+ e.preventDefault();if(!sb||!chatUser||!activeThread)return alert('Choisis une conversation privée.');const f=e.currentTarget,content=String(f.elements.message.value||'').trim();if(!content||content.length>2000)return;
+ $('sendRealButton').disabled=true;const {error}=await sb.from('chat_messages').insert({conversation_id:activeThread,sender_id:chatUser.id,content});
+ $('sendRealButton').disabled=false;
+ if(error){chatStatus('Message non envoyé : autorisation manquante ou problème de connexion.');return;}
+ f.reset();await loadThreadMessages();
+});
+async function initSecureService(){
+ setAuthMode('login');
+ if(!hasSupabaseConfig){authStatus('Fonction privée en préparation : pour l’activer, créer le projet Supabase et relier LOGIKIDS à sa base protégée. Les autres fonctions restent des démonstrations locales.');$('authCard').querySelectorAll('input,button').forEach(el=>el.disabled=true);return;}
+ if(!window.supabase?.createClient){
+  const loaded=await new Promise(resolve=>{const lib=document.createElement('script');lib.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';lib.onload=()=>resolve(!!window.supabase?.createClient);lib.onerror=()=>resolve(false);document.head.appendChild(lib);});
+  if(!loaded){authStatus('La bibliothèque de connexion n’a pas chargé. Vérifie ton accès internet.');return;}
+ }
+ try{
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});
+  sb.auth.onAuthStateChange((event)=>{
+    if(event==='PASSWORD_RECOVERY'){$('recoverCard').classList.remove('hidden');ouvrir('compte');authStatus('Choisis ton nouveau mot de passe dans le formulaire.','good');}
+    if(['SIGNED_IN','SIGNED_OUT','INITIAL_SESSION','TOKEN_REFRESHED'].includes(event))setTimeout(()=>refreshAuthUI(),0);
+  });
+  await refreshAuthUI();
+ }catch(err){authStatus('Connexion Supabase non initialisée. Vérifie uniquement les paramètres publics et le SQL.');}
+}
+initSecureService();
 </script></body></html>
