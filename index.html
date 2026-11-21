@@ -472,7 +472,7 @@ else if(b.dataset.deleteAbsence){absences=absences.filter(x=>String(x.id)!==b.da
 else if(b.dataset.deleteMessage){mess.messages=mess.messages.filter(x=>String(x.id)!==b.dataset.deleteMessage);saveMess()}
 else if(b.dataset.deletePortail){const k=b.dataset.deletePortail;if(!Array.isArray(portail[k]))return;portail[k]=portail[k].filter(x=>String(x.id)!==b.dataset.id);savePortail()}
 });
-$('dateJournal').value=today();$('dateAbsence').value=today();document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());afficher();afficherAbsences();afficherContact();afficherMess();afficherPresences();
+// L'initialisation est déclenchée après les définitions de facturation et de cumul des heures.
 
 
 // -------------------------------------------------------------
@@ -571,6 +571,7 @@ document.addEventListener('click',e=>{
  if(imprimer)return preparerImpression(imprimer.dataset.imprimerFacture);
  if(approuver){const f=billing.factures.find(x=>x.id===approuver.dataset.approuverFacture);if(!f)return;if(!confirm('Approuver ce brouillon fictif ? Aucun envoi réel ne sera fait.'))return;f.statut='approuvee';if(sauvegarderBilling())afficherFacturation();}
 });
+$('dateJournal').value=today();$('dateAbsence').value=today();document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());afficher();afficherAbsences();afficherContact();afficherMess();afficherPresences();
 (function initialiserBilling(){const f=$('formNewInvoice'),[debut,fin]=plageProposee();f.elements.debut.value=debut;f.elements.fin.value=fin;const echeance=new Date(fin+'T12:00:00');echeance.setDate(echeance.getDate()+7);f.elements.echeance.value=dateISO(echeance);$('formBillingPayment').elements.date.value=today();afficherFacturation();afficherCumulPresences()})();
 
 // ================================================================
