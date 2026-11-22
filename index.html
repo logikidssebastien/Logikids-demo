@@ -398,7 +398,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <section id="parametres" class="page"><h2>⚙️ Paramètres</h2><div class="card"><h3>Prototype LOGIKIDS</h3><p>Version locale gratuite. Les données de démonstration restent dans ce navigateur. Un compte parent réel et une base de données sécurisée seront nécessaires avant de travailler avec des renseignements réels.</p><button class="action secondary" id="exporter" type="button">Exporter les données de démonstration (JSON)</button></div></section>
 <section id="contact" class="page"><h2>💬 Contacts et messagerie</h2>
 <div class="card"><h3>🔐 Messagerie privée LOGIKIDS</h3><p>Échanges réels entre parents et éducatrices autorisés, après activation du compte sécurisé et de Supabase.</p><div id="contactAuthStatus" class="secure-banner warning">Pas encore configuré : ne communique pas entre appareils.</div><button class="action" type="button" id="goSecureMessaging" onclick="document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='compte'));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page==='compte'?'page':'false'));window.scrollTo(0,0);">Accéder aux messages privés</button><p class="muted tiny" style="margin:10px 0 0">Version messagerie : correctif du 22 novembre 2026</p></div>
-<h3>Coordonnées et essais locaux</h3><div class="card"><h3>Coordonnées de la garderie</h3><p class="muted">Les informations de cette démonstration sont locales à cet appareil.</p><form id="formContact"><label>Téléphone professionnel</label><input name="telephone" type="tel" placeholder="Ex. : 418 555-0123"><label>WhatsApp (avec indicatif)</label><input name="whatsapp" type="tel" placeholder="Ex. : +1 418 555-0123"><label>Lien Messenger</label><input name="messenger" type="url" placeholder="https://m.me/votrepage"><label>Courriel professionnel</label><input name="courriel" type="email" placeholder="contact@exemple.ca"><button class="action">Enregistrer mes coordonnées</button></form><div class="grid" id="liensContact"></div></div>
+<h3>Coordonnées et essais locaux</h3><div class="card"><h3>Coordonnées de la garderie</h3><p class="muted">Les informations de cette démonstration sont locales à cet appareil.</p><form id="formContact"><label>Téléphone professionnel</label><input name="telephone" type="tel" placeholder="Ex. : 418 555-0123"><label>WhatsApp (avec indicatif)</label><input name="whatsapp" type="tel" placeholder="Ex. : +1 418 555-0123"><label>Courriel professionnel</label><input name="courriel" type="email" placeholder="contact@exemple.ca"><button class="action">Enregistrer mes coordonnées</button></form><div class="grid" id="liensContact"></div></div>
 <div class="card"><h3>👨‍👩‍👧 Répertoire des parents (fictifs)</h3><form id="formParent"><label>Nom du parent fictif</label><input name="nom" required maxlength="80" placeholder="Ex. : Parent de Alex"><label>Enfant associé (facultatif)</label><select name="enfant" id="enfantParent"></select><label>Téléphone</label><input name="telephone" type="tel"><label>WhatsApp</label><input name="whatsapp" type="tel"><label>Messenger (lien)</label><input name="messenger" type="url"><label>Courriel</label><input name="courriel" type="email"><button class="action">Ajouter le parent</button></form><div id="listeParentsContact"></div></div>
 <div class="card"><h3>💬 Messagerie LOGIKIDS — simulation locale</h3><p class="hint">Les messages sont des essais visibles seulement sur cet appareil. Ils ne sont ni transmis aux parents ni privés entre comptes réels.</p><form id="formMessage"><label>Conversation avec</label><select name="parentId" id="parentMessage" required></select><label>Expéditeur simulé</label><select name="expediteur"><option value="Garderie">Garderie → Parent</option><option value="Parent">Parent → Garderie</option></select><label>Message d'essai</label><textarea name="texte" required maxlength="2000" placeholder="Écrivez un message fictif..."></textarea><button class="action">Ajouter au fil de démonstration</button></form><h3>Historique de la conversation</h3><div id="listeMessages"></div></div></section>
 
@@ -747,9 +747,30 @@ try{const image=await createImageBitmap(file);const scale=Math.min(1,700/image.w
 function telecharger(nom,contenu,type='text/plain;charset=utf-8'){const blob=new Blob([contenu],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=nom;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
 $('exporter').addEventListener('click',()=>telecharger('logikids-demonstration.json',JSON.stringify({donnees:data,contacts:contact,messagerie:mess,absences,portail,presences:presence,facturation:billing},null,2),'application/json'));
 const numero=s=>String(s||'').replace(/[^+\d]/g,''),urlMessenger=s=>/^https:\/\/(m\.me|www\.messenger\.com|messenger\.com)\//i.test(s||'')?s:'';
-function liens(obj){const choix=[['📞 Téléphone',obj.telephone?'tel:'+numero(obj.telephone):''],['🟢 WhatsApp',obj.whatsapp?'https://wa.me/'+numero(obj.whatsapp).replace(/^\+/,''):''],['🔵 Messenger',urlMessenger(obj.messenger)],['✉️ Courriel',obj.courriel?'mailto:'+obj.courriel:'']];return choix.map(([titre,lien])=>lien?`<a class="linkaction" href="${safe(lien)}" target="_blank" rel="noopener noreferrer">${titre}</a>`:`<span class="pill">${titre} — À configurer</span>`).join(' ')}
-function afficherContact(){const f=$('formContact');for(const k of Object.keys(contact))f.elements[k].value=contact[k];$('liensContact').innerHTML='<div class="card">'+liens(contact)+'</div>'}
-$('formContact').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget;for(const k of Object.keys(contact))contact[k]=f.elements[k].value.trim();if(persist(contactCle,contact)){afficherContact();alert('Coordonnées enregistrées sur cet appareil.')}});
+// Le bouton de contact pour la garderie ouvre directement la messagerie sécurisée LOGIKIDS.
+// Les anciens liens Messenger Facebook du répertoire fictif restent inchangés.
+function liens(obj,esGarderie=false){
+ const choix=[
+  ['📞 Téléphone',obj.telephone?'tel:'+numero(obj.telephone):''],
+  ['🟢 WhatsApp',obj.whatsapp?'https://wa.me/'+numero(obj.whatsapp).replace(/^\+/,''):''],
+  [esGarderie?'💬 Messagerie LOGIKIDS':'🔵 Messenger',esGarderie?'LOGIKIDS_INTERNE':urlMessenger(obj.messenger)],
+  ['✉️ Courriel',obj.courriel?'mailto:'+obj.courriel:'']
+ ];
+ return choix.map(([titre,lien])=>{
+  if(lien==='LOGIKIDS_INTERNE')return `<button type="button" class="action" onclick="document.getElementById('goSecureMessaging').click()">${titre}</button>`;
+  return lien?`<a class="linkaction" href="${safe(lien)}" target="_blank" rel="noopener noreferrer">${titre}</a>`:`<span class="pill">${titre} — À configurer</span>`;
+ }).join(' ');
+}
+function afficherContact(){
+ const f=$('formContact');
+ for(const k of Object.keys(contact))if(f.elements[k])f.elements[k].value=contact[k];
+ $('liensContact').innerHTML='<div class="card">'+liens(contact,true)+'</div>';
+}
+$('formContact').addEventListener('submit',e=>{
+ e.preventDefault();const f=e.currentTarget;
+ for(const k of Object.keys(contact))if(f.elements[k])contact[k]=f.elements[k].value.trim();
+ if(persist(contactCle,contact)){afficherContact();alert('Coordonnées enregistrées sur cet appareil.');}
+});
 $('formParent').addEventListener('submit',e=>{e.preventDefault();mess.parents.push({id:uid(),...get(e.currentTarget)});if(saveMess())e.currentTarget.reset()});
 function afficherMess(){const sel=$('parentMessage'),selected=sel.value;sel.innerHTML='<option value="">Choisir un parent</option>'+mess.parents.map(p=>`<option value="${safe(p.id)}">${safe(p.nom)}</option>`).join('');if(mess.parents.some(p=>p.id===selected))sel.value=selected;lister('listeParentsContact',mess.parents,p=>`<div class="item"><button type="button" class="delete-btn" data-delete-parent="${safe(p.id)}">🗑️ Supprimer</button> <strong>👤 ${safe(p.nom)}</strong><p class="muted">Enfant : ${safe(nomEnfant(p.enfant))}</p>${liens(p)}</div>`);afficherMessages()}
 function afficherMessages(){const id=$('parentMessage').value,messages=mess.messages.filter(m=>m.parentId===id);lister('listeMessages',messages,m=>`<div class="message ${m.expediteur==='Parent'?'parent':''}"><button type="button" class="delete-btn" data-delete-message="${safe(m.id)}">🗑️ Supprimer</button> <span class="tag">${safe(m.expediteur)} • ${safe(m.date)}</span><p class="notes">${safe(m.texte)}</p></div>`)}
