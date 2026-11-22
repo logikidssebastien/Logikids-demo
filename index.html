@@ -296,7 +296,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <h2>🍎 Menus et repas</h2>
 <div class="card" id="mealTrackingCard">
 <h3>🥗 Alimentation de l'enfant — sélection rapide</h3>
-<p class="meal-intro">Cochez les aliments réellement mangés. Plusieurs choix sont possibles par catégorie. Vous pouvez aussi écrire un aliment qui manque dans la liste. La création des recettes et le répertoire des menus restent disponibles plus bas sur cette page.</p>
+<p class="meal-intro">Cochez les aliments réellement mangés. Plusieurs choix sont possibles par catégorie. Vous pouvez aussi écrire un aliment qui manque dans la liste. La catégorie orange Déjeuner permet de choisir céréales, gruau ou rôties sans répéter les fruits et les yogourts qui figurent déjà dans leurs catégories. Toutes les catégories restent disponibles pour chaque repas. La création des recettes et le répertoire des menus restent disponibles plus bas sur cette page.</p>
 <p class="meal-local-warning"><strong>Démonstration :</strong> utilisez seulement des enfants fictifs. Ce suivi est enregistré dans ce navigateur et visible dans l'aperçu du portail parents sur le même appareil. Il n'est pas encore partagé avec les comptes parents sécurisés via Supabase.</p>
 <form id="formAlimentEnfant">
 <div class="meal-form-grid">
@@ -424,6 +424,7 @@ function brancher(id,collection,transform){$(id).addEventListener('submit',e=>{e
 brancher('formEnfant','enfants',v=>({prenom:v.prenom.trim(),age:Number(v.age)}));brancher('formMenu','menus');brancher('formJournal','journaux',v=>({...v,activites:selections('choixActivites'),comportements:selections('choixComportements')}));brancher('formEvenement','evenements');brancher('formDepense','depenses',v=>({...v,montant:Number(v.montant)}));brancher('formAttente','attente');
 // Alimentation suivie de facon locale dans le prototype (pas de transfert Supabase).
 const categoriesAlimentaires = [
+ {nom:'Déjeuner', couleur:'#d97706', fond:'#fff3de', aliments:['Céréales','Gruau','Rôties','Pain doré','Crêpes','Gaufres','Bagel','Muffin anglais','Croissant']},
  {nom:'Protéines et viandes', couleur:'#ae343f', fond:'#fff1f2', aliments:['Poulet','Bœuf','Porc','Poisson','Agneau','Œufs','Tofu','Lentilles','Option végétarienne']},
  {nom:'Féculents', couleur:'#2464b1', fond:'#eef5ff', aliments:['Riz','Pâtes','Patates','Frites','Pain','Couscous','Quinoa','Purée']},
  {nom:'Légumes', couleur:'#268453', fond:'#ecfaef', aliments:['Carottes','Brocoli','Haricots','Maïs','Petits pois','Concombre','Salade']},
