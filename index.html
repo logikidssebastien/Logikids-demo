@@ -174,6 +174,24 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .billing-overdue{border-color:#d76565;background:#fff2f2}
 .small-note{font-size:12px;color:#5b6c83}
 @media(max-width:650px){.billing-grid{grid-template-columns:1fr}.billing-matrix{font-size:11px}.billing-matrix th,.billing-matrix td{padding:6px 4px}}
+
+/* LOGIKIDS — suivi alimentaire facultatif, mode démonstration locale */
+.meal-intro{background:#f5f9ff;border:1px solid #d6e3f6;border-left:4px solid #c99b42;border-radius:10px;padding:12px;line-height:1.5}
+.meal-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}
+.meal-sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:15px 0}
+.meal-group{--group:#6c7e91;--group-bg:#edf1f5;margin:0;padding:13px;border:1px solid #dbe2ec;border-left:5px solid var(--group);border-radius:13px;background:var(--group-bg);min-width:0}
+.meal-group legend{color:#17304f;font-weight:850;font-size:15px;padding:0 5px}
+.meal-choices{display:flex;flex-wrap:wrap;gap:7px}
+.meal-choice{width:auto!important;min-height:37px!important;border-radius:10px;border:1px solid #bdcad8;background:white;color:#283f59;padding:7px 11px;font:inherit;font-size:13px;font-weight:650;cursor:pointer;box-shadow:0 2px 0 #17375714}
+.meal-choice[aria-pressed="true"]{border:2px solid var(--group);background:var(--group);color:#fff;box-shadow:0 2px 5px #1d35552b}
+.meal-choice:focus-visible{outline:3px solid #e5b147;outline-offset:2px}
+.meal-summary{background:#f7faff;border:1px solid #d9e5f4;border-radius:11px;padding:13px;margin:10px 0}
+.meal-summary p{margin:7px 0}
+.meal-summary .meal-tags{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.meal-tag{display:inline-block;padding:5px 9px;border-radius:30px;background:#e7effa;color:#14365f;font-size:12px;font-weight:700}
+.meal-local-warning{font-size:13px;color:#614b23;background:#fff5dc;padding:10px;border-radius:9px;margin:10px 0}
+@media(max-width:600px){.meal-sections{grid-template-columns:1fr}.meal-form-grid{grid-template-columns:1fr}}
+
 </style></head>
 <body>
 <div class="app-shell">
@@ -262,7 +280,33 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 </div><button type="submit" class="action">Enregistrer le versement fictif</button></form></div>
 </section>
 <section id="journal" class="page"><h2>📖 Journal quotidien</h2><div class="card"><form id="formJournal"><label>Enfant</label><select name="enfant" id="enfantJournal" required></select><label>Date</label><input name="date" type="date" id="dateJournal" required><label>Repas enregistré</label><select name="repas" id="repasJournal"></select><label>Sieste</label><input name="sieste" placeholder="Ex. : 12 h 30 à 14 h"><label>Activités (plusieurs choix possibles)</label><div class="checks" id="choixActivites"></div><label>Humeur</label><select name="humeur"><option>😊 Heureux</option><option>😌 Calme</option><option>😴 Fatigué</option><option>😢 Triste</option><option>😟 Inquiet</option></select><label>Comportements observés</label><div class="checks" id="choixComportements"></div><label>Notes facultatives</label><textarea name="notes"></textarea><label>Visibilité (démonstration)</label><select name="visibilite"><option>Journal de fin de journée</option><option>Notification aux parents — non connectée</option><option>Note interne — démonstration locale</option></select><button class="action">Enregistrer le journal</button></form></div><div class="card"><h3>Journaux enregistrés</h3><div id="listeJournaux"></div></div></section>
-<section id="menus" class="page"><h2>🍎 Menus et repas</h2><div class="card"><form id="formMenu"><label>Nom du plat</label><input name="plat" required><label>Ingrédients</label><textarea name="ingredients"></textarea><label>Préparation</label><textarea name="preparation"></textarea><label>Allergènes à vérifier</label><input name="allergenes"><button class="action">Enregistrer le menu</button></form></div><div class="card"><h3>Répertoire de menus</h3><div id="listeMenus"></div></div></section>
+<section id="menus" class="page">
+<h2>🍎 Menus et repas</h2>
+<div class="card">
+<h3>👨‍🍳 Créer une recette ou un menu</h3>
+<form id="formMenu"><label>Nom du plat</label><input name="plat" required><label>Ingrédients</label><textarea name="ingredients"></textarea><label>Préparation</label><textarea name="preparation"></textarea><label>Allergènes à vérifier</label><input name="allergenes"><button class="action">Enregistrer le menu</button></form>
+</div>
+<div class="card"><h3>📂 Répertoire de menus</h3><div id="listeMenus"></div></div>
+<div class="card" id="mealTrackingCard">
+<h3>🥗 Alimentation de l'enfant — sélection rapide</h3>
+<p class="meal-intro">Cochez les aliments réellement mangés. Plusieurs choix sont possibles par catégorie. Vous pouvez aussi écrire un aliment qui manque dans la liste. Les recettes ci-dessus sont conservées séparément.</p>
+<p class="meal-local-warning"><strong>Démonstration :</strong> utilisez seulement des enfants fictifs. Ce suivi est enregistré dans ce navigateur et visible dans l'aperçu du portail parents sur le même appareil. Il n'est pas encore partagé avec les comptes parents sécurisés via Supabase.</p>
+<form id="formAlimentEnfant">
+<div class="meal-form-grid">
+<div><label for="alimentEnfant">Enfant fictif</label><select id="alimentEnfant" name="enfant" required><option value="">Choisir un enfant</option></select></div>
+<div><label for="alimentDate">Date</label><input type="date" id="alimentDate" name="date" required></div>
+<div><label for="alimentMoment">Repas</label><select id="alimentMoment" name="moment"><option>Déjeuner</option><option selected>Dîner</option><option>Collation du matin</option><option>Collation de l'après-midi</option><option>Souper</option></select></div>
+<div><label for="alimentMenu">Plat enregistré (facultatif)</label><select id="alimentMenu" name="menu"><option value="">Aucun plat choisi</option></select></div>
+</div>
+<h4>Choisir les aliments</h4>
+<div class="meal-sections" id="alimentChoix" aria-label="Catégories d'aliments"></div>
+<label for="alimentAutre">Autres aliments consommés (facultatif)</label><input id="alimentAutre" name="autres" maxlength="300" placeholder="Ex. : potage de courge, galette de maïs…">
+<label for="alimentNotes">Notes facultatives</label><textarea id="alimentNotes" name="notes" maxlength="500" placeholder="Ex. : Lucas a mangé le riz et les carottes, mais pas le brocoli."></textarea>
+<button class="action" type="submit">Enregistrer ce que l'enfant a mangé</button>
+</form>
+</div>
+<div class="card"><h3>📋 Repas consommés — historique</h3><div id="listeAlimentEnfant"></div></div>
+</section>
 <section id="parents" class="page"><h2>👨‍👩‍👧 Portail parents</h2><div class="hint">14 modules de démonstration : cliquez sur <strong>Ouvrir</strong> sous une icône. Les données ne sont visibles que sur cet appareil, sans authentification parent réelle.</div><div class="grid" id="apercuParents"></div>
 <div class="card module-parent" id="module-humeur"><h3 class="module-title">😊 Humeur du jour</h3><p class="muted">D'après les journaux quotidiens enregistrés (simulation).</p><div id="humeursParent"></div><button class="action secondary" data-go="journal" type="button">Enregistrer une humeur dans le journal</button></div>
 <div class="card module-parent" id="module-presenceparent"><h3 class="module-title">🟢🔴 Présence à la garderie</h3>
@@ -283,7 +327,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div class="card module-parent" id="module-calendrierparent"><h3 class="module-title">📅 Calendrier</h3><div id="calendrierParent"></div><button class="action secondary" type="button" data-go="calendrier">Ajouter un événement</button></div>
 <div class="card module-parent" id="module-sac"><h3 class="module-title">🎒 Sac à dos intelligent et rappels</h3><p class="muted">Liste d'articles à apporter, dates de rappel et statut préparé. Les rappels sont visibles à l'écran uniquement; aucune notification n'est envoyée.</p><form id="formSac"><label>Enfant fictif</label><select name="enfant" class="selectEnfantObligatoire" required></select><label>Article à apporter</label><input name="article" required maxlength="100" placeholder="Ex. : Vêtements de rechange"><label>Date souhaitée</label><input type="date" name="date" required><label>Précisions (facultatif)</label><input name="notes" maxlength="150"><button class="action">Ajouter au sac à dos</button></form><h4>Articles et rappels</h4><div id="sacParent"></div></div>
 <div class="card module-parent" id="module-victoires"><h3 class="module-title">🏅 Carnet des petites victoires</h3><form id="formVictoire"><label>Enfant fictif</label><select name="enfant" class="selectEnfantObligatoire" required></select><label>Date</label><input type="date" name="date" required><label>Petite victoire</label><input name="titre" required maxlength="130" placeholder="Ex. : J'ai réussi à attacher mon manteau"><label>Message positif</label><textarea name="notes" maxlength="600"></textarea><button class="action">Ajouter cette victoire</button></form><div id="victoiresParent"></div></div>
-<div class="card module-parent" id="module-repasparent"><h3 class="module-title">🍎 Repas et allergènes</h3><p class="hint">Les allergènes affichés proviennent des menus saisis et doivent être vérifiés par un adulte. Aucun contrôle d'allergies médicales ou d'accès sécurisé n'est activé.</p><div id="repasParent"></div><button class="action secondary" data-go="menus" type="button">Créer ou modifier les menus</button></div>
+<div class="card module-parent" id="module-repasparent"><h3 class="module-title">🍎 Repas et allergènes</h3><p class="hint">Les menus et les aliments consommés sont affichés uniquement dans cette démonstration locale, sans synchronisation avec les comptes parents sécurisés. Les allergènes doivent être vérifiés par un adulte. N'utilisez pas de données réelles d'enfants.</p><div id="repasParent"></div><button class="action secondary" data-go="menus" type="button">Créer ou modifier les menus</button></div>
 <div class="card module-parent" id="module-activites"><h3 class="module-title">🏡 Activités à poursuivre à la maison</h3><form id="formActiviteMaison"><label>Titre de l'activité</label><input name="titre" required maxlength="100" placeholder="Ex. : Chercher 5 objets de couleur bleue"><label>Consignes pour la famille (simulation)</label><textarea name="consignes" required maxlength="900"></textarea><label>Âge conseillé</label><select name="age"><option>0 à 2 ans</option><option>2 à 3 ans</option><option>3 à 5 ans</option><option>Tous les âges</option></select><button class="action">Ajouter une activité</button></form><div id="activitesParent"></div></div>
 </section>
 <section id="calendrier" class="page"><h2>📅 Calendrier</h2><div class="card"><form id="formEvenement"><label>Date</label><input name="date" type="date" required><label>Événement</label><input name="titre" required maxlength="120"><button class="action">Ajouter l'événement</button></form></div><div class="card"><h3>Événements</h3><div id="listeEvenements"></div></div></section>
@@ -315,7 +359,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 'use strict';
 const sections=[['accueil','🏠','Tableau de bord'],['enfants','👶','Enfants'],['presences','🟢','Présences'],['facturation','🧾','Facturation'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres'],['contact','💬','Contacts'],['compte','🔐','Compte sécurisé']];
 const cle='logikids_demo_v2',absenceCle='logikids_absences_demo_v1',contactCle='logikids_contact_demo_v1',messCle='logikids_messages_demo_v1',portailCle='logikids_portail_demo_v1',presenceCle='logikids_presences_demo_v1';
-const base=()=>({enfants:[],menus:[],journaux:[],evenements:[],depenses:[],attente:[]});
+const base=()=>({enfants:[],menus:[],journaux:[],evenements:[],depenses:[],attente:[],alimentation:[]});
 const $=id=>document.getElementById(id),safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),money=n=>new Intl.NumberFormat('fr-CA',{style:'currency',currency:'CAD'}).format(Number(n)||0),uid=()=>String(Date.now())+Math.random().toString(36).slice(2,7),get=f=>Object.fromEntries(new FormData(f)),today=()=>new Date().toLocaleDateString('en-CA');
 function load(key,fallback){try{const d=JSON.parse(localStorage.getItem(key)||'null');return d&&typeof d==='object'?d:fallback}catch{return fallback}}
 let data=base();const saved=load(cle,{});for(const k of Object.keys(data))if(Array.isArray(saved[k]))data[k]=saved[k];const old=load('logikids_demo_v1',{});for(const k of ['enfants','menus','journaux'])if(!data[k].length&&Array.isArray(old[k]))data[k]=old[k];
@@ -345,6 +389,7 @@ $('statEnfants').textContent=data.enfants.length;if($('childMeterFill'))$('child
 lister('listeEnfants',data.enfants,e=>`<div class="item"><button type="button" class="delete-btn" data-delete="enfants" data-id="${safe(e.id)}">🗑️ Supprimer</button> 👶 ${safe(e.prenom)} — ${safe(e.age)} ans</div>`);optionsEnfants();
 $('repasJournal').innerHTML='<option value="">Aucun menu sélectionné</option>'+data.menus.map(m=>`<option value="${safe(m.plat)}">${safe(m.plat)}</option>`).join('');
 lister('listeMenus',data.menus,m=>`<div class="item"><button type="button" class="delete-btn" data-delete="menus" data-id="${safe(m.id)}">🗑️ Supprimer</button> <strong>🍽️ ${safe(m.plat)}</strong><p class="notes">${safe(m.ingredients)}</p><p class="muted notes">${safe(m.preparation)}</p><small>Allergènes : ${safe(m.allergenes||'Non précisés')}</small></div>`);
+ afficherAlimentation();
 lister('listeJournaux',data.journaux,j=>`<div class="item"><button type="button" class="delete-btn" data-delete="journaux" data-id="${safe(j.id)}">🗑️ Supprimer</button> <strong>${safe(nomEnfant(j.enfant))} — ${safe(j.date)}</strong><p>Repas : ${safe(j.repas)} | Sieste : ${safe(j.sieste)}</p><p>Activités : ${safe(Array.isArray(j.activites)?j.activites.join(', '):j.activites)}</p><p>Humeur : ${safe(j.humeur||'Non précisée')} | Comportements : ${safe(Array.isArray(j.comportements)?j.comportements.join(', '):j.comportements)}</p><p class="notes">Notes : ${safe(j.notes||'Aucune')}</p><small>${safe(j.visibilite||'')}</small></div>`);
 lister('listeEvenements',data.evenements.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),e=>`<div class="item"><button type="button" class="delete-btn" data-delete="evenements" data-id="${safe(e.id)}">🗑️ Supprimer</button> 📅 ${safe(e.date)} — ${safe(e.titre)}</div>`);
 const totaux={};for(const d of data.depenses)totaux[d.categorie]=(totaux[d.categorie]||0)+Number(d.montant||0);$('totauxDepenses').innerHTML='<strong>Total : '+money(data.depenses.reduce((s,d)=>s+Number(d.montant||0),0))+'</strong><div>'+Object.entries(totaux).map(([k,v])=>`<span class="pill">${safe(k)} : ${money(v)}</span>`).join('')+'</div>';
@@ -354,6 +399,64 @@ function afficherAbsences(){lister('listeAbsences',absences.slice().sort((a,b)=>
 $('formAbsence').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,v=get(f);if(!data.enfants.some(x=>String(x.id)===String(v.enfant)))return alert('Choisissez un enfant fictif.');if(!v.date)return;absences.push({id:uid(),...v,notes:(v.notes||'').trim()});if(persist(absenceCle,absences)){afficherAbsences();f.reset();$('dateAbsence').value=today();alert('Absence enregistrée dans la démonstration. Aucun avis n’a été envoyé.')}});
 function brancher(id,collection,transform){$(id).addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,v=get(f),obj=transform?transform(v):v;if(!obj)return;data[collection].push({id:uid(),...obj});if(save()){f.reset();if(id==='formJournal')$('dateJournal').value=today()}})}
 brancher('formEnfant','enfants',v=>({prenom:v.prenom.trim(),age:Number(v.age)}));brancher('formMenu','menus');brancher('formJournal','journaux',v=>({...v,activites:selections('choixActivites'),comportements:selections('choixComportements')}));brancher('formEvenement','evenements');brancher('formDepense','depenses',v=>({...v,montant:Number(v.montant)}));brancher('formAttente','attente');
+// Alimentation suivie de facon locale dans le prototype (pas de transfert Supabase).
+const categoriesAlimentaires = [
+ {nom:'Protéines et viandes', couleur:'#ae343f', fond:'#fff1f2', aliments:['Poulet','Bœuf','Porc','Poisson','Agneau','Œufs','Tofu','Lentilles','Option végétarienne']},
+ {nom:'Féculents', couleur:'#2464b1', fond:'#eef5ff', aliments:['Riz','Pâtes','Patates','Frites','Pain','Couscous','Quinoa','Purée']},
+ {nom:'Légumes', couleur:'#268453', fond:'#ecfaef', aliments:['Carottes','Brocoli','Haricots','Maïs','Petits pois','Concombre','Salade']},
+ {nom:'Fruits', couleur:'#8352b1', fond:'#f4eeff', aliments:['Pomme','Banane','Fraises','Raisins','Orange','Compote']},
+ {nom:'Desserts', couleur:'#b44b7b', fond:'#fff0f7', aliments:['Yogourt','Biscuit','Gâteau','Muffin','Pouding','Dessert maison']},
+ {nom:'Boissons', couleur:'#956a15', fond:'#fff8dc', aliments:['Eau','Lait','Jus','Boisson végétale']}
+];
+let alimentsSelectionnes = new Set();
+function dessinerCasesAliments(){
+ $('alimentChoix').innerHTML=categoriesAlimentaires.map(g=>`<fieldset class="meal-group" style="--group:${g.couleur};--group-bg:${g.fond}"><legend>${safe(g.nom)}</legend><div class="meal-choices">${g.aliments.map(n=>{const cle=g.nom+'|'+n,on=alimentsSelectionnes.has(cle);return `<button type="button" class="meal-choice" data-aliment="${safe(cle)}" aria-pressed="${on}">${on?'✓ ':''}${safe(n)}</button>`}).join('')}</div></fieldset>`).join('');
+}
+$('alimentChoix').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-aliment]');if(!b)return;
+ const cle=b.dataset.aliment;if(alimentsSelectionnes.has(cle))alimentsSelectionnes.delete(cle);else alimentsSelectionnes.add(cle);
+ dessinerCasesAliments();
+});
+function formatAliments(r){
+ const a=Array.isArray(r.choix)?r.choix:[];
+ const fiches=categoriesAlimentaires.map(g=>{
+   const choisis=a.filter(x=>x.categorie===g.nom).map(x=>x.aliment);
+   return choisis.length?`<p><strong>${safe(g.nom)} :</strong> ${choisis.map(safe).join(', ')}</p>`:'';
+ }).join('');
+ return `<div class="meal-summary"><strong>${safe(nomEnfant(r.enfant))} · ${safe(r.date)} · ${safe(r.moment)}</strong>${r.menuNom?`<p><strong>Plat enregistré :</strong> ${safe(r.menuNom)}</p>`:''}${fiches}${r.autres?`<p><strong>Autres aliments :</strong> ${safe(r.autres)}</p>`:''}${r.notes?`<p class="notes"><strong>Note :</strong> ${safe(r.notes)}</p>`:''}</div>`;
+}
+function afficherAlimentation(){
+ const enfantSelect=$('alimentEnfant'),chosenChild=enfantSelect.value;
+ enfantSelect.innerHTML='<option value="">Choisir un enfant fictif</option>'+data.enfants.map(x=>`<option value="${safe(x.id)}">${safe(x.prenom)}</option>`).join('');
+ if(data.enfants.some(x=>String(x.id)===String(chosenChild)))enfantSelect.value=chosenChild;
+ const menuSelect=$('alimentMenu'),chosenMenu=menuSelect.value;
+ menuSelect.innerHTML='<option value="">Aucun plat choisi</option>'+data.menus.map(m=>`<option value="${safe(m.id)}">${safe(m.plat)}</option>`).join('');
+ if(data.menus.some(m=>String(m.id)===String(chosenMenu)))menuSelect.value=chosenMenu;
+ const entries=Array.isArray(data.alimentation)?data.alimentation:[];
+ $('listeAlimentEnfant').innerHTML=entries.length?entries.slice().reverse().map(r=>`<div class="item"><button type="button" class="delete-btn" data-delete-aliment="${safe(r.id)}">🗑️ Supprimer</button>${formatAliments(r)}</div>`).join(''):'<p class="muted">Aucun repas consommé enregistré dans cette démonstration.</p>';
+}
+$('formAlimentEnfant').addEventListener('submit',e=>{
+ e.preventDefault();const f=e.currentTarget,v=get(f);
+ if(!data.enfants.some(x=>String(x.id)===String(v.enfant)))return alert('Choisis un enfant fictif dans la section Enfants avant d’enregistrer son repas.');
+ const choix=[...alimentsSelectionnes].map(s=>{const pos=s.indexOf('|');return {categorie:s.slice(0,pos),aliment:s.slice(pos+1)}});
+ const autres=String(v.autres||'').trim();
+ if(!choix.length&&!autres)return alert('Coche au moins un aliment ou indique un aliment dans « Autres aliments ».');
+ const menu=data.menus.find(m=>String(m.id)===String(v.menu));
+ const entree={id:uid(),enfant:v.enfant,date:v.date,moment:v.moment,menuId:menu?.id||'',menuNom:menu?.plat||'',choix,autres,notes:String(v.notes||'').trim(),creeLe:new Date().toISOString()};
+ data.alimentation.push(entree);
+ if(!save()){data.alimentation.pop();return;}
+ f.reset();$('alimentDate').value=today();alimentsSelectionnes.clear();dessinerCasesAliments();afficherAlimentation();
+ alert('Suivi du repas enregistré dans cette démonstration locale. Aucun envoi au compte parent sécurisé.');
+});
+$('listeAlimentEnfant').addEventListener('click',e=>{
+ const b=e.target.closest('[data-delete-aliment]');if(!b)return;
+ const i=data.alimentation.findIndex(x=>String(x.id)===String(b.dataset.deleteAliment));if(i<0)return;
+ if(!confirm('Supprimer cette note alimentaire de démonstration ?'))return;
+ const [removed]=data.alimentation.splice(i,1);
+ if(!save())data.alimentation.splice(i,0,removed);
+});
+$('alimentDate').value=today();dessinerCasesAliments();
+
 const parentModules=[['humeur','😊 Humeur du jour'],['presenceparent','🟢🔴 Présence'],['journalparent','📖 Journal quotidien'],['photos','📸 Photos et souvenirs'],['absence','🏠 Signaler une absence'],['messages','💬 Messages'],['facturesparent','🧾 Factures et heures'],['documents','📄 Documents et contrats'],['paiements','💳 Paiements et reçus'],['calendrierparent','📅 Calendrier'],['sac','🎒 Sac à dos et rappels'],['victoires','🏅 Petites victoires'],['repasparent','🍎 Repas et allergènes'],['activites','🏡 Activités à la maison']];
 $('apercuParents').innerHTML=parentModules.map(([id,title])=>`<div class="card parent-card"><strong>${title}</strong><p class="muted">Module interactif de démonstration</p><button type="button" class="action" data-module="${id}">Ouvrir</button></div>`).join('');
 $('apercuParents').addEventListener('click',e=>{const b=e.target.closest('button[data-module]');if(!b)return;document.querySelectorAll('.module-parent').forEach(m=>m.classList.remove('active'));const target=$('module-'+b.dataset.module);if(target){target.classList.add('active');afficherPortail();target.scrollIntoView({behavior:'smooth',block:'start'})}});
@@ -364,6 +467,7 @@ const visibles=data.journaux.filter(j=>!String(j.visibilite||'').startsWith('Not
 const derniers=[];for(const j of visibles){if(!derniers.some(x=>String(x.enfant)===String(j.enfant)))derniers.push(j)}
 lister('humeursParent',derniers,j=>`<div class="item"><strong>${safe(nomEnfant(j.enfant))}</strong> : ${safe(j.humeur||'Non précisée')} — ${safe(j.date||'')}</div>`);
 lister('journauxParent',visibles,j=>`<div class="item"><strong>${safe(nomEnfant(j.enfant))} — ${safe(j.date)}</strong><p>Humeur : ${safe(j.humeur||'')} · Repas : ${safe(j.repas||'')} · Sieste : ${safe(j.sieste||'')}</p><p>Activités : ${safe(Array.isArray(j.activites)?j.activites.join(', '):j.activites||'')}</p><p class="notes">${safe(j.notes||'')}</p></div>`);
+ if((data.alimentation||[]).length){$('journauxParent').insertAdjacentHTML('beforeend','<h4>🍎 Alimentation consommée — démonstration locale</h4>'+data.alimentation.slice().reverse().map(formatAliments).join(''));}
 lister('photosParent',portail.photos.slice().reverse(),p=>itemPortail('photos',p,`<strong>${safe(nomEnfant(p.enfant))}</strong><img class="photo" src="${p.image}" alt="Photo fictive de démonstration"><div>${safe(p.legende||'')}</div>`));
 $('messagesParent').innerHTML=`<p>${mess.parents.length} parent(s) fictif(s) dans le répertoire; ${mess.messages.length} message(s) de démonstration.</p>`;
 lister('documentsParent',portail.documents.slice().reverse(),d=>itemPortail('documents',d,`<strong>${safe(d.type)} — ${safe(d.titre)}</strong><p class="notes">${safe(d.texte)}</p><button type="button" class="action secondary" data-download-document="${safe(d.id)}">Télécharger le texte</button>`));
@@ -372,7 +476,10 @@ $('paiementsParent').innerHTML+=portail.paiements.slice().reverse().map(p=>itemP
 lister('calendrierParent',data.evenements.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),e=>`<div class="item">📅 <strong>${safe(e.date)}</strong> — ${safe(e.titre)}</div>`);
 lister('sacParent',portail.sac.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),s=>`<div class="item"><div class="row-controls"><input class="inline-check" type="checkbox" data-toggle-sac="${safe(s.id)}" ${s.pret?'checked':''} aria-label="Article préparé"><span><strong>${safe(nomEnfant(s.enfant))} — ${safe(s.article)}</strong> ${s.pret?'<span class="status">✓ Préparé</span>':s.date<today()?'<span class="pill">À vérifier : date dépassée</span>':s.date===today()?'<span class="pill">À apporter aujourd’hui</span>':''}</span><button type="button" class="delete-btn" data-delete-portail="sac" data-id="${safe(s.id)}">🗑️ Supprimer</button></div><div class="muted">Pour le ${safe(s.date)} ${safe(s.notes||'')}</div></div>`);
 lister('victoiresParent',portail.victoires.slice().reverse(),v=>itemPortail('victoires',v,`<strong>🏅 ${safe(nomEnfant(v.enfant))} — ${safe(v.titre)}</strong><p class="muted">${safe(v.date)}</p><p class="notes">${safe(v.notes||'')}</p>`));
-lister('repasParent',data.menus,m=>`<div class="item"><strong>${safe(m.plat)}</strong><p class="notes">Ingrédients : ${safe(m.ingredients||'À compléter')}</p><p><strong>Allergènes déclarés : ${safe(m.allergenes||'À vérifier')}</strong></p></div>`);
+$('repasParent').innerHTML='<h4>🍽️ Ce que les enfants ont mangé (aperçu local)</h4>'+
+ ((data.alimentation||[]).length?data.alimentation.slice().reverse().map(formatAliments).join(''):'<p class="muted">Aucun repas consommé enregistré.</p>')+
+ '<h4>📚 Répertoire des menus</h4>'+
+ (data.menus.length?data.menus.map(m=>`<div class="item"><strong>${safe(m.plat)}</strong><p class="notes">Ingrédients : ${safe(m.ingredients||'À compléter')}</p><p><strong>Allergènes déclarés : ${safe(m.allergenes||'À vérifier')}</strong></p></div>`).join(''):'<p class="muted">Aucun menu enregistré.</p>');
 lister('activitesParent',portail.activites.slice().reverse(),a=>itemPortail('activites',a,`<strong>🏡 ${safe(a.titre)}</strong> <span class="pill">${safe(a.age)}</span><p class="notes">${safe(a.consignes)}</p>`));
 }
 
@@ -472,7 +579,7 @@ else if(b.dataset.deleteAbsence){absences=absences.filter(x=>String(x.id)!==b.da
 else if(b.dataset.deleteMessage){mess.messages=mess.messages.filter(x=>String(x.id)!==b.dataset.deleteMessage);saveMess()}
 else if(b.dataset.deletePortail){const k=b.dataset.deletePortail;if(!Array.isArray(portail[k]))return;portail[k]=portail[k].filter(x=>String(x.id)!==b.dataset.id);savePortail()}
 });
-// L'initialisation est déclenchée après les définitions de facturation et de cumul des heures.
+$('dateJournal').value=today();$('dateAbsence').value=today();document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());afficher();afficherAbsences();afficherContact();afficherMess();afficherPresences();
 
 
 // -------------------------------------------------------------
@@ -571,7 +678,6 @@ document.addEventListener('click',e=>{
  if(imprimer)return preparerImpression(imprimer.dataset.imprimerFacture);
  if(approuver){const f=billing.factures.find(x=>x.id===approuver.dataset.approuverFacture);if(!f)return;if(!confirm('Approuver ce brouillon fictif ? Aucun envoi réel ne sera fait.'))return;f.statut='approuvee';if(sauvegarderBilling())afficherFacturation();}
 });
-$('dateJournal').value=today();$('dateAbsence').value=today();document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());afficher();afficherAbsences();afficherContact();afficherMess();afficherPresences();
 (function initialiserBilling(){const f=$('formNewInvoice'),[debut,fin]=plageProposee();f.elements.debut.value=debut;f.elements.fin.value=fin;const echeance=new Date(fin+'T12:00:00');echeance.setDate(echeance.getDate()+7);f.elements.echeance.value=dateISO(echeance);$('formBillingPayment').elements.date.value=today();afficherFacturation();afficherCumulPresences()})();
 
 // ================================================================
