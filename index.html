@@ -419,18 +419,74 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 </section>
 </main><footer>LOGIKIDS © 2026 — Prototype de démonstration</footer></div></div>
 <script>
-// Fonctionnement autonome du cadenas : navigation et connexion / déconnexion.
-// Ce script est indépendant de Supabase et du chargement des autres modules.
+// LOGIKIDS : commandes de compte et date independantes des modules de demonstration.
+// Permet de naviguer meme si le chargement d'un autre module est interrompu.
 (function(){
  'use strict';
- const bouton=document.getElementById('topAccount');
- const menu=document.getElementById('accountMenu');
- const zone=document.getElementById('accountMenuAnchor');
+ const byId=id=>document.getElementById(id);
+ const bouton=byId('topAccount');
+ const menu=byId('accountMenu');
+ const zone=byId('accountMenuAnchor');
  if(!bouton||!menu||!zone)return;
- const changer=(ouvrir)=>{menu.hidden=!ouvrir;bouton.setAttribute('aria-expanded',String(ouvrir));};
- bouton.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();changer(menu.hidden);});
- document.addEventListener('click',function(e){if(!zone.contains(e.target))changer(false);});
- document.addEventListener('keydown',function(e){if(e.key==='Escape')changer(false);});
+
+ // Date du jour visible immediatement, sans attendre la connexion a Supabase.
+ const dateField=byId('dashboardDate');
+ const afficherDate=()=>{
+   if(!dateField)return;
+   try{
+     const valeur=new Intl.DateTimeFormat('fr-CA',{
+       weekday:'long',day:'numeric',month:'long',year:'numeric'
+     }).format(new Date());
+     dateField.textContent=valeur.charAt(0).toUpperCase()+valeur.slice(1);
+   }catch(e){dateField.textContent=new Date().toLocaleDateString('fr-CA');}
+ };
+ afficherDate();
+
+ const changer=visible=>{
+   menu.hidden=!visible;
+   bouton.setAttribute('aria-expanded',String(visible));
+ };
+ const ouvrirCompte=mode=>{
+   changer(false);
+   const section=byId('compte');
+   if(!section)return;
+   // Navigation autonome : ne depend pas de la grosse routine d'initialisation.
+   document.querySelectorAll('.page').forEach(page=>{
+     page.classList.toggle('active',page===section);
+   });
+   document.querySelectorAll('.key').forEach(key=>{
+     key.setAttribute('aria-current',key.dataset.page==='compte'?'page':'false');
+   });
+   const signup=mode==='signup';
+   const wrap=byId('fullNameWrap');
+   const pw=byId('passwordWrap');
+   const action=byId('authSubmit');
+   const form=byId('authForm');
+   if(wrap)wrap.classList.toggle('hidden',!signup);
+   if(pw)pw.classList.remove('hidden');
+   if(action)action.textContent=signup?'Créer mon compte':'Se connecter';
+   if(form&&form.elements.password){
+     form.elements.password.required=true;
+     form.elements.password.minLength=signup?12:6;
+   }
+   // La logique principale conserve la valeur du mode lorsque disponible.
+   try{if(typeof setAuthMode==='function')setAuthMode(mode);}catch(e){}
+   window.scrollTo(0,0);
+ };
+ bouton.addEventListener('click',function(e){
+   e.preventDefault();e.stopPropagation();changer(menu.hidden);
+ });
+ byId('menuLogin')?.addEventListener('click',e=>{
+   e.preventDefault();e.stopPropagation();ouvrirCompte('login');
+ });
+ byId('menuSignup')?.addEventListener('click',e=>{
+   e.preventDefault();e.stopPropagation();ouvrirCompte('signup');
+ });
+ byId('menuAccount')?.addEventListener('click',e=>{
+   e.preventDefault();e.stopPropagation();ouvrirCompte('login');
+ });
+ document.addEventListener('click',e=>{if(!zone.contains(e.target))changer(false);});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')changer(false);});
 })();
 </script>
 <script>
@@ -794,9 +850,6 @@ function updateAccountMenu(){
  $('topAccount').title=isLoggedIn?'Compte connecté — options':'Se connecter à LOGIKIDS';
 }
 // L'ouverture du cadenas est initialisée dans le script indépendant ci-dessus.
-$('menuLogin').addEventListener('click',()=>{closeAccountMenu();setAuthMode('login');ouvrir('compte');});
-$('menuSignup').addEventListener('click',()=>{closeAccountMenu();setAuthMode('signup');ouvrir('compte');});
-$('menuAccount').addEventListener('click',()=>{closeAccountMenu();ouvrir('compte');});
 $('menuLogout').addEventListener('click',()=>{closeAccountMenu();logoutAccount();});
 // La fermeture du menu est également prise en charge par le script indépendant.
 updateAccountMenu();
@@ -1045,8 +1098,6 @@ initSecureService();
 
 // Compléments de navigation du tableau de bord : n'altèrent pas les modules existants.
 (function(){
-  const dateField=document.getElementById('dashboardDate');
-  if(dateField)dateField.textContent=new Intl.DateTimeFormat('fr-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(new Date());
   document.addEventListener('click',function(e){
     const quick=e.target.closest('button[data-quick-module]');if(!quick)return;
     ouvrir('parents');
