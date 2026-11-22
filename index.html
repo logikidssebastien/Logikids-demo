@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LOGIKIDS — Gestion de garderie</title>
 <style>
-/* LOGIKIDS — interface bleu marine et or retenue le 20 novembre */ 
+/* LOGIKIDS — interface bleu marine et or retenue le 20 novembre */
 :root{--marine:#0c2248;--marine2:#173a6e;--gold:#c99b42;--goldlite:#f8ebc9;--ink:#1c3557;--canvas:#edf2f8}
 body{background:var(--canvas)!important;color:var(--ink)!important}
 .app-shell{display:flex;min-height:100vh;align-items:stretch}
@@ -397,7 +397,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <section id="inscriptions" class="page"><h2>📝 Inscriptions et liste d'attente</h2><div class="card"><form id="formAttente"><label>Nom fictif</label><input name="nom" required><label>Statut</label><select name="statut"><option>En attente</option><option>À contacter</option><option>Place offerte</option></select><label>Notes facultatives</label><textarea name="notes"></textarea><button class="action">Ajouter à la liste</button></form></div><div class="card" id="listeAttente"></div></section>
 <section id="parametres" class="page"><h2>⚙️ Paramètres</h2><div class="card"><h3>Prototype LOGIKIDS</h3><p>Version locale gratuite. Les données de démonstration restent dans ce navigateur. Un compte parent réel et une base de données sécurisée seront nécessaires avant de travailler avec des renseignements réels.</p><button class="action secondary" id="exporter" type="button">Exporter les données de démonstration (JSON)</button></div></section>
 <section id="contact" class="page"><h2>💬 Contacts et messagerie</h2>
-<div class="card"><h3>🔐 Messagerie privée LOGIKIDS</h3><p>Échanges réels entre parents et éducatrices autorisés, après activation du compte sécurisé et de Supabase.</p><div id="contactAuthStatus" class="secure-banner warning">Pas encore configuré : ne communique pas entre appareils.</div><button class="action" type="button" id="goSecureMessaging">Accéder aux messages privés</button></div>
+<div class="card"><h3>🔐 Messagerie privée LOGIKIDS</h3><p>Échanges réels entre parents et éducatrices autorisés, après activation du compte sécurisé et de Supabase.</p><div id="contactAuthStatus" class="secure-banner warning">Pas encore configuré : ne communique pas entre appareils.</div><button class="action" type="button" id="goSecureMessaging" onclick="document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='compte'));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page==='compte'?'page':'false'));window.scrollTo(0,0);">Accéder aux messages privés</button><p class="muted tiny" style="margin:10px 0 0">Version messagerie : correctif du 22 novembre 2026</p></div>
 <h3>Coordonnées et essais locaux</h3><div class="card"><h3>Coordonnées de la garderie</h3><p class="muted">Les informations de cette démonstration sont locales à cet appareil.</p><form id="formContact"><label>Téléphone professionnel</label><input name="telephone" type="tel" placeholder="Ex. : 418 555-0123"><label>WhatsApp (avec indicatif)</label><input name="whatsapp" type="tel" placeholder="Ex. : +1 418 555-0123"><label>Lien Messenger</label><input name="messenger" type="url" placeholder="https://m.me/votrepage"><label>Courriel professionnel</label><input name="courriel" type="email" placeholder="contact@exemple.ca"><button class="action">Enregistrer mes coordonnées</button></form><div class="grid" id="liensContact"></div></div>
 <div class="card"><h3>👨‍👩‍👧 Répertoire des parents (fictifs)</h3><form id="formParent"><label>Nom du parent fictif</label><input name="nom" required maxlength="80" placeholder="Ex. : Parent de Alex"><label>Enfant associé (facultatif)</label><select name="enfant" id="enfantParent"></select><label>Téléphone</label><input name="telephone" type="tel"><label>WhatsApp</label><input name="whatsapp" type="tel"><label>Messenger (lien)</label><input name="messenger" type="url"><label>Courriel</label><input name="courriel" type="email"><button class="action">Ajouter le parent</button></form><div id="listeParentsContact"></div></div>
 <div class="card"><h3>💬 Messagerie LOGIKIDS — simulation locale</h3><p class="hint">Les messages sont des essais visibles seulement sur cet appareil. Ils ne sont ni transmis aux parents ni privés entre comptes réels.</p><form id="formMessage"><label>Conversation avec</label><select name="parentId" id="parentMessage" required></select><label>Expéditeur simulé</label><select name="expediteur"><option value="Garderie">Garderie → Parent</option><option value="Parent">Parent → Garderie</option></select><label>Message d'essai</label><textarea name="texte" required maxlength="2000" placeholder="Écrivez un message fictif..."></textarea><button class="action">Ajouter au fil de démonstration</button></form><h3>Historique de la conversation</h3><div id="listeMessages"></div></div></section>
@@ -487,6 +487,49 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
  });
  document.addEventListener('click',e=>{if(!zone.contains(e.target))changer(false);});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')changer(false);});
+
+ // Le bouton « Accéder aux messages privés » ne doit jamais dépendre
+ // du chargement de la messagerie, de la comptabilité ou de Supabase.
+ const accesPrive=byId('goSecureMessaging');
+ const panneau=byId('contactAuthStatus');
+ const avisCompte=byId('authNotice');
+ if(accesPrive){
+   accesPrive.addEventListener('click',function(e){
+     e.preventDefault();
+     e.stopImmediatePropagation();
+     ouvrirCompte('login');
+     // Un vrai diagnostic remplace un écran qui semble ne rien faire.
+     if(avisCompte && /^(Préparation du compte sécurisé|Connexion à Supabase : vérification)/.test(avisCompte.textContent.trim())){
+       avisCompte.textContent='Connexion à Supabase : vérification en cours…';
+       avisCompte.className='secure-banner warning';
+     }
+     const champ=byId('authForm')?.elements?.email;
+     if(champ && !byId('authCard')?.classList.contains('hidden')){
+       try{champ.focus({preventScroll:true});}catch(_){}
+     }
+   },{capture:true});
+ }
+ // Indiquer que le statut actuel est en cours d'évaluation et non « pas configuré ».
+ if(panneau && panneau.textContent.includes('Pas encore configuré')){
+   panneau.textContent='Connexion sécurisée : vérification en cours…';
+ }
+ if(avisCompte && avisCompte.textContent.includes('Préparation du compte sécurisé')){
+   avisCompte.textContent='Connexion à Supabase : vérification en cours…';
+ }
+ // Lorsqu'un bloqueur empêche le SDK de charger, expliquer clairement le blocage.
+ setTimeout(()=>{
+   const message=byId('contactAuthStatus');
+   const auth=byId('authNotice');
+   const attente=/vérification en cours/i;
+   if(message && attente.test(message.textContent||'')){
+     message.textContent='Connexion non confirmée. Ouvre « Compte sécurisé » et vérifie ton réseau. Aucune messagerie privée active pour le moment.';
+     message.className='secure-banner warning';
+   }
+   if(auth && attente.test(auth.textContent||'')){
+     auth.textContent='Connexion à Supabase non confirmée. Vérifie l’accès internet, puis réessaie. Ne communique pas de données réelles avant validation.';
+     auth.className='secure-banner warning';
+   }
+ },12000);
 })();
 </script>
 <script>
@@ -853,7 +896,7 @@ function updateAccountMenu(){
 $('menuLogout').addEventListener('click',()=>{closeAccountMenu();logoutAccount();});
 // La fermeture du menu est également prise en charge par le script indépendant.
 updateAccountMenu();
-$('goSecureMessaging').addEventListener('click',()=>ouvrir('compte'));
+// Le bouton Contacts vers la messagerie est gere par le script de navigation autonome.
 const authError=e=>{const m=String(e?.message||'Une erreur est survenue.');return /invalid login credentials/i.test(m)?'Courriel ou mot de passe incorrect.':/email not confirmed/i.test(m)?'Vérifie ton courriel et confirme ton inscription.':/email rate limit/i.test(m)?'Trop de demandes : réessaie plus tard.':m;};
 $('authForm').addEventListener('submit',async e=>{
  e.preventDefault();if(!sb)return authStatus('Connexion non activée. Il faut d’abord configurer le projet Supabase.');
@@ -1082,8 +1125,25 @@ async function initSecureService(){
  setAuthMode('login');
  if(!hasSupabaseConfig){authStatus('Fonction privée en préparation : pour l’activer, créer le projet Supabase et relier LOGIKIDS à sa base protégée. Les autres fonctions restent des démonstrations locales.');$('authCard').querySelectorAll('input,button').forEach(el=>el.disabled=true);return;}
  if(!window.supabase?.createClient){
-  const loaded=await new Promise(resolve=>{const lib=document.createElement('script');lib.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';lib.onload=()=>resolve(!!window.supabase?.createClient);lib.onerror=()=>resolve(false);document.head.appendChild(lib);});
-  if(!loaded){authStatus('La bibliothèque de connexion n’a pas chargé. Vérifie ton accès internet.');return;}
+  // Éviter un chargement infini ; essayer une deuxième source si nécessaire.
+  const chargerLib=src=>new Promise(resolve=>{
+    const lib=document.createElement('script');
+    let termine=false;
+    const finir=succes=>{
+      if(termine)return;
+      termine=true;clearTimeout(delai);
+      if(!succes)lib.remove();
+      resolve(succes);
+    };
+    const delai=setTimeout(()=>finir(false),6500);
+    lib.onload=()=>finir(!!window.supabase?.createClient);
+    lib.onerror=()=>finir(false);
+    lib.src=src;
+    document.head.appendChild(lib);
+  });
+  const loaded=await chargerLib('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js') ||
+    await chargerLib('https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js');
+  if(!loaded){authStatus('Impossible de charger la connexion Supabase. Vérifie l’accès Internet, puis réessaie. La messagerie privée est indisponible.');return;}
  }
  try{
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});
