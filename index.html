@@ -766,7 +766,8 @@ else if(b.dataset.deleteAbsence){absences=absences.filter(x=>String(x.id)!==b.da
 else if(b.dataset.deleteMessage){mess.messages=mess.messages.filter(x=>String(x.id)!==b.dataset.deleteMessage);saveMess()}
 else if(b.dataset.deletePortail){const k=b.dataset.deletePortail;if(!Array.isArray(portail[k]))return;portail[k]=portail[k].filter(x=>String(x.id)!==b.dataset.id);savePortail()}
 });
-$('dateJournal').value=today();$('dateAbsence').value=today();document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());afficher();afficherAbsences();afficherContact();afficherMess();afficherPresences();
+// Initialisation des ecrans reportee a la fin du script.
+// Les fonctions de facturation doivent etre declarees AVANT le premier affichage.
 
 
 // -------------------------------------------------------------
@@ -1154,6 +1155,22 @@ async function initSecureService(){
   await refreshAuthUI();
  }catch(err){authStatus('Connexion Supabase non initialisée. Vérifie uniquement les paramètres publics et le SQL.');}
 }
+// Le chargement initial a lieu seulement apres toutes les declarations.
+// Il evite l'erreur « Cannot access 'debutSemaine' before initialization ».
+$('dateJournal').value=today();
+$('dateAbsence').value=today();
+document.querySelectorAll('#parents input[type="date"]').forEach(i=>i.value=today());
+for(const [nom,operation] of [
+ ['Tableau de bord',afficher],
+ ['Absences',afficherAbsences],
+ ['Contacts',afficherContact],
+ ['Messagerie locale',afficherMess],
+ ['Presences',afficherPresences]
+]){
+ try{operation()}
+ catch(erreur){console.error('LOGIKIDS — erreur d’affichage dans '+nom,erreur)}
+}
+// La messagerie securisee et Supabase s'initialisent apres les autres modules.
 initSecureService();
 
 // Compléments de navigation du tableau de bord : n'altèrent pas les modules existants.
