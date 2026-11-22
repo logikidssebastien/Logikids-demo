@@ -233,6 +233,18 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .key .nav-art{display:block!important;flex:0 0 29px!important;width:29px!important;height:29px!important;min-width:29px!important;object-fit:contain!important;margin:0!important;filter:drop-shadow(0 1px 1px #001b3b52)}
 @media(max-width:790px){.key .nav-art{width:27px!important;height:27px!important;min-width:27px!important;flex-basis:27px!important}}
 @media(max-width:470px){.key .nav-art{width:25px!important;height:25px!important;min-width:25px!important;flex-basis:25px!important}}
+
+/* LOGIKIDS — quatre espaces, interface de prévisualisation par rôle.
+   Important : le contrôle d'accès aux vraies données doit aussi être assuré par Supabase/RLS. */
+.role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px;margin-top:18px}
+.role-card{border:1px solid #cddceb;border-top:4px solid #c99b42;border-radius:13px;padding:16px;background:linear-gradient(145deg,#fff,#edf4fe)}
+.role-card h3{font-size:17px;margin:0 0 7px;color:#143c72}
+.role-card p{font-size:13px;margin:8px 0 12px;color:#4a607d;line-height:1.5}
+.role-tag{display:inline-block;background:#fdf2d6;border:1px solid #ddb860;border-radius:50px;color:#654711;font-size:12px;font-weight:850;padding:6px 12px;margin:6px 0}
+.role-note{background:#fff3d7;border-left:4px solid #c99b42;padding:13px;border-radius:9px;font-size:13px;line-height:1.5;margin:13px 0}
+.role-link{font:inherit;background:#173f72;color:#fff;border:0;border-radius:9px;padding:9px 13px;font-weight:700;cursor:pointer}
+.key[hidden],.dashboard-tile[hidden],.masthead-icon[hidden]{display:none!important}
+@media(max-width:650px){.role-grid{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div class="app-shell">
@@ -266,7 +278,16 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 </aside>
 <div class="workspace">
 <main>
-<div class="hint"><strong>Prototype en cours de développement :</strong> les modules enfants, journal, photos, dépenses et Portail parents restent des démonstrations locales. Même après la connexion Supabase, <strong>ces modules ne sont PAS encore sécurisés ni synchronisés</strong>. Utilisez des renseignements et photos fictifs. Seule la future messagerie privée utilisera la base sécurisée après configuration et tests.</div>
+<div class="hint"><strong>Prototype en cours de développement :</strong> les modules enfants, journal, photos, dépenses et Portail parents restent des démonstrations locales. Même après la connexion Supabase, <strong>ces modules ne sont PAS encore sécurisés ni synchronisés</strong>. Utilisez des renseignements et photos fictifs. Seule la messagerie privée actuellement testée utilise Supabase. Les quatre interfaces sont en cours de mise en place : aucune donnée réelle d’enfant ne doit être saisie dans les autres modules.</div>
+<section id="roleAccueil" class="page" aria-label="Espace selon votre rôle">
+  <h2 id="roleTitle">🔐 Mon espace LOGIKIDS</h2>
+  <div class="card">
+    <span id="roleTag" class="role-tag">Vérification du compte</span>
+    <p id="roleExplanation" class="muted" role="status">LOGIKIDS vérifie les autorisations de votre compte.</p>
+    <div id="roleCards" class="role-grid"></div>
+    <div id="roleNotice" class="role-note">Version de démonstration : les données locales ne sont pas un portail familial sécurisé. N'utilisez que des informations fictives.</div>
+  </div>
+</section>
 <section id="accueil" class="page active">
 <div class="dashboard-stage">
   <div class="dashboard-welcome"><span class="greeting">👋 Bonjour !</span><span class="today-date">📅 <span id="dashboardDate">Date du jour</span></span></div>
@@ -534,7 +555,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 </script>
 <script>
 'use strict';
-const sections=[['accueil','🏠','Tableau de bord'],['enfants','👶','Enfants'],['presences','🟢','Présences'],['facturation','🧾','Facturation'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres'],['contact','💬','Contacts'],['compte','🔐','Compte sécurisé']];
+const sections=[['roleAccueil','🛡️','Mon espace'],['accueil','🏠','Tableau de bord'],['enfants','👶','Enfants'],['presences','🟢','Présences'],['facturation','🧾','Facturation'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres'],['contact','💬','Contacts'],['compte','🔐','Compte sécurisé']];
 const cle='logikids_demo_v2',absenceCle='logikids_absences_demo_v1',contactCle='logikids_contact_demo_v1',messCle='logikids_messages_demo_v1',portailCle='logikids_portail_demo_v1',presenceCle='logikids_presences_demo_v1';
 const base=()=>({enfants:[],menus:[],journaux:[],evenements:[],depenses:[],attente:[],alimentation:[]});
 const $=id=>document.getElementById(id),safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),money=n=>new Intl.NumberFormat('fr-CA',{style:'currency',currency:'CAD'}).format(Number(n)||0),uid=()=>String(Date.now())+Math.random().toString(36).slice(2,7),get=f=>Object.fromEntries(new FormData(f)),today=()=>new Date().toLocaleDateString('en-CA');
@@ -559,8 +580,81 @@ $('menu').innerHTML=sections.map(([id,emoji,label])=>{
  const pictogramme=illustration?`<img class="nav-art" src="${illustration}" alt="" aria-hidden="true" decoding="async">`:`<span class="emoji" aria-hidden="true">${emoji}</span>`;
  return `<button class="key" type="button" data-page="${id}" aria-current="${id==='accueil'?'page':'false'}">${pictogramme}<span class="nav-label">${label}</span></button>`;
 }).join('');
-function ouvrir(id){if(!$(id))return;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page===id?'page':'false'));if(id==='parents'){afficherPortail();afficherFacturesParents();}if(id==='presences'||id==='parents'||id==='accueil')afficherPresences();if(id==='facturation')afficherFacturation();window.scrollTo({top:0,behavior:'smooth'})}
+function ouvrir(id){if(!$(id))return;if(!roleAccessPermits(id)){id='roleAccueil';if(!$(id))return;}document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page===id?'page':'false'));if(id==='parents'){afficherPortail();afficherFacturesParents();}if(id==='presences'||id==='parents'||id==='accueil')afficherPresences();if(id==='facturation')afficherFacturation();window.scrollTo({top:0,behavior:'smooth'})}
 $('menu').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)ouvrir(b.dataset.page)});
+// Identification du rôle via les réponses vérifiées de Supabase, JAMAIS depuis le courriel.
+// En absence de réponse vérifiable, on refuse l'accès aux modules liés à un compte.
+let roleAccess='demo', roleAccessRequest=0, roleAccessUser=null;
+const rolePages={
+  verification:['roleAccueil','compte'],
+  inconnu:['roleAccueil','compte'],
+  superadmin:['roleAccueil','compte'],
+  responsable:['roleAccueil','accueil','enfants','presences','facturation','journal','menus','parents','calendrier','depenses','inscriptions','parametres','contact','compte'],
+  educatrice:['roleAccueil','accueil','enfants','presences','journal','menus','calendrier','contact','compte'],
+  parent:['roleAccueil','compte']
+};
+function roleAccessPermits(id){return roleAccess==='demo'?id!=='roleAccueil':(rolePages[roleAccess]||rolePages.inconnu).includes(id);}
+const roleCards={
+  superadmin:[['🏢','Garderies clientes','Liste et gestion des établissements : interface en préparation.',null],['💳','Abonnements','Suivi des forfaits et de la facturation : interface en préparation.',null],['🛡️','Sécurité','Votre statut est vérifié côté Supabase. Les dossiers privés des enfants ne sont pas accessibles ici.',null]],
+  responsable:[['🏠','Gestion de garderie','Accéder au tableau de bord existant, en mode démonstration.','accueil'],['💬','Messagerie privée','Ouvrir les conversations sécurisées.','compte'],['💰','Administration','Comptabilité, facturation et inscriptions de démonstration.','facturation']],
+  educatrice:[['📖','Journal quotidien','Saisir les activités de démonstration.','journal'],['🟢','Présences','Voir les présences de démonstration.','presences'],['💬','Messagerie privée','Ouvrir les conversations sécurisées.','compte']],
+  parent:[['💬','Messages privés','Accéder aux conversations autorisées, sans accès à celles des autres familles.','compte'],['📖','Journal de mon enfant','Liaison sécurisée des journaux et du compte enfant à venir.',null],['🎒','Sac à dos et rappels','Données de l’enfant non encore synchronisées avec votre compte.',null]],
+  inconnu:[['🔐','Compte sécurisé','Vérifiez auprès de la garderie que votre compte est autorisé.','compte']],
+  verification:[['⏳','Vérification en cours','Connexion à Supabase et lecture des autorisations.','compte']]
+};
+function roleAccessUpdate(role, detail=''){
+  roleAccess=role;
+  document.body.dataset.accessRole=role;
+  const names={demo:'Démonstration',verification:'Vérification du rôle',inconnu:'Rôle non confirmé',superadmin:'Super-administrateur LOGIKIDS',responsable:'Administrateur de garderie',educatrice:'Éducatrice / Personnel autorisé',parent:'Parent'};
+  const explanations={
+    superadmin:'Votre compte est identifié comme super-administrateur. La gestion commerciale des garderies sera ajoutée séparément.',
+    responsable:'Vous disposez du tableau de gestion de la garderie. Les modules actuels restent des démonstrations locales.',
+    educatrice:'Votre espace de travail présente les outils quotidiens; les fonctions de direction sont masquées dans cette version.',
+    parent:'Bienvenue sur votre espace parent. Pour le moment, seule la messagerie sécurisée peut utiliser des données réelles.',
+    inconnu:'Votre connexion est active, mais aucun rôle autorisé n’a pu être confirmé. Aucun accès de gestion n’est accordé.',
+    verification:'Vérification du rôle attribué à votre compte dans Supabase.',
+    demo:'Vous utilisez une version de démonstration, sans accès aux informations réelles d’une garderie.'
+  };
+  $('roleTitle').textContent='🛡️ '+(names[role]||names.inconnu);
+  $('roleTag').textContent=names[role]||names.inconnu;
+  $('roleExplanation').textContent=(explanations[role]||'')+(detail?' '+detail:'');
+  const cartes=roleCards[role]||[];
+  $('roleCards').innerHTML=cartes.map(([icone,titre,description,page])=>`<div class="role-card"><h3>${icone} ${titre}</h3><p>${description}</p>${page?`<button type="button" class="role-link" data-role-target="${page}">Ouvrir</button>`:''}</div>`).join('');
+  document.querySelectorAll('#menu .key').forEach(b=>{b.hidden=!roleAccessPermits(b.dataset.page);});
+  document.querySelectorAll('.dashboard-tile[data-go]').forEach(b=>{b.hidden=!roleAccessPermits(b.dataset.go);});
+  document.querySelectorAll('.masthead-icon[data-go]').forEach(b=>{b.hidden=!roleAccessPermits(b.dataset.go);});
+  $('roleNotice').textContent=role==='superadmin'?'Accès de gestion générale en préparation. Ce tableau de bord ne permet pas encore d’administrer les abonnements. Aucune donnée privée des familles n’est présentée.':
+    'Mode prototype : les modules enfants, journal, présences, facturation et portail parents stockent encore des essais locaux. Seule la messagerie privée a été reliée au service sécurisé. Ne saisissez aucune donnée réelle d’enfant.';
+  const visible=document.querySelector('.page.active');
+  if(visible&&!roleAccessPermits(visible.id))ouvrir(role==='demo'?'accueil':'roleAccueil');
+}
+$('roleCards').addEventListener('click',e=>{const b=e.target.closest('[data-role-target]');if(b)ouvrir(b.dataset.roleTarget);});
+async function roleAccessResolve(user){
+  if(!user?.id){roleAccessUser=null;roleAccessRequest++;roleAccessUpdate('demo');return;}
+  if(!sb)return;
+  const request=++roleAccessRequest;
+  if(roleAccessUser!==user.id){roleAccessUser=user.id;roleAccessUpdate('verification');}
+  try{
+    // La fonction SQL ne retourne que le droit de l'utilisateur connecté.
+    // Sans cette fonction, le super-administrateur n'est PAS présumé.
+    const [superResult, membresResult, legacyResult]=await Promise.all([
+      chatTimeout(sb.rpc('logikids_est_super_admin'),10),
+      chatTimeout(sb.from('membres_garderie').select('role').eq('utilisateur_id',user.id),10),
+      chatTimeout(sb.from('daycare_memberships').select('role').eq('user_id',user.id).eq('active',true),10)
+    ]);
+    if(request!==roleAccessRequest||chatUser?.id!==user.id)return;
+    if(!superResult?.error&&superResult.data===true){roleAccessUpdate('superadmin');return;}
+    const lesRoles=[...(membresResult?.error?[]:(membresResult.data||[])),...(legacyResult?.error?[]:(legacyResult.data||[]))].map(x=>String(x.role||'').toLowerCase());
+    if(lesRoles.includes('responsable'))roleAccessUpdate('responsable');
+    else if(lesRoles.includes('educatrice')||lesRoles.includes('educator'))roleAccessUpdate('educatrice');
+    else if(lesRoles.includes('parent'))roleAccessUpdate('parent');
+    else roleAccessUpdate('inconnu','L’accès Super-administrateur nécessite aussi la fonction de vérification SQL.');
+  }catch(erreur){
+    if(request===roleAccessRequest&&chatUser?.id===user.id)roleAccessUpdate('inconnu','La vérification a échoué : aucune permission supplémentaire n’est accordée.');
+  }
+}
+roleAccessUpdate('demo');
+
 const activites=['Jeux libres','Bricolage','Lecture','Chansons','Jeux extérieurs','Motricité','Peinture','Jeux éducatifs'],comportements=['Participation','Entraide','Partage','Besoin de réconfort','Difficulté à attendre','Conflit observé'];
 function checks(id,items){$(id).innerHTML=items.map((s,i)=>`<label><input type="checkbox" value="${safe(s)}" name="choix${id}${i}"> ${safe(s)}</label>`).join('')};checks('choixActivites',activites);checks('choixComportements',comportements);
 const selections=id=>[...$(id).querySelectorAll('input:checked')].map(x=>x.value);
@@ -978,6 +1072,8 @@ async function refreshAuthUI(){
   const user=error?null:data?.user||null;
   const previousId=chatUser?.id||null;
   chatUser=user;
+  if(user)void roleAccessResolve(user);
+  else void roleAccessResolve(null);
   $('authCard').classList.toggle('hidden',!!user);
   $('signedCard').classList.toggle('hidden',!user);
   $('realChatCard').classList.toggle('hidden',!user);
@@ -1198,6 +1294,7 @@ initSecureService();
 (function(){
   document.addEventListener('click',function(e){
     const quick=e.target.closest('button[data-quick-module]');if(!quick)return;
+    if(!roleAccessPermits('parents')){ouvrir('roleAccueil');return;}
     ouvrir('parents');
     const moduleBtn=document.querySelector('button[data-module="'+quick.dataset.quickModule+'"]');
     if(moduleBtn)moduleBtn.click();
