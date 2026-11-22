@@ -229,6 +229,10 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .chat-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:6px 0 15px}
 .chat-controls .action{margin-top:0!important}
 #chatLastUpdate{font-size:12px}
+/* Menu latéral : mêmes images que sur les grandes touches, mais à une taille lisible. */
+.key .nav-art{display:block!important;flex:0 0 29px!important;width:29px!important;height:29px!important;min-width:29px!important;object-fit:contain!important;margin:0!important;filter:drop-shadow(0 1px 1px #001b3b52)}
+@media(max-width:790px){.key .nav-art{width:27px!important;height:27px!important;min-width:27px!important;flex-basis:27px!important}}
+@media(max-width:470px){.key .nav-art{width:25px!important;height:25px!important;min-width:25px!important;flex-basis:25px!important}}
 </style></head>
 <body>
 <div class="app-shell">
@@ -403,10 +407,10 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div class="card" id="authCard"><h3>Connexion à LOGIKIDS</h3>
 <p class="muted">Les comptes doivent être approuvés et reliés à une garderie avant de pouvoir échanger des messages. Aucune information concernant un véritable enfant ne doit être saisie dans les modules de démonstration.</p>
 <div class="auth-buttons"><button type="button" class="action secondary" id="showLogin">Se connecter</button><button type="button" class="action secondary" id="showSignup">Créer un compte</button><button type="button" class="action secondary" id="showReset">Mot de passe oublié</button></div>
-<form id="authForm"><div id="fullNameWrap" class="hidden"><label>Nom complet</label><input name="fullName" maxlength="100" autocomplete="name"></div><label>Courriel</label><input type="email" name="email" autocomplete="email" required maxlength="255"><div id="passwordWrap"><label>Mot de passe (au moins 12 caractères pour un nouveau compte)</label><input type="password" name="password" autocomplete="current-password" minlength="6"></div><button class="action" type="submit" id="authSubmit">Connexion</button></form>
+<form id="authForm" onsubmit="return false"><div id="fullNameWrap" class="hidden"><label>Nom complet</label><input name="fullName" maxlength="100" autocomplete="name"></div><label>Courriel</label><input type="email" name="email" autocomplete="email" required maxlength="255"><div id="passwordWrap"><label>Mot de passe (au moins 12 caractères pour un nouveau compte)</label><input type="password" name="password" autocomplete="current-password" minlength="6"></div><button class="action" type="submit" id="authSubmit">Connexion</button></form>
 </div>
 <div class="card hidden" id="signedCard"><h3>Mon compte</h3><p id="signedIdentity"></p><button class="action secondary" type="button" id="signOut">Se déconnecter</button></div>
-<div class="card hidden" id="recoverCard"><h3>Choisir un nouveau mot de passe</h3><form id="recoverForm"><label>Nouveau mot de passe (au moins 12 caractères)</label><input name="password" type="password" minlength="12" autocomplete="new-password" required><button class="action">Mettre à jour mon mot de passe</button></form></div>
+<div class="card hidden" id="recoverCard"><h3>Choisir un nouveau mot de passe</h3><form id="recoverForm" onsubmit="return false"><label>Nouveau mot de passe (au moins 12 caractères)</label><input name="password" type="password" minlength="12" autocomplete="new-password" required><button class="action">Mettre à jour mon mot de passe</button></form></div>
 <div class="card hidden" id="realChatCard"><h3>💬 Conversations sécurisées</h3><div id="chatStatus" class="secure-banner">Chargement…</div>
 <div class="chat-controls"><button class="action secondary" type="button" id="refreshPrivateChat">🔄 Actualiser les messages</button><span class="muted" id="chatLastUpdate" aria-live="polite">Connexion en cours…</span></div>
 <div class="hidden" id="educatorNewChat"><label>Parent autorisé dans votre garderie</label><select id="parentStartChat"><option value="">Sélectionner</option></select><button type="button" class="action" id="startConversation">Démarrer une conversation</button></div>
@@ -414,6 +418,21 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 </div>
 </section>
 </main><footer>LOGIKIDS © 2026 — Prototype de démonstration</footer></div></div>
+<script>
+// Fonctionnement autonome du cadenas : navigation et connexion / déconnexion.
+// Ce script est indépendant de Supabase et du chargement des autres modules.
+(function(){
+ 'use strict';
+ const bouton=document.getElementById('topAccount');
+ const menu=document.getElementById('accountMenu');
+ const zone=document.getElementById('accountMenuAnchor');
+ if(!bouton||!menu||!zone)return;
+ const changer=(ouvrir)=>{menu.hidden=!ouvrir;bouton.setAttribute('aria-expanded',String(ouvrir));};
+ bouton.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();changer(menu.hidden);});
+ document.addEventListener('click',function(e){if(!zone.contains(e.target))changer(false);});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')changer(false);});
+})();
+</script>
 <script>
 'use strict';
 const sections=[['accueil','🏠','Tableau de bord'],['enfants','👶','Enfants'],['presences','🟢','Présences'],['facturation','🧾','Facturation'],['journal','📖','Journal quotidien'],['menus','🍎','Menus et repas'],['parents','👨‍👩‍👧','Parents'],['calendrier','📅','Calendrier'],['depenses','💰','Comptabilité'],['inscriptions','📝','Inscriptions'],['parametres','⚙️','Paramètres'],['contact','💬','Contacts'],['compte','🔐','Compte sécurisé']];
@@ -431,7 +450,16 @@ if(!billing||typeof billing!=='object')billing={};if(!Array.isArray(billing.fact
 let presence=load(presenceCle,{historique:[],demandes:[]});
 if(!presence||!Array.isArray(presence.historique)||!Array.isArray(presence.demandes))presence={historique:[],demandes:[]};
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){alert('Le navigateur ne peut plus enregistrer ces données. Exportez les données dans Paramètres et libérez de la place.');return false}}
-$('menu').innerHTML=sections.map(([id,emoji,label])=>`<button class="key" type="button" data-page="${id}" aria-current="${id==='accueil'?'page':'false'}"><span class="emoji">${emoji}</span><span class="nav-label">${label}</span></button>`).join('');
+// Icônes harmonisées : mêmes illustrations bleu marine et doré que les tuiles du tableau de bord.
+// Aucun téléchargement supplémentaire et aucune modification des données conservées dans le navigateur.
+const imagesNavigation=Object.fromEntries([...document.querySelectorAll('.dashboard-tile[data-go]')].map(tuile=>[tuile.dataset.go,tuile.querySelector('img.tile-art')?.getAttribute('src')||'']));
+const iconeCompteSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="b"><stop stop-color="#fff"/><stop offset="1" stop-color="#e3eef9"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#b)" stroke="#d7a64a" stroke-width="3"/><path d="M33 44v-9c0-23 34-23 34 0v9" fill="none" stroke="#153864" stroke-width="8" stroke-linecap="round"/><rect x="24" y="43" width="52" height="38" rx="9" fill="#17416e" stroke="#c99c42" stroke-width="4"/><circle cx="50" cy="58" r="5" fill="#efc66a"/><path d="M50 61v9" stroke="#efc66a" stroke-width="5" stroke-linecap="round"/></svg>';
+imagesNavigation.compte='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(iconeCompteSvg);
+$('menu').innerHTML=sections.map(([id,emoji,label])=>{
+ const illustration=imagesNavigation[id];
+ const pictogramme=illustration?`<img class="nav-art" src="${illustration}" alt="" aria-hidden="true" decoding="async">`:`<span class="emoji" aria-hidden="true">${emoji}</span>`;
+ return `<button class="key" type="button" data-page="${id}" aria-current="${id==='accueil'?'page':'false'}">${pictogramme}<span class="nav-label">${label}</span></button>`;
+}).join('');
 function ouvrir(id){if(!$(id))return;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page===id?'page':'false'));if(id==='parents'){afficherPortail();afficherFacturesParents();}if(id==='presences'||id==='parents'||id==='accueil')afficherPresences();if(id==='facturation')afficherFacturation();window.scrollTo({top:0,behavior:'smooth'})}
 $('menu').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)ouvrir(b.dataset.page)});
 const activites=['Jeux libres','Bricolage','Lecture','Chansons','Jeux extérieurs','Motricité','Peinture','Jeux éducatifs'],comportements=['Participation','Entraide','Partage','Besoin de réconfort','Difficulté à attendre','Conflit observé'];
@@ -765,17 +793,12 @@ function updateAccountMenu(){
  $('accountMenuState').textContent=isLoggedIn?'Connecté : '+(chatUser.email||'Compte autorisé'):'Non connecté';
  $('topAccount').title=isLoggedIn?'Compte connecté — options':'Se connecter à LOGIKIDS';
 }
-$('topAccount').addEventListener('click',()=>{
- const next=$('accountMenu').hidden;
- $('accountMenu').hidden=!next;
- $('topAccount').setAttribute('aria-expanded',String(next));
-});
+// L'ouverture du cadenas est initialisée dans le script indépendant ci-dessus.
 $('menuLogin').addEventListener('click',()=>{closeAccountMenu();setAuthMode('login');ouvrir('compte');});
 $('menuSignup').addEventListener('click',()=>{closeAccountMenu();setAuthMode('signup');ouvrir('compte');});
 $('menuAccount').addEventListener('click',()=>{closeAccountMenu();ouvrir('compte');});
 $('menuLogout').addEventListener('click',()=>{closeAccountMenu();logoutAccount();});
-document.addEventListener('click',e=>{if(!e.target.closest('#accountMenuAnchor'))closeAccountMenu();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAccountMenu();});
+// La fermeture du menu est également prise en charge par le script indépendant.
 updateAccountMenu();
 $('goSecureMessaging').addEventListener('click',()=>ouvrir('compte'));
 const authError=e=>{const m=String(e?.message||'Une erreur est survenue.');return /invalid login credentials/i.test(m)?'Courriel ou mot de passe incorrect.':/email not confirmed/i.test(m)?'Vérifie ton courriel et confirme ton inscription.':/email rate limit/i.test(m)?'Trop de demandes : réessaie plus tard.':m;};
