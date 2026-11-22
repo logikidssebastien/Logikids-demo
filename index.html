@@ -673,7 +673,7 @@ async function initSecureService(){
  setAuthMode('login');
  if(!hasSupabaseConfig){authStatus('Fonction privée en préparation : pour l’activer, créer le projet Supabase et relier LOGIKIDS à sa base protégée. Les autres fonctions restent des démonstrations locales.');$('authCard').querySelectorAll('input,button').forEach(el=>el.disabled=true);return;}
  if(!window.supabase?.createClient){
-  const loaded=await new Promise(resolve=>{const lib=document.createElement('script');lib.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';lib.onload=()=>resolve(!!window.supabase?.createClient);lib.onerror=()=>resolve(false);document.head.appendChild(lib);});
+  const loaded=await new Promise(resolve=>{const lib=document.createElement('script');lib.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';lib.onload=()=>resolve(!!window.supabase?.createClient);lib.onerror=()=>resolve(false);document.head.appendChild(lib);});
   if(!loaded){authStatus('La bibliothèque de connexion n’a pas chargé. Vérifie ton accès internet.');return;}
  }
  try{
