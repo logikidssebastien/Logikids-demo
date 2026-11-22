@@ -175,6 +175,18 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .small-note{font-size:12px;color:#5b6c83}
 @media(max-width:650px){.billing-grid{grid-template-columns:1fr}.billing-matrix{font-size:11px}.billing-matrix th,.billing-matrix td{padding:6px 4px}}
 
+/* Sélection de la quantité consommée : jamais de valeur présélectionnée */
+.meal-portion{border:1px solid #cbd9e9;border-left:5px solid #cf9e3f;border-radius:14px;background:#fffaf0;margin:15px 0;padding:14px;min-width:0}
+.meal-portion legend{font-size:16px;font-weight:850;color:#183a67;padding:0 6px}
+.meal-portion p{margin:0 0 11px;font-size:13px}
+.meal-portion-options{display:flex;flex-wrap:wrap;gap:9px}
+.meal-portion-options label{position:relative;display:inline-block;margin:0;cursor:pointer}
+.meal-portion-options input{position:absolute;opacity:0;width:1px;height:1px}
+.meal-portion-options span{display:inline-block;background:#fff;border:1px solid #b9cde2;border-radius:12px;padding:10px 13px;font-size:13px;font-weight:700;color:#193a63;box-shadow:0 2px 4px #12385b14}
+.meal-portion-options input:checked+span{background:#174778;border:2px solid #cf9e3f;color:#fff;padding:9px 12px}
+.meal-portion-options input:focus-visible+span{outline:3px solid #e5b147;outline-offset:3px}
+@media(max-width:470px){.meal-portion-options label{width:100%}.meal-portion-options span{display:block}}
+
 /* LOGIKIDS — suivi alimentaire facultatif, mode démonstration locale */
 .meal-intro{background:#f5f9ff;border:1px solid #d6e3f6;border-left:4px solid #c99b42;border-radius:10px;padding:12px;line-height:1.5}
 .meal-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}
@@ -282,14 +294,9 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <section id="journal" class="page"><h2>📖 Journal quotidien</h2><div class="card"><form id="formJournal"><label>Enfant</label><select name="enfant" id="enfantJournal" required></select><label>Date</label><input name="date" type="date" id="dateJournal" required><label>Repas enregistré</label><select name="repas" id="repasJournal"></select><label>Sieste</label><input name="sieste" placeholder="Ex. : 12 h 30 à 14 h"><label>Activités (plusieurs choix possibles)</label><div class="checks" id="choixActivites"></div><label>Humeur</label><select name="humeur"><option>😊 Heureux</option><option>😌 Calme</option><option>😴 Fatigué</option><option>😢 Triste</option><option>😟 Inquiet</option></select><label>Comportements observés</label><div class="checks" id="choixComportements"></div><label>Notes facultatives</label><textarea name="notes"></textarea><label>Visibilité (démonstration)</label><select name="visibilite"><option>Journal de fin de journée</option><option>Notification aux parents — non connectée</option><option>Note interne — démonstration locale</option></select><button class="action">Enregistrer le journal</button></form></div><div class="card"><h3>Journaux enregistrés</h3><div id="listeJournaux"></div></div></section>
 <section id="menus" class="page">
 <h2>🍎 Menus et repas</h2>
-<div class="card">
-<h3>👨‍🍳 Créer une recette ou un menu</h3>
-<form id="formMenu"><label>Nom du plat</label><input name="plat" required><label>Ingrédients</label><textarea name="ingredients"></textarea><label>Préparation</label><textarea name="preparation"></textarea><label>Allergènes à vérifier</label><input name="allergenes"><button class="action">Enregistrer le menu</button></form>
-</div>
-<div class="card"><h3>📂 Répertoire de menus</h3><div id="listeMenus"></div></div>
 <div class="card" id="mealTrackingCard">
 <h3>🥗 Alimentation de l'enfant — sélection rapide</h3>
-<p class="meal-intro">Cochez les aliments réellement mangés. Plusieurs choix sont possibles par catégorie. Vous pouvez aussi écrire un aliment qui manque dans la liste. Les recettes ci-dessus sont conservées séparément.</p>
+<p class="meal-intro">Cochez les aliments réellement mangés. Plusieurs choix sont possibles par catégorie. Vous pouvez aussi écrire un aliment qui manque dans la liste. La création des recettes et le répertoire des menus restent disponibles plus bas sur cette page.</p>
 <p class="meal-local-warning"><strong>Démonstration :</strong> utilisez seulement des enfants fictifs. Ce suivi est enregistré dans ce navigateur et visible dans l'aperçu du portail parents sur le même appareil. Il n'est pas encore partagé avec les comptes parents sécurisés via Supabase.</p>
 <form id="formAlimentEnfant">
 <div class="meal-form-grid">
@@ -300,12 +307,28 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 </div>
 <h4>Choisir les aliments</h4>
 <div class="meal-sections" id="alimentChoix" aria-label="Catégories d'aliments"></div>
+<fieldset class="meal-portion" aria-describedby="mealPortionHelp">
+<legend>🍽️ Quantité mangée</legend>
+<p id="mealPortionHelp" class="muted">Sélectionnez la quantité approximative réellement consommée par l'enfant.</p>
+<div class="meal-portion-options">
+<label><input type="radio" name="quantite" value="100" required><span>😊 Tout mangé — 100 %</span></label>
+<label><input type="radio" name="quantite" value="75"><span>🙂 En grande partie — 75 %</span></label>
+<label><input type="radio" name="quantite" value="50"><span>😐 La moitié — 50 %</span></label>
+<label><input type="radio" name="quantite" value="25"><span>😕 Quelques bouchées — 25 %</span></label>
+<label><input type="radio" name="quantite" value="0"><span>🙁 Refusé — 0 %</span></label>
+</div>
+</fieldset>
 <label for="alimentAutre">Autres aliments consommés (facultatif)</label><input id="alimentAutre" name="autres" maxlength="300" placeholder="Ex. : potage de courge, galette de maïs…">
 <label for="alimentNotes">Notes facultatives</label><textarea id="alimentNotes" name="notes" maxlength="500" placeholder="Ex. : Lucas a mangé le riz et les carottes, mais pas le brocoli."></textarea>
 <button class="action" type="submit">Enregistrer ce que l'enfant a mangé</button>
 </form>
 </div>
 <div class="card"><h3>📋 Repas consommés — historique</h3><div id="listeAlimentEnfant"></div></div>
+<div class="card">
+<h3>👨‍🍳 Créer une recette ou un menu</h3>
+<form id="formMenu"><label>Nom du plat</label><input name="plat" required><label>Ingrédients</label><textarea name="ingredients"></textarea><label>Préparation</label><textarea name="preparation"></textarea><label>Allergènes à vérifier</label><input name="allergenes"><button class="action">Enregistrer le menu</button></form>
+</div>
+<div class="card"><h3>📂 Répertoire de menus</h3><div id="listeMenus"></div></div>
 </section>
 <section id="parents" class="page"><h2>👨‍👩‍👧 Portail parents</h2><div class="hint">14 modules de démonstration : cliquez sur <strong>Ouvrir</strong> sous une icône. Les données ne sont visibles que sur cet appareil, sans authentification parent réelle.</div><div class="grid" id="apercuParents"></div>
 <div class="card module-parent" id="module-humeur"><h3 class="module-title">😊 Humeur du jour</h3><p class="muted">D'après les journaux quotidiens enregistrés (simulation).</p><div id="humeursParent"></div><button class="action secondary" data-go="journal" type="button">Enregistrer une humeur dans le journal</button></div>
@@ -423,7 +446,7 @@ function formatAliments(r){
    const choisis=a.filter(x=>x.categorie===g.nom).map(x=>x.aliment);
    return choisis.length?`<p><strong>${safe(g.nom)} :</strong> ${choisis.map(safe).join(', ')}</p>`:'';
  }).join('');
- return `<div class="meal-summary"><strong>${safe(nomEnfant(r.enfant))} · ${safe(r.date)} · ${safe(r.moment)}</strong>${r.menuNom?`<p><strong>Plat enregistré :</strong> ${safe(r.menuNom)}</p>`:''}${fiches}${r.autres?`<p><strong>Autres aliments :</strong> ${safe(r.autres)}</p>`:''}${r.notes?`<p class="notes"><strong>Note :</strong> ${safe(r.notes)}</p>`:''}</div>`;
+ return `<div class="meal-summary"><strong>${safe(nomEnfant(r.enfant))} · ${safe(r.date)} · ${safe(r.moment)}</strong>${r.menuNom?`<p><strong>Plat enregistré :</strong> ${safe(r.menuNom)}</p>`:''}${fiches}${r.quantite!==undefined&&r.quantite!==null&&r.quantite!==''?`<p><strong>Quantité mangée (approx.) :</strong> ${safe(({100:'Tout mangé — 100 %',75:'En grande partie — 75 %',50:'La moitié — 50 %',25:'Quelques bouchées — 25 %',0:'Refusé — 0 %'})[String(r.quantite)] || 'Non précisée')}</p>`:''}${r.autres?`<p><strong>Autres aliments :</strong> ${safe(r.autres)}</p>`:''}${r.notes?`<p class="notes"><strong>Note :</strong> ${safe(r.notes)}</p>`:''}</div>`;
 }
 function afficherAlimentation(){
  const enfantSelect=$('alimentEnfant'),chosenChild=enfantSelect.value;
@@ -442,7 +465,7 @@ $('formAlimentEnfant').addEventListener('submit',e=>{
  const autres=String(v.autres||'').trim();
  if(!choix.length&&!autres)return alert('Coche au moins un aliment ou indique un aliment dans « Autres aliments ».');
  const menu=data.menus.find(m=>String(m.id)===String(v.menu));
- const entree={id:uid(),enfant:v.enfant,date:v.date,moment:v.moment,menuId:menu?.id||'',menuNom:menu?.plat||'',choix,autres,notes:String(v.notes||'').trim(),creeLe:new Date().toISOString()};
+ const entree={id:uid(),enfant:v.enfant,date:v.date,moment:v.moment,menuId:menu?.id||'',menuNom:menu?.plat||'',choix,quantite:String(v.quantite||''),autres,notes:String(v.notes||'').trim(),creeLe:new Date().toISOString()};
  data.alimentation.push(entree);
  if(!save()){data.alimentation.pop();return;}
  f.reset();$('alimentDate').value=today();alimentsSelectionnes.clear();dessinerCasesAliments();afficherAlimentation();
