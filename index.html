@@ -245,6 +245,19 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .role-link{font:inherit;background:#173f72;color:#fff;border:0;border-radius:9px;padding:9px 13px;font-weight:700;cursor:pointer}
 .key[hidden],.dashboard-tile[hidden],.masthead-icon[hidden]{display:none!important}
 @media(max-width:650px){.role-grid{grid-template-columns:1fr}}
+
+/* LOGIKIDS : accès commun aux 4 rôles — mot de passe visible / récupération */
+.auth-password-field{position:relative;display:flex;align-items:center}
+.auth-password-field input{padding-right:58px;min-width:0}
+.auth-eye-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:44px;height:42px;border:1px solid #c6d2e0;border-radius:8px;background:#f1f5fb;color:#173a6e;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation}
+.auth-eye-btn:hover,.auth-eye-btn:focus-visible{background:#e3edfa;outline:2px solid #2c669b;outline-offset:1px}
+.auth-eye-btn svg{width:23px;height:23px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.auth-eye-btn .eye-slash{display:none}
+.auth-eye-btn.is-visible .eye-slash{display:block}
+.auth-forgot-row{margin:9px 0 1px;text-align:right}
+.auth-forgot-btn{font:inherit;font-size:14px;font-weight:750;color:#114e89;background:transparent;border:0;padding:8px 0;text-decoration:underline;cursor:pointer}
+.auth-forgot-btn:hover,.auth-forgot-btn:focus-visible{color:#082e5c;text-decoration-thickness:2px}
+.auth-reset-description{margin:11px 0 8px;line-height:1.5}
 </style></head>
 <body>
 <div class="app-shell">
@@ -427,11 +440,19 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div class="secure-banner warning" id="authNotice" role="status">Préparation du compte sécurisé…</div>
 <div class="card" id="authCard"><h3>Connexion à LOGIKIDS</h3>
 <p class="muted">Les comptes doivent être approuvés et reliés à une garderie avant de pouvoir échanger des messages. Aucune information concernant un véritable enfant ne doit être saisie dans les modules de démonstration.</p>
-<div class="auth-buttons"><button type="button" class="action secondary" id="showLogin">Se connecter</button><button type="button" class="action secondary" id="showSignup">Créer un compte</button><button type="button" class="action secondary" id="showReset">Mot de passe oublié</button></div>
-<form id="authForm" onsubmit="return false"><div id="fullNameWrap" class="hidden"><label>Nom complet</label><input name="fullName" maxlength="100" autocomplete="name"></div><label>Courriel</label><input type="email" name="email" autocomplete="email" required maxlength="255"><div id="passwordWrap"><label>Mot de passe (au moins 12 caractères pour un nouveau compte)</label><input type="password" name="password" autocomplete="current-password" minlength="6"></div><button class="action" type="submit" id="authSubmit">Connexion</button></form>
+<div class="auth-buttons"><button type="button" class="action secondary" id="showLogin">Se connecter</button><button type="button" class="action secondary" id="showSignup">Créer un compte</button></div>
+<form id="authForm" onsubmit="return false"><div id="fullNameWrap" class="hidden"><label>Nom complet</label><input name="fullName" maxlength="100" autocomplete="name"></div>
+<label for="authEmail">Courriel</label><input id="authEmail" type="email" name="email" autocomplete="email" required maxlength="255">
+<div id="passwordWrap"><label for="authPassword" id="authPasswordLabel">Mot de passe</label>
+<div class="auth-password-field"><input id="authPassword" type="password" name="password" autocomplete="current-password" minlength="6" required><button id="authTogglePassword" class="auth-eye-btn" type="button" aria-label="Afficher le mot de passe" aria-pressed="false" title="Afficher le mot de passe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="M3 21 21 3"/></svg></button></div>
+<div class="auth-forgot-row" id="forgotPasswordRow"><button id="showReset" class="auth-forgot-btn" type="button">Mot de passe oublié ?</button></div></div>
+<p class="muted auth-reset-description hidden" id="resetHelp">Inscris ton adresse courriel, puis clique sur « Envoyer le lien de réinitialisation ». Le lien sera envoyé dans cette boîte courriel si le compte existe. Tu pourras ensuite choisir un nouveau mot de passe.</p>
+<button class="action" type="submit" id="authSubmit">Se connecter</button></form>
 </div>
 <div class="card hidden" id="signedCard"><h3>Mon compte</h3><p id="signedIdentity"></p><button class="action secondary" type="button" id="signOut">Se déconnecter</button></div>
-<div class="card hidden" id="recoverCard"><h3>Choisir un nouveau mot de passe</h3><form id="recoverForm" onsubmit="return false"><label>Nouveau mot de passe (au moins 12 caractères)</label><input name="password" type="password" minlength="12" autocomplete="new-password" required><button class="action">Mettre à jour mon mot de passe</button></form></div>
+<div class="card hidden" id="recoverCard"><h3>Choisir un nouveau mot de passe</h3><form id="recoverForm" onsubmit="return false">
+<label for="recoverPassword">Nouveau mot de passe (au moins 12 caractères)</label><div class="auth-password-field"><input id="recoverPassword" name="password" type="password" minlength="12" autocomplete="new-password" required><button id="recoverTogglePassword" class="auth-eye-btn" type="button" aria-label="Afficher le nouveau mot de passe" aria-pressed="false" title="Afficher le nouveau mot de passe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="M3 21 21 3"/></svg></button></div>
+<button class="action" type="submit">Mettre à jour mon mot de passe</button></form></div>
 <div class="card hidden" id="realChatCard"><h3>💬 Conversations sécurisées</h3><div id="chatStatus" class="secure-banner">Chargement…</div>
 <div class="chat-controls"><button class="action secondary" type="button" id="refreshPrivateChat">🔄 Actualiser les messages</button><span class="muted" id="chatLastUpdate" aria-live="polite">Connexion en cours…</span></div>
 <div class="hidden" id="educatorNewChat"><label>Parent autorisé dans votre garderie</label><select id="parentStartChat"><option value="">Sélectionner</option></select><button type="button" class="action" id="startConversation">Démarrer une conversation</button></div>
@@ -993,7 +1014,43 @@ const hasSupabaseConfig = /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(SUPABA
 let sb=null, chatUser=null, activeThread=null, myThreads=[],chatRealtime=null, secureRoles=[], authMode='login';
 const chatStatus=(txt,kind='warning')=>{ $('chatStatus').textContent=txt;$('chatStatus').className='secure-banner '+kind; };
 const authStatus=(txt,kind='warning')=>{ $('authNotice').textContent=txt;$('authNotice').className='secure-banner '+kind;$('contactAuthStatus').textContent=txt;$('contactAuthStatus').className='secure-banner '+kind; };
-function setAuthMode(mode){authMode=mode;$('fullNameWrap').classList.toggle('hidden',mode!=='signup');$('passwordWrap').classList.toggle('hidden',mode==='reset');$('authSubmit').textContent=mode==='signup'?'Créer mon compte':mode==='reset'?'Envoyer le lien de réinitialisation':'Se connecter';$('authForm').elements.password.required=mode!=='reset';$('authForm').elements.password.minLength=mode==='signup'?12:6;}
+// Le même écran sert aux 4 rôles ; le rôle est attribué côté Supabase, jamais choisi ici.
+function authPasswordVisibility(inputId,buttonId){
+ const input=$(inputId),button=$(buttonId);
+ if(!input||!button)return;
+ button.addEventListener('click',()=>{
+  const revealing=input.type==='password';
+  input.type=revealing?'text':'password';
+  const prefix=inputId==='recoverPassword'?'le nouveau mot de passe':'le mot de passe';
+  button.setAttribute('aria-label',(revealing?'Masquer ':'Afficher ')+prefix);
+  button.setAttribute('title',(revealing?'Masquer ':'Afficher ')+prefix);
+  button.setAttribute('aria-pressed',String(revealing));
+  button.classList.toggle('is-visible',revealing);
+  input.focus({preventScroll:true});
+ });
+}
+authPasswordVisibility('authPassword','authTogglePassword');
+authPasswordVisibility('recoverPassword','recoverTogglePassword');
+function setAuthMode(mode){
+ authMode=mode;
+ const signup=mode==='signup',reset=mode==='reset';
+ $('fullNameWrap').classList.toggle('hidden',!signup);
+ $('passwordWrap').classList.toggle('hidden',reset);
+ $('resetHelp').classList.toggle('hidden',!reset);
+ $('forgotPasswordRow').classList.toggle('hidden',signup);
+ $('authPasswordLabel').textContent=signup?'Mot de passe (12 caractères minimum)':'Mot de passe';
+ const password=$('authForm').elements.password;
+ password.required=!reset;
+ password.minLength=signup?12:6;
+ password.autocomplete=signup?'new-password':'current-password';
+ password.type='password';
+ $('authTogglePassword').classList.remove('is-visible');
+ $('authTogglePassword').setAttribute('aria-label','Afficher le mot de passe');
+ $('authTogglePassword').setAttribute('aria-pressed','false');
+ $('authTogglePassword').title='Afficher le mot de passe';
+ $('authSubmit').textContent=signup?'Créer mon compte':reset?'Envoyer le lien de réinitialisation':'Se connecter';
+ if(reset){$('authForm').elements.email.focus({preventScroll:true});}
+}
 $('showLogin').addEventListener('click',()=>setAuthMode('login'));
 $('showSignup').addEventListener('click',()=>setAuthMode('signup'));
 $('showReset').addEventListener('click',()=>setAuthMode('reset'));
@@ -1035,7 +1092,7 @@ $('authForm').addEventListener('submit',async e=>{
  }catch(err){authStatus('Impossible de joindre le service. Vérifie la connexion internet.');}
  finally{$('authSubmit').disabled=false;}
 });
-$('recoverForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb)return;const pw=e.target.elements.password.value;if(pw.length<12)return authStatus('12 caractères minimum.');const {error}=await sb.auth.updateUser({password:pw});if(error){authStatus(authError(error));return;}$('recoverCard').classList.add('hidden');e.target.reset();authStatus('Mot de passe mis à jour.','good');});
+$('recoverForm').addEventListener('submit',async e=>{e.preventDefault();if(!sb)return;const pw=e.target.elements.password.value;if(pw.length<12)return authStatus('12 caractères minimum.');const {error}=await sb.auth.updateUser({password:pw});if(error){authStatus(authError(error));return;}$('recoverCard').classList.add('hidden');e.target.reset();$('recoverPassword').type='password';$('recoverTogglePassword').classList.remove('is-visible');$('recoverTogglePassword').setAttribute('aria-pressed','false');$('recoverTogglePassword').setAttribute('aria-label','Afficher le nouveau mot de passe');authStatus('Mot de passe mis à jour. Tu peux te connecter avec ton nouveau mot de passe.','good');});
 async function logoutAccount(){
  if(!sb){authStatus('Service de connexion indisponible pour le moment.');ouvrir('compte');return;}
  $('menuLogout').disabled=true;
