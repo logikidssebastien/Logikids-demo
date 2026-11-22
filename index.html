@@ -578,8 +578,8 @@ $('dateJournal').value=today();$('dateAbsence').value=today();document.querySele
 // Connexion Supabase (à activer après la création du projet privé).
 // URL et clé « publishable » PUBLIQUES seulement — JAMAIS secret/service_role.
 // ================================================================
-const SUPABASE_URL = '';
-const SUPABASE_PUBLISHABLE_KEY = '';
+const SUPABASE_URL = 'https://dhbharzygmfsqxyzdpor.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_5AX_OJdMBM58UQLR0VdNwA_FoFFyxN-';
 const hasSupabaseConfig = /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(SUPABASE_URL) && /^(sb_publishable_|eyJ)/.test(SUPABASE_PUBLISHABLE_KEY);
 let sb=null, chatUser=null, activeThread=null, myThreads=[],chatRealtime=null, secureRoles=[], authMode='login';
 const chatStatus=(txt,kind='warning')=>{ $('chatStatus').textContent=txt;$('chatStatus').className='secure-banner '+kind; };
