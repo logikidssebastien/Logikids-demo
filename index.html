@@ -373,6 +373,15 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
     <div id="roleNotice" class="role-note">Version de démonstration : les données locales ne sont pas un portail familial sécurisé. N'utilisez que des informations fictives.</div>
   </div>
 </section>
+<section id="journalFamille" class="page" aria-label="Journal familial sécurisé">
+  <h2>📖 Journal de mon enfant</h2>
+  <div class="card">
+    <p class="secure-banner warning"><strong>Espace parent protégé en préparation.</strong> Seuls les journaux publiés pour un enfant officiellement rattaché à votre compte peuvent apparaître ici. Les données fictives enregistrées dans le navigateur ne sont jamais utilisées dans cet espace.</p>
+    <button type="button" class="action" id="actualiserJournalFamille">🔄 Actualiser mes journaux</button>
+    <p id="etatJournalFamille" class="muted" role="status" aria-live="polite">Connectez-vous avec un compte Parent autorisé.</p>
+    <div id="journauxFamilleProteges"></div>
+  </div>
+</section>
 <section id="accueil" class="page active">
 <div class="dashboard-stage">
   <div class="dashboard-welcome"><span class="greeting">👋 Bonjour !</span><span class="today-date">📅 <span id="dashboardDate">Date du jour</span></span></div>
@@ -748,7 +757,7 @@ $('menu').innerHTML=sections.map(([id,emoji,label])=>{
  const pictogramme=illustration?`<img class="nav-art" src="${illustration}" alt="" aria-hidden="true" decoding="async">`:`<span class="emoji" aria-hidden="true">${emoji}</span>`;
  return `<button class="key" type="button" data-page="${id}" aria-current="${id==='accueil'?'page':'false'}">${pictogramme}<span class="nav-label">${label}</span></button>`;
 }).join('');
-function ouvrir(id){if(!$(id))return;if(!roleAccessPermits(id)){id='roleAccueil';if(!$(id))return;}document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page===id?'page':'false'));if(id==='parents'){afficherPortail();afficherFacturesParents();}if(id==='presences'||id==='parents'||id==='accueil')afficherPresences();if(id==='facturation')afficherFacturation();window.scrollTo({top:0,behavior:'smooth'})}
+function ouvrir(id){if(!$(id))return;if(!roleAccessPermits(id)){id='roleAccueil';if(!$(id))return;}document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.key').forEach(b=>b.setAttribute('aria-current',b.dataset.page===id?'page':'false'));if(id==='parents'){afficherPortail();afficherFacturesParents();}if(id==='presences'||id==='parents'||id==='accueil')afficherPresences();if(id==='facturation')afficherFacturation();if(id==='journalFamille')void afficherJournalFamilleProtege();window.scrollTo({top:0,behavior:'smooth'})}
 $('menu').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)ouvrir(b.dataset.page)});
 // Identification du rôle via les réponses vérifiées de Supabase, JAMAIS depuis le courriel.
 // En absence de réponse vérifiable, on refuse l'accès aux modules liés à un compte.
@@ -797,14 +806,14 @@ const rolePages={
   superadmin:['roleAccueil','compte'],
   responsable:['roleAccueil','accueil','enfants','presences','facturation','journal','menus','parents','calendrier','depenses','inscriptions','parametres','contact','compte'],
   educatrice:['roleAccueil','accueil','enfants','presences','journal','menus','calendrier','contact','compte'],
-  parent:['roleAccueil','compte']
+  parent:['roleAccueil','compte','journalFamille']
 };
 function roleAccessPermits(id){return roleAccess==='demo'?id!=='roleAccueil':(rolePages[roleAccess]||rolePages.inconnu).includes(id);}
 const roleCards={
   superadmin:[['🏢','Garderies clientes','Liste et gestion des établissements : interface en préparation.',null],['💳','Abonnements','Suivi des forfaits et de la facturation : interface en préparation.',null],['🛡️','Sécurité','Votre statut est vérifié côté Supabase. Les dossiers privés des enfants ne sont pas accessibles ici.',null]],
   responsable:[['🏠','Gestion de garderie','Accéder au tableau de bord existant, en mode démonstration.','accueil'],['💬','Messagerie privée','Ouvrir les conversations sécurisées.','compte'],['💰','Administration','Comptabilité, facturation et inscriptions de démonstration.','facturation']],
   educatrice:[['📖','Journal quotidien','Saisir les activités de démonstration.','journal'],['🟢','Présences','Voir les présences de démonstration.','presences'],['💬','Messagerie privée','Ouvrir les conversations sécurisées.','compte']],
-  parent:[['💬','Messages privés','Accéder aux conversations autorisées, sans accès à celles des autres familles.','compte'],['📖','Journal de mon enfant','Liaison sécurisée des journaux et du compte enfant à venir.',null],['🎒','Sac à dos et rappels','Données de l’enfant non encore synchronisées avec votre compte.',null]],
+  parent:[['💬','Messages privés','Accéder aux conversations autorisées, sans accès à celles des autres familles.','compte'],['📖','Journal de mon enfant','Voir uniquement les journaux publiés pour les enfants liés à votre compte.','journalFamille'],['🎒','Sac à dos et rappels','Données de l’enfant non encore synchronisées avec votre compte.',null]],
   inconnu:[['🔐','Compte sécurisé','Vérifiez auprès de la garderie que votre compte est autorisé.','compte']],
   verification:[['⏳','Vérification en cours','Connexion à Supabase et lecture des autorisations.','compte']]
 };
@@ -1823,6 +1832,53 @@ async function initSecureService(){
   await refreshAuthUI();
  }catch(err){authStatus('Connexion Supabase non initialisée. Vérifie uniquement les paramètres publics et le SQL.');}
 }
+
+// Journaux des parents : lecture exclusivement Supabase + politiques RLS.
+// Aucune conversion automatique des données locales de démonstration.
+async function afficherJournalFamilleProtege(){
+ const etat=$('etatJournalFamille'),liste=$('journauxFamilleProteges');
+ if(!etat||!liste)return;
+ liste.replaceChildren();
+ if(roleAccess!=='parent'||!chatUser?.id||!sb){
+   etat.textContent='Accès réservé aux comptes Parent autorisés et connectés.';return;
+ }
+ const compte=chatUser.id;
+ etat.textContent='Chargement des journaux autorisés…';
+ try{
+  const result=await chatTimeout(sb.from('logikids_journaux_partages')
+   .select('id,jour,contenu_parent,logikids_enfants_secure(prenom)')
+   .eq('publie',true).order('jour',{ascending:false}).limit(60),12);
+  if(chatUser?.id!==compte||roleAccess!=='parent')return;
+  if(result.error){
+   etat.textContent=result.error.code==='42P01'||result.error.code==='PGRST205'
+    ?'La base des journaux familiaux n’est pas encore configurée. Aucune donnée n’est affichée.'
+    :'Impossible de vérifier les journaux autorisés pour le moment. Aucun dossier n’est affiché.';
+   return;
+  }
+  const journaux=Array.isArray(result.data)?result.data:[];
+  if(!journaux.length){etat.textContent='Aucun journal publié pour un enfant rattaché à ce compte pour le moment.';return;}
+  etat.textContent=`${journaux.length} journal(aux) autorisé(s).`;
+  // Le texte est injecté uniquement à travers textContent : aucun HTML de la base.
+  for(const r of journaux){
+   const bloc=document.createElement('div');bloc.className='item';
+   const enfant=Array.isArray(r.logikids_enfants_secure)?r.logikids_enfants_secure[0]:r.logikids_enfants_secure;
+   const titre=document.createElement('strong');titre.textContent=(enfant?.prenom||'Mon enfant')+' — '+(r.jour||'');
+   bloc.append(titre);
+   const v=r.contenu_parent&&typeof r.contenu_parent==='object'?r.contenu_parent:{};
+   for(const [etiquette,champ] of [['Repas','repas'],['Activités','activites'],['Sieste','sieste'],['Humeur','humeur'],['Note partagée','note_parent']]){
+    const valeur=v[champ];if(valeur==null||valeur==='')continue;
+    const p=document.createElement('p');
+    p.textContent=etiquette+' : '+(Array.isArray(valeur)?valeur.join(', '):String(valeur));
+    bloc.append(p);
+   }
+   liste.append(bloc);
+  }
+ }catch(err){
+  if(chatUser?.id===compte)etat.textContent='La connexion au journal familial est momentanément indisponible. Aucun dossier n’est affiché.';
+ }
+}
+$('actualiserJournalFamille').addEventListener('click',()=>void afficherJournalFamilleProtege());
+
 // Le chargement initial a lieu seulement apres toutes les declarations.
 // Il evite l'erreur « Cannot access 'debutSemaine' before initialization ».
 $('dateJournal').value=today();
