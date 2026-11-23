@@ -245,6 +245,15 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .role-link{font:inherit;background:#173f72;color:#fff;border:0;border-radius:9px;padding:9px 13px;font-weight:700;cursor:pointer}
 .key[hidden],.dashboard-tile[hidden],.masthead-icon[hidden]{display:none!important}
 @media(max-width:650px){.role-grid{grid-template-columns:1fr}}
+/* LOGIKIDS : rôle du compte — identification visuelle, non une autorisation supplémentaire. */
+.signed-role-line{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:12px 0 7px}
+.signed-role-label{font-size:14px;font-weight:800;color:#163b6d}
+.signed-role-pill{display:inline-flex;align-items:center;min-height:32px;max-width:100%;border:1px solid #c79b42;border-radius:40px;background:#fff4d9;color:#17385f;font-size:13px;font-weight:850;padding:6px 13px;line-height:1.3;overflow-wrap:anywhere}
+.signed-role-pill[data-status="pending"]{background:#f0f4fb;border-color:#cad5e4;color:#485e77}
+.signed-role-pill[data-status="unknown"]{background:#fff2e9;border-color:#e6baa1;color:#86421d}
+.signed-role-explanation{margin:4px 0 9px!important;font-size:12px;line-height:1.5;color:#48617c}
+.account-dropdown-role{font-size:12px;color:#203f69!important;font-weight:750;margin:4px 5px 12px!important;line-height:1.4;overflow-wrap:anywhere}
+
 
 /* LOGIKIDS : accès commun aux 4 rôles — mot de passe visible / récupération */
 .auth-password-field{position:relative;display:flex;align-items:center}
@@ -309,6 +318,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
       <div class="account-dropdown" id="accountMenu" hidden aria-label="Options du compte LOGIKIDS">
         <div class="account-dropdown-title">🔐 Mon compte LOGIKIDS</div>
         <p class="account-dropdown-state" id="accountMenuState">État de connexion : vérification…</p>
+        <p class="account-dropdown-role" id="accountMenuRole" hidden>Rôle : vérification…</p>
         <button type="button" class="account-option" id="menuLogin">🔑 Se connecter</button>
         <button type="button" class="account-option" id="menuSignup">➕ Créer un compte</button>
         <button type="button" class="account-option" id="menuAccount" hidden>👤 Mon compte et messagerie privée</button>
@@ -528,7 +538,11 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <p class="muted auth-reset-description hidden" id="resetHelp">Inscris ton adresse courriel, puis clique sur « Envoyer le lien de réinitialisation ». Le lien sera envoyé dans cette boîte courriel si le compte existe. Tu pourras ensuite choisir un nouveau mot de passe.</p>
 <button class="action" type="submit" id="authSubmit">Se connecter</button></form>
 </div>
-<div class="card hidden" id="signedCard"><h3>Mon compte</h3><p id="signedIdentity"></p><button class="action secondary" type="button" id="signOut">Se déconnecter</button></div>
+<div class="card hidden" id="signedCard"><h3>👤 Mon compte</h3><p id="signedIdentity"></p>
+<div class="signed-role-line"><span class="signed-role-label">Mon rôle :</span><span id="signedRoleValue" class="signed-role-pill" data-status="pending" role="status" aria-live="polite">Vérification en cours…</span></div>
+<p id="signedRoleExplanation" class="signed-role-explanation">LOGIKIDS vérifie le rôle attribué à ce compte.</p>
+<p class="signed-role-explanation" id="signedDaycareContext">Garderie affichée dans la démonstration : Faveur Grâce (rattachement du compte à vérifier).</p>
+<button class="action secondary" type="button" id="signOut">Se déconnecter</button></div>
 <div class="card hidden" id="recoverCard"><h3>Choisir un nouveau mot de passe</h3><form id="recoverForm" onsubmit="return false">
 <label for="recoverPassword">Nouveau mot de passe (au moins 12 caractères)</label><div class="auth-password-field"><input id="recoverPassword" name="password" type="password" minlength="12" autocomplete="new-password" required><button id="recoverTogglePassword" class="auth-eye-btn" type="button" aria-label="Afficher le nouveau mot de passe" aria-pressed="false" title="Afficher le nouveau mot de passe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="M3 21 21 3"/></svg></button></div>
 <button class="action" type="submit">Mettre à jour mon mot de passe</button></form></div>
@@ -685,6 +699,13 @@ $('menu').addEventListener('click',e=>{const b=e.target.closest('button[data-pag
 // Identification du rôle via les réponses vérifiées de Supabase, JAMAIS depuis le courriel.
 // En absence de réponse vérifiable, on refuse l'accès aux modules liés à un compte.
 let roleAccess='demo', roleAccessRequest=0, roleAccessUser=null;
+// Les libellés affichés réutilisent le rôle vérifié pour l'accès aux pages.
+// Un rôle non confirmé n'est jamais présenté comme « Direction ».
+const roleDisplayNames={
+  demo:'Non connecté',verification:'Vérification en cours…',inconnu:'Rôle non confirmé',
+  superadmin:'Administrateur LOGIKIDS',responsable:'Direction de garderie',
+  educatrice:'Éducatrice / Éducateur',parent:'Parent'
+};
 const rolePages={
   verification:['roleAccueil','compte'],
   inconnu:['roleAccueil','compte'],
@@ -715,6 +736,22 @@ function roleAccessUpdate(role, detail=''){
     verification:'Vérification du rôle attribué à votre compte dans Supabase.',
     demo:'Vous utilisez une version de démonstration, sans accès aux informations réelles d’une garderie.'
   };
+  // Présenter le rôle au même endroit que le courriel, et dans le menu 🔐.
+  // Les données proviennent de roleAccessResolve : pas du courriel ni d'un choix local.
+  const roleLabel=roleDisplayNames[role]||roleDisplayNames.inconnu;
+  const rolePill=$('signedRoleValue');
+  if(rolePill){
+    rolePill.textContent=roleLabel;
+    rolePill.dataset.status=(role==='verification'||role==='demo')?'pending':(role==='inconnu'?'unknown':'verified');
+  }
+  const roleExplain=$('signedRoleExplanation');
+  if(roleExplain)roleExplain.textContent=
+    role==='verification'?'Vérification des autorisations associées à ton compte…':
+    role==='inconnu'?'LOGIKIDS ne peut pas confirmer ton rôle avec les autorisations disponibles. Vérifie ton rattachement auprès de la garderie.':
+    role==='demo'?'Connecte-toi pour afficher le rôle associé à ton compte.':
+    'Rôle identifié à partir des autorisations du compte dans Supabase.';
+  const roleMenu=$('accountMenuRole');
+  if(roleMenu)roleMenu.textContent='Rôle : '+roleLabel;
   $('roleTitle').textContent='🛡️ '+(names[role]||names.inconnu);
   $('roleTag').textContent=names[role]||names.inconnu;
   $('roleExplanation').textContent=(explanations[role]||'')+(detail?' '+detail:'');
@@ -1294,6 +1331,8 @@ function updateAccountMenu(){
  $('menuSignup').hidden=isLoggedIn;
  $('menuAccount').hidden=!isLoggedIn;
  $('menuLogout').hidden=!isLoggedIn;
+ $('accountMenuRole').hidden=!isLoggedIn;
+ $('accountMenuRole').textContent='Rôle : '+(roleDisplayNames[isLoggedIn?roleAccess:'demo']||roleDisplayNames.inconnu);
  $('accountMenuState').textContent=isLoggedIn?'Connecté : '+(chatUser.email||'Compte autorisé'):'Non connecté';
  $('topAccount').title=isLoggedIn?'Compte connecté — options':'Se connecter à LOGIKIDS';
 }
