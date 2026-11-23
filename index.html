@@ -216,6 +216,10 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .meal-tag{display:inline-block;padding:5px 9px;border-radius:30px;background:#e7effa;color:#14365f;font-size:12px;font-weight:700}
 .meal-local-warning{font-size:13px;color:#614b23;background:#fff5dc;padding:10px;border-radius:9px;margin:10px 0}
 @media(max-width:600px){.meal-sections{grid-template-columns:1fr}.meal-form-grid{grid-template-columns:1fr}}
+.meal-auto{background:#f2f7ff;border:1px solid #c8d9ec;border-left:5px solid #bb903c;border-radius:12px;padding:14px;margin:12px 0 16px}
+.meal-auto .meal-summary{background:white}
+.journal-repas{border-left:3px solid #bc923d;background:#f7faff;border-radius:10px;padding:12px;margin:12px 0}
+.journal-repas .meal-summary{background:white;margin:8px 0}
 
 
 /* LOGIKIDS — proposition B retenue : icônes bleu marine/doré et fonds pastels circulaires. */
@@ -443,7 +447,9 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div class="form-wide"><label>Note facultative (simulation)</label><input name="note" maxlength="140" placeholder="Virement simulé, premier versement..."></div>
 </div><button type="submit" class="action">Enregistrer le versement fictif</button></form></div>
 </section>
-<section id="journal" class="page"><h2>📖 Journal quotidien</h2><div class="card"><form id="formJournal"><label>Enfant</label><select name="enfant" id="enfantJournal" required></select><label>Date</label><input name="date" type="date" id="dateJournal" required><label>Repas enregistré</label><select name="repas" id="repasJournal"></select><label>Sieste</label><input name="sieste" placeholder="Ex. : 12 h 30 à 14 h"><label>Activités (plusieurs choix possibles)</label><div class="checks" id="choixActivites"></div><label>Humeur</label><select name="humeur"><option>😊 Heureux</option><option>😌 Calme</option><option>😴 Fatigué</option><option>😢 Triste</option><option>😟 Inquiet</option></select><label>Comportements observés</label><div class="checks" id="choixComportements"></div><label>Notes facultatives</label><textarea name="notes"></textarea><label>Visibilité (démonstration)</label><select name="visibilite"><option>Journal de fin de journée</option><option>Notification aux parents — non connectée</option><option>Note interne — démonstration locale</option></select><button class="action">Enregistrer le journal</button></form></div><div class="card"><h3>Journaux enregistrés</h3><div id="listeJournaux"></div></div></section>
+<section id="journal" class="page"><h2>📖 Journal quotidien</h2><div class="card"><form id="formJournal"><label>Enfant</label><select name="enfant" id="enfantJournal" required></select><label>Date</label><input name="date" type="date" id="dateJournal" required>
+<div class="meal-auto" id="repasJournalAuto" aria-live="polite"><p class="muted">Sélectionne un enfant et une date pour afficher ses repas déjà enregistrés.</p></div>
+<label>Plat du répertoire (facultatif)</label><select name="repas" id="repasJournal"></select><p class="muted tiny">Le plat du répertoire est facultatif. Les aliments réellement mangés sont liés automatiquement à partir du module « Menus et repas ».</p><label>Sieste</label><input name="sieste" placeholder="Ex. : 12 h 30 à 14 h"><label>Activités (plusieurs choix possibles)</label><div class="checks" id="choixActivites"></div><label>Humeur</label><select name="humeur"><option>😊 Heureux</option><option>😌 Calme</option><option>😴 Fatigué</option><option>😢 Triste</option><option>😟 Inquiet</option></select><label>Comportements observés</label><div class="checks" id="choixComportements"></div><label>Notes facultatives</label><textarea name="notes"></textarea><label>Visibilité (démonstration)</label><select name="visibilite"><option>Journal de fin de journée</option><option>Notification aux parents — non connectée</option><option>Note interne — démonstration locale</option></select><button class="action">Enregistrer le journal</button></form></div><div class="card"><h3>Journaux enregistrés</h3><div id="listeJournaux"></div></div></section>
 <section id="menus" class="page">
 <h2>🍎 Menus et repas</h2>
 <div class="card" id="mealTrackingCard">
@@ -880,14 +886,48 @@ function saveMess(){if(persist(messCle,mess)){afficherMess();afficherPortail();r
 function savePortail(){if(persist(portailCle,portail)){afficherPortail();return true}return false}
 function lister(id,arr,render){$(id).innerHTML=arr.length?arr.map(render).join(''):'<p class="muted">Aucun élément enregistré.</p>'}
 function nomEnfant(id){return data.enfants.find(e=>String(e.id)===String(id))?.prenom||'Enfant fictif'}
-function optionsEnfants(){const options=data.enfants.map(e=>`<option value="${safe(e.id)}">${safe(e.prenom)}</option>`).join('');$('enfantJournal').innerHTML='<option value="">Choisir un enfant</option>'+options;$('enfantAbsence').innerHTML='<option value="">Choisir un enfant fictif</option>'+options;$('enfantParent').innerHTML='<option value="">Non associé</option>'+options;document.querySelectorAll('.selectEnfantObligatoire').forEach(s=>{const v=s.value;s.innerHTML='<option value="">Choisir un enfant fictif</option>'+options;s.value=v});document.querySelectorAll('.selectEnfantOption').forEach(s=>{const v=s.value;s.innerHTML='<option value="">Tous les enfants (fictif)</option>'+options;s.value=v})}
+function optionsEnfants(){const options=data.enfants.map(e=>`<option value="${safe(e.id)}">${safe(e.prenom)}</option>`).join('');const journalSelect=$('enfantJournal'),ancienEnfant=journalSelect.value;journalSelect.innerHTML='<option value="">Choisir un enfant</option>'+options;if(data.enfants.some(x=>String(x.id)===ancienEnfant))journalSelect.value=ancienEnfant;$('enfantAbsence').innerHTML='<option value="">Choisir un enfant fictif</option>'+options;$('enfantParent').innerHTML='<option value="">Non associé</option>'+options;document.querySelectorAll('.selectEnfantObligatoire').forEach(s=>{const v=s.value;s.innerHTML='<option value="">Choisir un enfant fictif</option>'+options;s.value=v});document.querySelectorAll('.selectEnfantOption').forEach(s=>{const v=s.value;s.innerHTML='<option value="">Tous les enfants (fictif)</option>'+options;s.value=v})}
+// Liaison locale: le suivi des aliments est la seule source des repas consommés.
+// On n'enregistre pas une deuxième copie dans le journal, ce qui évite les divergences.
+function repasConsommesPour(enfant,date){
+ return (Array.isArray(data.alimentation)?data.alimentation:[]).filter(r=>String(r.enfant)===String(enfant)&&String(r.date)===String(date));
+}
+function blocRepasDansJournal(enfant,date){
+ const repas=repasConsommesPour(enfant,date);
+ return repas.length?`<div class="journal-repas"><strong>🍎 Repas réellement consommés (liaison automatique)</strong>${repas.map(formatAliments).join('')}</div>`:'';
+}
+function afficherRepasJournalSelection(){
+ const box=$('repasJournalAuto');if(!box)return;
+ const enfant=$('enfantJournal').value,date=$('dateJournal').value;
+ if(!enfant||!date){box.innerHTML='<p class="muted">Choisis un enfant et une date pour retrouver automatiquement les repas enregistrés dans « Menus et repas ».</p>';return;}
+ const repas=repasConsommesPour(enfant,date);
+ box.innerHTML=repas.length?`<strong>🍎 Repas de ${safe(nomEnfant(enfant))} — ${safe(date)}</strong><p class="muted tiny">Importés automatiquement du suivi alimentaire, sans nouvelle saisie.</p>${repas.map(formatAliments).join('')}`:`<p class="muted">Aucun repas consommé enregistré pour ${safe(nomEnfant(enfant))} le ${safe(date)}. Ajoute-le dans « Menus et repas » : il apparaîtra ici automatiquement.</p>`;
+}
+function jourEnfantCle(enfant,date){return JSON.stringify([String(enfant),String(date)])}
+function afficherHistoriqueJournaux(){
+ const journaux=data.journaux.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ const deja=new Set(journaux.map(j=>jourEnfantCle(j.enfant,j.date)));
+ const entrees=journaux.map(j=>`<div class="item"><button type="button" class="delete-btn" data-delete="journaux" data-id="${safe(j.id)}">🗑️ Supprimer</button> <strong>${safe(nomEnfant(j.enfant))} — ${safe(j.date)}</strong><p>Plat du répertoire : ${safe(j.repas||'Aucun')} | Sieste : ${safe(j.sieste||'Non précisée')}</p>${blocRepasDansJournal(j.enfant,j.date)}<p>Activités : ${safe(Array.isArray(j.activites)?j.activites.join(', '):j.activites||'')}</p><p>Humeur : ${safe(j.humeur||'Non précisée')} | Comportements : ${safe(Array.isArray(j.comportements)?j.comportements.join(', '):j.comportements||'')}</p><p class="notes">Notes : ${safe(j.notes||'Aucune')}</p><small>${safe(j.visibilite||'')}</small></div>`);
+ const groupes=new Map();for(const r of (data.alimentation||[])){
+  const key=jourEnfantCle(r.enfant,r.date);
+  if(deja.has(key)||groupes.has(key))continue;
+  groupes.set(key,{enfant:r.enfant,date:r.date});
+ }
+ const repasSeuls=[...groupes.values()].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>`<div class="item"><strong>${safe(nomEnfant(x.enfant))} — ${safe(x.date)}</strong><p class="muted">Suivi alimentaire enregistré automatiquement. Le reste du journal quotidien n'a pas encore été rempli.</p>${blocRepasDansJournal(x.enfant,x.date)}</div>`);
+ $('listeJournaux').innerHTML=entrees.length||repasSeuls.length?repasSeuls.concat(entrees).join(''):'<p class="muted">Aucun journal ni repas enregistré.</p>';
+}
+$('enfantJournal').addEventListener('change',afficherRepasJournalSelection);
+$('dateJournal').addEventListener('change',afficherRepasJournalSelection);
 function afficher(){
 $('statEnfants').textContent=data.enfants.length;if($('childMeterFill'))$('childMeterFill').style.width=Math.min(100,Math.round(data.enfants.length/9*100))+'%';if($('statAttente'))$('statAttente').textContent=data.attente.filter(x=>String(x.statut||'').toLowerCase().includes('attente')).length;$('statMenus').textContent=data.menus.length;$('statJournaux').textContent=data.journaux.length;$('statDepenses').textContent=money(data.depenses.reduce((s,d)=>s+Number(d.montant||0),0));
 lister('listeEnfants',data.enfants,e=>`<div class="item"><button type="button" class="delete-btn" data-delete="enfants" data-id="${safe(e.id)}">🗑️ Supprimer</button> 👶 ${safe(e.prenom)} — ${safe(e.age)} ans</div>`);optionsEnfants();
-$('repasJournal').innerHTML='<option value="">Aucun menu sélectionné</option>'+data.menus.map(m=>`<option value="${safe(m.plat)}">${safe(m.plat)}</option>`).join('');
+const repasSelection=$('repasJournal').value;
+$('repasJournal').innerHTML='<option value="">Aucun plat sélectionné</option>'+data.menus.map(m=>`<option value="${safe(m.plat)}">${safe(m.plat)}</option>`).join('');
+if([...$('repasJournal').options].some(o=>o.value===repasSelection))$('repasJournal').value=repasSelection;
+afficherRepasJournalSelection();
 lister('listeMenus',data.menus,m=>`<div class="item"><button type="button" class="delete-btn" data-delete="menus" data-id="${safe(m.id)}">🗑️ Supprimer</button> <strong>🍽️ ${safe(m.plat)}</strong><p class="notes">${safe(m.ingredients)}</p><p class="muted notes">${safe(m.preparation)}</p><small>Allergènes : ${safe(m.allergenes||'Non précisés')}</small></div>`);
  afficherAlimentation();
-lister('listeJournaux',data.journaux,j=>`<div class="item"><button type="button" class="delete-btn" data-delete="journaux" data-id="${safe(j.id)}">🗑️ Supprimer</button> <strong>${safe(nomEnfant(j.enfant))} — ${safe(j.date)}</strong><p>Repas : ${safe(j.repas)} | Sieste : ${safe(j.sieste)}</p><p>Activités : ${safe(Array.isArray(j.activites)?j.activites.join(', '):j.activites)}</p><p>Humeur : ${safe(j.humeur||'Non précisée')} | Comportements : ${safe(Array.isArray(j.comportements)?j.comportements.join(', '):j.comportements)}</p><p class="notes">Notes : ${safe(j.notes||'Aucune')}</p><small>${safe(j.visibilite||'')}</small></div>`);
+afficherHistoriqueJournaux();
 lister('listeEvenements',data.evenements.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),e=>`<div class="item"><button type="button" class="delete-btn" data-delete="evenements" data-id="${safe(e.id)}">🗑️ Supprimer</button> 📅 ${safe(e.date)} — ${safe(e.titre)}</div>`);
 const totaux={};for(const d of data.depenses)totaux[d.categorie]=(totaux[d.categorie]||0)+Number(d.montant||0);$('totauxDepenses').innerHTML='<strong>Total : '+money(data.depenses.reduce((s,d)=>s+Number(d.montant||0),0))+'</strong><div>'+Object.entries(totaux).map(([k,v])=>`<span class="pill">${safe(k)} : ${money(v)}</span>`).join('')+'</div>';
 lister('listeDepenses',data.depenses,d=>`<div class="item"><button type="button" class="delete-btn" data-delete="depenses" data-id="${safe(d.id)}">🗑️ Supprimer</button> ${safe(d.date)} — ${safe(d.fournisseur)} (${safe(d.categorie)}) : <strong>${money(d.montant)}</strong></div>`);
@@ -944,7 +984,7 @@ $('formAlimentEnfant').addEventListener('submit',e=>{
  data.alimentation.push(entree);
  if(!save()){data.alimentation.pop();return;}
  f.reset();$('alimentDate').value=today();alimentsSelectionnes.clear();dessinerCasesAliments();afficherAlimentation();
- alert('Suivi du repas enregistré dans cette démonstration locale. Aucun envoi au compte parent sécurisé.');
+ alert('Repas enregistré ! Il apparaît maintenant automatiquement dans le journal quotidien de cet enfant, pour cette date (sur cet appareil). Aucun envoi au compte parent sécurisé.');
 });
 $('listeAlimentEnfant').addEventListener('click',e=>{
  const b=e.target.closest('[data-delete-aliment]');if(!b)return;
@@ -1058,8 +1098,14 @@ function afficherPortail(){
 const visibles=data.journaux.filter(j=>!String(j.visibilite||'').startsWith('Note interne')).slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
 const derniers=[];for(const j of visibles){if(!derniers.some(x=>String(x.enfant)===String(j.enfant)))derniers.push(j)}
 lister('humeursParent',derniers,j=>`<div class="item"><strong>${safe(nomEnfant(j.enfant))}</strong> : ${safe(j.humeur||'Non précisée')} — ${safe(j.date||'')}</div>`);
-lister('journauxParent',visibles,j=>`<div class="item"><strong>${safe(nomEnfant(j.enfant))} — ${safe(j.date)}</strong><p>Humeur : ${safe(j.humeur||'')} · Repas : ${safe(j.repas||'')} · Sieste : ${safe(j.sieste||'')}</p><p>Activités : ${safe(Array.isArray(j.activites)?j.activites.join(', '):j.activites||'')}</p><p class="notes">${safe(j.notes||'')}</p></div>`);
- if((data.alimentation||[]).length){$('journauxParent').insertAdjacentHTML('beforeend','<h4>🍎 Alimentation consommée — démonstration locale</h4>'+data.alimentation.slice().reverse().map(formatAliments).join(''));}
+const vus=new Set(visibles.map(j=>jourEnfantCle(j.enfant,j.date)));
+ const journauxParentHTML=visibles.map(j=>`<div class="item"><strong>${safe(nomEnfant(j.enfant))} — ${safe(j.date)}</strong><p>Humeur : ${safe(j.humeur||'')} · Plat du répertoire : ${safe(j.repas||'')} · Sieste : ${safe(j.sieste||'')}</p>${blocRepasDansJournal(j.enfant,j.date)}<p>Activités : ${safe(Array.isArray(j.activites)?j.activites.join(', '):j.activites||'')}</p><p class="notes">${safe(j.notes||'')}</p></div>`);
+ const groupesRepas=new Map();for(const r of (data.alimentation||[])){
+  const key=jourEnfantCle(r.enfant,r.date);if(vus.has(key)||groupesRepas.has(key))continue;
+  groupesRepas.set(key,{enfant:r.enfant,date:r.date});
+ }
+ const repasSansJournal=[...groupesRepas.values()].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>`<div class="item"><strong>${safe(nomEnfant(x.enfant))} — ${safe(x.date)}</strong><p class="muted">Suivi alimentaire uniquement (journal de fin de journée non encore rempli).</p>${blocRepasDansJournal(x.enfant,x.date)}</div>`);
+ $('journauxParent').innerHTML=journauxParentHTML.length||repasSansJournal.length?repasSansJournal.concat(journauxParentHTML).join(''):'<p class="muted">Aucun journal ni repas enregistré.</p>';
 lister('photosParent',portail.photos.slice().reverse(),p=>itemPortail('photos',p,`<strong>${safe(nomEnfant(p.enfant))}</strong><img class="photo" src="${p.image}" alt="Photo fictive de démonstration"><div>${safe(p.legende||'')}</div>`));
 $('messagesParent').innerHTML=`<p>${mess.parents.length} parent(s) fictif(s) dans le répertoire; ${mess.messages.length} message(s) de démonstration.</p>`;
 lister('documentsParent',portail.documents.slice().reverse(),d=>itemPortail('documents',d,`<strong>${safe(d.type)} — ${safe(d.titre)}</strong><p class="notes">${safe(d.texte)}</p><button type="button" class="action secondary" data-download-document="${safe(d.id)}">Télécharger le texte</button>`));
