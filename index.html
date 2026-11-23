@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LOGIKIDS — Gestion de garderie</title>
 <style>
-/* LOGIKIDS — interface bleu marine et or retenue le 20 novembre */
+/* LOGIKIDS — interface bleu marine et or retenue le 20 novembre; sac à dos local amélioré le 23 novembre */
 :root{--marine:#0c2248;--marine2:#173a6e;--gold:#c99b42;--goldlite:#f8ebc9;--ink:#1c3557;--canvas:#edf2f8}
 body{background:var(--canvas)!important;color:var(--ink)!important}
 .app-shell{display:flex;min-height:100vh;align-items:stretch}
@@ -258,6 +258,25 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .auth-forgot-btn{font:inherit;font-size:14px;font-weight:750;color:#114e89;background:transparent;border:0;padding:8px 0;text-decoration:underline;cursor:pointer}
 .auth-forgot-btn:hover,.auth-forgot-btn:focus-visible{color:#082e5c;text-decoration-thickness:2px}
 .auth-reset-description{margin:11px 0 8px;line-height:1.5}
+
+/* Sac à dos intelligent — amélioration locale, sans interférence avec Messenger. */
+.sac-suggestions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 20px}
+.sac-suggestions button{background:#eef4fb;color:#153963;border:1px solid #bbcfe4;border-radius:20px;padding:8px 12px;cursor:pointer;font-weight:650}
+.sac-suggestions button:hover,.sac-suggestions button:focus-visible{background:#fff3d5;border-color:#c99b42}
+.sac-resume{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px;margin:12px 0}
+.sac-indicateur{background:#f5f8fd;border:1px solid #d5e0ec;border-radius:12px;padding:12px}
+.sac-indicateur strong{display:block;color:#123360;font-size:24px}
+.sac-indicateur.urgent{border-color:#e0a77a;background:#fff3e9}
+.sac-filtres{display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));gap:7px 16px;margin:18px 0}
+.sac-filtres label{margin:0}
+.sac-filtres select{width:100%}
+.sac-ligne{border-left:4px solid #c5d5e6}
+.sac-ligne.sac-a-faire{border-left-color:#d7a349}
+.sac-ligne.sac-retard{border-left-color:#b34c40}
+.sac-etiquette{display:inline-block;border-radius:15px;padding:3px 9px;margin-left:6px;background:#eaf2fc;color:#234b72;font-size:12px;font-weight:700}
+.sac-etiquette.sac-urgent{background:#fce2db;color:#8d2f27}
+.sac-meta{margin:6px 0 2px;color:#4a617c}
+@media(max-width:600px){.sac-filtres{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div class="app-shell">
@@ -421,7 +440,35 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div class="card module-parent" id="module-facturesparent"><h3 class="module-title">🧾 Mes factures et mes heures de garde</h3><div class="hint">Prévisualisation locale avec données fictives : en production, chaque parent devra voir uniquement les factures de son enfant après connexion sécurisée. Aucun paiement bancaire réel ici.</div><div id="parentBillingInvoices"></div></div>
 <div class="card module-parent" id="module-paiements"><h3 class="module-title">💳 Paiements et reçus</h3><div class="hint">Aucun vrai paiement ou prélèvement bancaire n'est possible ici. Les montants et reçus sont des exemples.</div><form id="formPaiement"><label>Enfant fictif</label><select name="enfant" class="selectEnfantObligatoire" required></select><label>Date</label><input type="date" name="date" required><label>Description</label><input name="description" maxlength="100" placeholder="Ex. : Frais de garde — novembre" required><label>Montant ($ CA)</label><input type="number" name="montant" min="0" step="0.01" required><label>Statut de démonstration</label><select name="statut"><option>À payer</option><option>Payé (simulation)</option></select><button class="action">Ajouter le paiement fictif</button></form><div id="paiementsParent"></div></div>
 <div class="card module-parent" id="module-calendrierparent"><h3 class="module-title">📅 Calendrier</h3><div id="calendrierParent"></div><button class="action secondary" type="button" data-go="calendrier">Ajouter un événement</button></div>
-<div class="card module-parent" id="module-sac"><h3 class="module-title">🎒 Sac à dos intelligent et rappels</h3><p class="muted">Liste d'articles à apporter, dates de rappel et statut préparé. Les rappels sont visibles à l'écran uniquement; aucune notification n'est envoyée.</p><form id="formSac"><label>Enfant fictif</label><select name="enfant" class="selectEnfantObligatoire" required></select><label>Article à apporter</label><input name="article" required maxlength="100" placeholder="Ex. : Vêtements de rechange"><label>Date souhaitée</label><input type="date" name="date" required><label>Précisions (facultatif)</label><input name="notes" maxlength="150"><button class="action">Ajouter au sac à dos</button></form><h4>Articles et rappels</h4><div id="sacParent"></div></div>
+<div class="card module-parent" id="module-sac">
+  <h3 class="module-title">🎒 Sac à dos intelligent et rappels</h3>
+  <p class="muted">Préparez les articles de chaque enfant, indiquez les quantités et voyez les rappels prioritaires. Cette version fonctionne localement dans ce navigateur : elle n'envoie pas encore de notifications et ne se synchronise pas avec Supabase.</p>
+  <h4>Ajout rapide d'un article</h4>
+  <div class="sac-suggestions" aria-label="Articles courants">
+    <button type="button" data-sac-suggestion="Couches" data-sac-category="Hygiène">🧷 Couches</button>
+    <button type="button" data-sac-suggestion="Lingettes" data-sac-category="Hygiène">🧻 Lingettes</button>
+    <button type="button" data-sac-suggestion="Vêtements de rechange" data-sac-category="Vêtements">👕 Rechange</button>
+    <button type="button" data-sac-suggestion="Crème solaire" data-sac-category="Extérieur">☀️ Crème solaire</button>
+    <button type="button" data-sac-suggestion="Bottes" data-sac-category="Extérieur">🥾 Bottes</button>
+    <button type="button" data-sac-suggestion="Mitaines" data-sac-category="Extérieur">🧤 Mitaines</button>
+  </div>
+  <form id="formSac">
+    <label for="sacEnfant">Enfant fictif</label><select id="sacEnfant" name="enfant" class="selectEnfantObligatoire" required></select>
+    <label for="sacArticle">Article à apporter</label><input id="sacArticle" name="article" required maxlength="100" placeholder="Ex. : Vêtements de rechange">
+    <label for="sacCategorie">Catégorie</label><select id="sacCategorie" name="categorie"><option>Hygiène</option><option>Vêtements</option><option>Extérieur</option><option>Repas</option><option selected>Autres</option></select>
+    <label for="sacQuantite">Quantité demandée</label><input id="sacQuantite" type="number" name="quantite" min="1" max="999" value="1" required>
+    <label for="sacDate">À apporter au plus tard le</label><input id="sacDate" type="date" name="date" required>
+    <label for="sacNotes">Précisions (facultatif)</label><input id="sacNotes" name="notes" maxlength="150" placeholder="Ex. : Taille 4 ou bottes imperméables">
+    <button class="action" type="submit">Ajouter au sac à dos</button>
+  </form>
+  <h4>Tableau de suivi</h4>
+  <div id="sacResume" class="sac-resume" aria-live="polite"></div>
+  <div class="sac-filtres">
+    <label for="sacFiltreEnfant">Afficher l'enfant</label><select id="sacFiltreEnfant"><option value="">Tous les enfants fictifs</option></select>
+    <label for="sacFiltreEtat">Afficher les articles</label><select id="sacFiltreEtat"><option value="tous">Tous les articles</option><option value="afaire">À préparer</option><option value="prets">Déjà préparés</option></select>
+  </div>
+  <div id="sacParent"></div>
+</div></div>
 <div class="card module-parent" id="module-victoires"><h3 class="module-title">🏅 Carnet des petites victoires</h3><form id="formVictoire"><label>Enfant fictif</label><select name="enfant" class="selectEnfantObligatoire" required></select><label>Date</label><input type="date" name="date" required><label>Petite victoire</label><input name="titre" required maxlength="130" placeholder="Ex. : J'ai réussi à attacher mon manteau"><label>Message positif</label><textarea name="notes" maxlength="600"></textarea><button class="action">Ajouter cette victoire</button></form><div id="victoiresParent"></div></div>
 <div class="card module-parent" id="module-repasparent"><h3 class="module-title">🍎 Repas et allergènes</h3><p class="hint">Les menus et les aliments consommés sont affichés uniquement dans cette démonstration locale, sans synchronisation avec les comptes parents sécurisés. Les allergènes doivent être vérifiés par un adulte. N'utilisez pas de données réelles d'enfants.</p><div id="repasParent"></div><button class="action secondary" data-go="menus" type="button">Créer ou modifier les menus</button></div>
 <div class="card module-parent" id="module-activites"><h3 class="module-title">🏡 Activités à poursuivre à la maison</h3><form id="formActiviteMaison"><label>Titre de l'activité</label><input name="titre" required maxlength="100" placeholder="Ex. : Chercher 5 objets de couleur bleue"><label>Consignes pour la famille (simulation)</label><textarea name="consignes" required maxlength="900"></textarea><label>Âge conseillé</label><select name="age"><option>0 à 2 ans</option><option>2 à 3 ans</option><option>3 à 5 ans</option><option>Tous les âges</option></select><button class="action">Ajouter une activité</button></form><div id="activitesParent"></div></div>
@@ -764,6 +811,37 @@ $('apercuParents').innerHTML=parentModules.map(([id,title])=>`<div class="card p
 $('apercuParents').addEventListener('click',e=>{const b=e.target.closest('button[data-module]');if(!b)return;document.querySelectorAll('.module-parent').forEach(m=>m.classList.remove('active'));const target=$('module-'+b.dataset.module);if(target){target.classList.add('active');afficherPortail();target.scrollIntoView({behavior:'smooth',block:'start'})}});
 document.addEventListener('click',e=>{const b=e.target.closest('button[data-go]');if(b)ouvrir(b.dataset.go)});
 function itemPortail(type,x,body){return `<div class="item"><div class="item-head"><div>${body}</div><button type="button" class="delete-btn" data-delete-portail="${type}" data-id="${safe(x.id)}">🗑️ Supprimer</button></div></div>`}
+// Sac à dos local : compatible avec les anciens articles (sans catégorie ou quantité).
+function afficherSacIntelligent(){
+ const liste=Array.isArray(portail.sac)?portail.sac:[];
+ const filtreEnfant=$('sacFiltreEnfant');
+ const choixPrecedent=filtreEnfant.value;
+ filtreEnfant.innerHTML='<option value="">Tous les enfants fictifs</option>'+data.enfants.map(e=>`<option value="${safe(e.id)}">${safe(e.prenom)}</option>`).join('');
+ if([...filtreEnfant.options].some(o=>o.value===choixPrecedent))filtreEnfant.value=choixPrecedent;
+ const etat=$('sacFiltreEtat').value;
+ const maintenant=today();
+ const restants=liste.filter(e=>!e.pret);
+ const retards=restants.filter(e=>String(e.date||'')<maintenant).length;
+ const aujourdHui=restants.filter(e=>String(e.date||'')===maintenant).length;
+ const prets=liste.length-restants.length;
+ $('sacResume').innerHTML=`<div class="sac-indicateur"><strong>${liste.length}</strong>Articles inscrits</div><div class="sac-indicateur"><strong>${prets}</strong>Préparés</div><div class="sac-indicateur ${retards?'urgent':''}"><strong>${retards}</strong>Dates dépassées</div><div class="sac-indicateur ${aujourdHui?'urgent':''}"><strong>${aujourdHui}</strong>À apporter aujourd'hui</div>`;
+ const selection=liste.filter(x=>(!filtreEnfant.value||String(x.enfant)===filtreEnfant.value)&&(etat==='tous'||(etat==='prets'?!!x.pret:!x.pret)));
+ selection.sort((a,b)=>Number(!!a.pret)-Number(!!b.pret)||String(a.date||'').localeCompare(String(b.date||''))||String(a.article||'').localeCompare(String(b.article||'')));
+ $('sacParent').innerHTML=selection.length?selection.map(s=>{
+  const date=String(s.date||'');
+  const delta=date?Math.round((new Date(date+'T12:00:00').getTime()-new Date(maintenant+'T12:00:00').getTime())/86400000):null;
+  const etatLabel=s.pret?'✓ Préparé':delta===null?'Date à préciser':delta<0?'Date dépassée':delta===0?"À apporter aujourd'hui":delta===1?'À apporter demain':delta<=3?'À apporter bientôt':'À préparer';
+  const urgent=!s.pret&&delta!==null&&delta<=0;
+  const quantite=Math.max(1,Math.min(999,Math.round(Number(s.quantite)||1)));
+  return `<div class="item sac-ligne ${s.pret?'':'sac-a-faire'} ${urgent?'sac-retard':''}">
+   <div class="row-controls"><input class="inline-check" type="checkbox" data-toggle-sac="${safe(s.id)}" ${s.pret?'checked':''} aria-label="Article préparé : ${safe(s.article)} pour ${safe(nomEnfant(s.enfant))}">
+   <span><strong>${safe(nomEnfant(s.enfant))} — ${safe(s.article)}</strong><span class="sac-etiquette ${urgent?'sac-urgent':''}">${safe(etatLabel)}</span></span>
+   <button type="button" class="delete-btn" data-delete-portail="sac" data-id="${safe(s.id)}">🗑️ Supprimer</button></div>
+   <p class="sac-meta">Quantité : <strong>${quantite}</strong> · Catégorie : ${safe(s.categorie||'Autres')} · Date : ${safe(date||'À préciser')}</p>
+   ${s.notes?`<p class="notes">${safe(s.notes)}</p>`:''}
+   </div>`;
+ }).join(''):'<p class="muted">Aucun article correspondant à ce filtre.</p>';
+}
 function afficherPortail(){
 const visibles=data.journaux.filter(j=>!String(j.visibilite||'').startsWith('Note interne')).slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
 const derniers=[];for(const j of visibles){if(!derniers.some(x=>String(x.enfant)===String(j.enfant)))derniers.push(j)}
@@ -776,7 +854,7 @@ lister('documentsParent',portail.documents.slice().reverse(),d=>itemPortail('doc
 const somme=portail.paiements.reduce((s,p)=>s+Number(p.montant||0),0);$('paiementsParent').innerHTML=`<p><strong>Total des montants fictifs : ${money(somme)}</strong></p>`;
 $('paiementsParent').innerHTML+=portail.paiements.slice().reverse().map(p=>itemPortail('paiements',p,`<strong>${safe(nomEnfant(p.enfant))} — ${money(p.montant)}</strong><p>${safe(p.date)} · ${safe(p.description)} · ${safe(p.statut)}</p>${p.statut.startsWith('Payé')?`<button type="button" class="action secondary" data-recu="${safe(p.id)}">Télécharger un reçu fictif</button>`:''}`)).join('')||'<p class="muted">Aucun montant enregistré.</p>';
 lister('calendrierParent',data.evenements.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),e=>`<div class="item">📅 <strong>${safe(e.date)}</strong> — ${safe(e.titre)}</div>`);
-lister('sacParent',portail.sac.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),s=>`<div class="item"><div class="row-controls"><input class="inline-check" type="checkbox" data-toggle-sac="${safe(s.id)}" ${s.pret?'checked':''} aria-label="Article préparé"><span><strong>${safe(nomEnfant(s.enfant))} — ${safe(s.article)}</strong> ${s.pret?'<span class="status">✓ Préparé</span>':s.date<today()?'<span class="pill">À vérifier : date dépassée</span>':s.date===today()?'<span class="pill">À apporter aujourd’hui</span>':''}</span><button type="button" class="delete-btn" data-delete-portail="sac" data-id="${safe(s.id)}">🗑️ Supprimer</button></div><div class="muted">Pour le ${safe(s.date)} ${safe(s.notes||'')}</div></div>`);
+afficherSacIntelligent();
 lister('victoiresParent',portail.victoires.slice().reverse(),v=>itemPortail('victoires',v,`<strong>🏅 ${safe(nomEnfant(v.enfant))} — ${safe(v.titre)}</strong><p class="muted">${safe(v.date)}</p><p class="notes">${safe(v.notes||'')}</p>`));
 $('repasParent').innerHTML='<h4>🍽️ Ce que les enfants ont mangé (aperçu local)</h4>'+
  ((data.alimentation||[]).length?data.alimentation.slice().reverse().map(formatAliments).join(''):'<p class="muted">Aucun repas consommé enregistré.</p>')+
@@ -856,7 +934,17 @@ $('presenceRequestsStaff').addEventListener('click',e=>{
 });
 
 function portailForm(id,key,transform){$(id).addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,v=get(f),val=transform?transform(v):v;if(!val)return;portail[key].push({id:uid(),...val});if(savePortail()){f.reset();document.querySelectorAll('#parents input[type="date"]').forEach(i=>{if(!i.value)i.value=today()})}})}
-portailForm('formDocument','documents');portailForm('formPaiement','paiements',v=>({...v,montant:Number(v.montant)}));portailForm('formSac','sac',v=>({...v,pret:false}));portailForm('formVictoire','victoires');portailForm('formActiviteMaison','activites');
+
+// Choix rapides et filtres — n'interviennent pas dans les autres écrans.
+$('module-sac').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-sac-suggestion]');if(!b)return;
+ $('sacArticle').value=b.dataset.sacSuggestion;
+ $('sacCategorie').value=b.dataset.sacCategory||'Autres';
+ $('sacArticle').focus({preventScroll:true});
+});
+$('sacFiltreEnfant').addEventListener('change',afficherSacIntelligent);
+$('sacFiltreEtat').addEventListener('change',afficherSacIntelligent);
+portailForm('formDocument','documents');portailForm('formPaiement','paiements',v=>({...v,montant:Number(v.montant)}));portailForm('formSac','sac',v=>{const n=Number(v.quantite);if(!Number.isInteger(n)||n<1||n>999){alert('Indique une quantité entre 1 et 999.');return null;}if(!data.enfants.some(e=>String(e.id)===String(v.enfant))){alert('Choisis un enfant fictif avant d’ajouter un article.');return null;}return {...v,quantite:n,pret:false,creeLe:new Date().toISOString()};});portailForm('formVictoire','victoires');portailForm('formActiviteMaison','activites');
 $('formPhoto').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,file=$('photoFichier').files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024)return alert('Choisissez une image JPEG, PNG ou WebP de moins de 8 Mo.');
 try{const image=await createImageBitmap(file);const scale=Math.min(1,700/image.width,700/image.height),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0,canvas.width,canvas.height);image.close();const imageData=canvas.toDataURL('image/jpeg',.62);if(imageData.length>220000)return alert('Photo encore trop grande : essayez une autre image.');const v=get(f),entry={id:uid(),enfant:v.enfant,legende:v.legende,image:imageData};portail.photos.push(entry);if(savePortail())f.reset();else portail.photos.pop();}catch(err){alert('Cette image ne peut pas être traitée.')}});
 function telecharger(nom,contenu,type='text/plain;charset=utf-8'){const blob=new Blob([contenu],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=nom;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
