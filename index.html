@@ -65,6 +65,19 @@ button.action,.linkaction{display:inline-block;padding:12px 17px;background:#176
 .parent-card{display:flex;flex-direction:column;justify-content:space-between;min-height:156px}.parent-card strong{font-size:16px}.module-parent{display:none;scroll-margin-top:20px}.module-parent.active{display:block}.module-title{border-bottom:1px solid #e4eaf2;padding-bottom:12px;margin-top:0}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}.mini{font-size:12px}.photo{max-height:190px;width:auto;max-width:100%;border-radius:10px;display:block;margin:8px 0}.status{color:#166543;font-weight:700}.notes{white-space:pre-wrap;overflow-wrap:anywhere}.tiny{font-size:13px}.inline-check{width:auto;vertical-align:middle}.row-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.notice{background:#e5f4f0;border-left:4px solid #2f8f74;padding:10px;border-radius:8px}.hidden{display:none!important}
 @media(max-width:600px){.menu{grid-template-columns:repeat(2,1fr);gap:10px}.key{min-height:100px}header{padding:20px}main{padding:13px}.card{padding:15px}}
 
+/* LOGIKIDS — Présences : correction manuelle et historique local */
+.presence-history-entry{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:9px 2px;border-bottom:1px solid #e6edf5}
+.presence-history-entry:last-child{border:0}
+.presence-history-text{flex:1;min-width:160px}
+.presence-history-actions{display:flex;gap:7px;align-items:center}
+.presence-history-action{cursor:pointer;min-width:40px;min-height:38px;border-radius:10px;background:#fff;border:1px solid #c6d3e2;color:#17375f;font-weight:850;font-size:16px}
+.presence-history-action:hover,.presence-history-action:focus-visible{background:#f5f8fd;outline:2px solid #4c7ba7;outline-offset:1px}
+.presence-history-action.delete{color:#a72832;border-color:#ecb8be}
+.presence-edit-panel{border:1px solid #d1dfeb;background:#f5f9ff;border-radius:13px;padding:16px;margin-top:15px}
+.presence-edit-panel h4{margin:0 0 8px;color:#153960}
+.presence-edit-panel label{margin-top:11px}
+.presence-edit-panel .presence-btns{margin-top:11px}
+.presence-revise-note{font-weight:750;color:#915e05;background:#fff3d7;padding:9px 10px;border-radius:8px}
 /* LOGIKIDS — module de présences (prototype local uniquement) */
 .presence-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-weight:850;font-size:13px;border:1px solid transparent;white-space:nowrap}
 .presence-present{background:#e2f5ea;color:#14683b;border-color:#a3ddbb}
@@ -301,6 +314,17 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .sac-gestion-ligne button{border-radius:8px;border:1px solid #c7d5e7;padding:5px 9px;background:#fff;color:#123360;cursor:pointer}
 .sac-gestion-ligne button:hover{background:#fff4df}
 @media(max-width:600px){.sac-filtres,.sac-outils{grid-template-columns:1fr}}
+/* LOGIKIDS — personnalisation visuelle du nom de garderie (prototype). */
+#daycareHeaderName{overflow-wrap:anywhere;max-width:min(55vw,420px);display:inline-block;text-align:center}
+.daycare-account-settings{padding:15px;margin:15px 0;border:1px solid #d3dfed;border-radius:13px;background:#f6f9fe}
+.daycare-account-settings h4{margin:0 0 8px;color:#173b69;font-size:16px}
+.daycare-account-settings .muted{margin:6px 0 10px;line-height:1.45}
+.daycare-account-settings label{margin-top:8px}
+.daycare-account-settings .action{margin-top:9px}
+#daycareSaveStatus{min-height:17px;font-size:13px;margin:9px 0 0;color:#365575}
+#daycareSaveStatus[data-result="error"]{color:#9f322b}
+#daycareSaveStatus[data-result="success"]{color:#176441}
+@media(max-width:600px){#daycareHeaderName{max-width:85vw}}
 </style></head>
 <body>
 <div class="app-shell">
@@ -309,7 +333,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
     <img class="masthead-logo" src="data:image/png;base64,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" alt="Symbole LOGIKIDS : adulte et enfant">
     <div class="masthead-title"><div class="brand-word">LOGI<span>KIDS</span></div><p>La gestion de votre garderie simplifiée</p></div>
   </div>
-  <div class="masthead-center"><span class="daycare-label">🏠 Garderie : Faveur Grâce</span></div>
+  <div class="masthead-center"><span class="daycare-label" id="daycareHeaderName">🏠 Garderie : Faveur Grâce</span></div>
   <div class="masthead-actions">
     <button type="button" class="masthead-icon" data-go="presences" title="Voir les présences" aria-label="Voir les présences">🔔</button>
     <button type="button" class="masthead-icon" data-go="contact" title="Ouvrir les messages" aria-label="Ouvrir la messagerie">✉️</button>
@@ -379,7 +403,18 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div class="card"><h3>Présences — <span id="presenceDate"></span></h3><div class="presence-summaries" id="presenceSummary"></div><p class="muted">🟢 Présent = arrivé à la garderie · 🔴 Parti = départ confirmé · ⚪ Non arrivé = aucune arrivée confirmée ou statut corrigé par la garderie.</p><div id="presenceStaffList"></div></div>
 <div class="card"><h3>📋 Demandes de correction des parents</h3><p class="muted">Le parent peut demander une correction. Seule la garderie applique le changement de statut dans ce prototype.</p><div id="presenceRequestsStaff"></div></div>
 <div class="card"><h3>⏱️ Heures de garde cumulées</h3><p class="muted">Calculées à partir des paires arrivée-départ confirmées; une arrivée sans départ ne génère pas d'heures facturables. Les corrections restent dans l’historique.</p><div id="presenceHoursSummary"></div><button type="button" class="action secondary" data-go="facturation">Voir la facturation</button></div>
-<div class="card"><h3>🕓 Historique des présences (démonstration)</h3><div id="presenceHistoryStaff"></div></div>
+<div class="card"><h3>🕓 Historique des présences (démonstration)</h3>
+<p class="muted">Chaque heure d'arrivée ou de départ est enregistrée automatiquement. ✏️ corrige une entrée, 🗑️ retire une entrée erronée de l'historique affiché. Les corrections conservent une trace locale et les heures sont recalculées.</p>
+<div id="presenceHistoryStaff"></div>
+<div id="presenceEditPanel" class="presence-edit-panel hidden">
+<h4>✏️ Corriger un pointage de <span id="presenceEditChild">l'enfant</span></h4>
+<form id="presenceEditForm" onsubmit="return false">
+<input type="hidden" id="presenceEditId" name="id">
+<label for="presenceEditDateTime">Date et heure exactes</label><input type="datetime-local" id="presenceEditDateTime" name="horodate" required>
+<label for="presenceEditStatut">Statut du pointage</label><select id="presenceEditStatut" name="statut" required><option value="present">🟢 Arrivée (présent)</option><option value="parti">🔴 Départ (parti)</option><option value="non_arrive">⚪ Non arrivé</option></select>
+<label for="presenceEditRaison">Raison de la correction</label><textarea id="presenceEditRaison" name="raison" maxlength="250" required placeholder="Ex. : Arrivée notée avec 10 minutes de retard"></textarea>
+<div class="presence-btns"><button type="submit" class="action">Enregistrer la correction</button><button type="button" id="presenceEditCancel" class="action secondary">Annuler</button></div>
+</form></div></div>
 </section>
 <section id="facturation" class="page"><h2>🧾 Heures de garde et facturation</h2>
 <div class="hint"><strong>Démonstration locale uniquement.</strong> Les heures s'accumulent automatiquement à partir des arrivées et départs confirmés sur cet appareil. Les factures, versements et alertes sont fictifs, sans envoi aux parents ni prélèvement bancaire. La facturation réelle nécessitera les comptes sécurisés, les contrats et un fournisseur de paiements autorisé.</div>
@@ -393,7 +428,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div><label>Tarif ou montant prévu ($ CA)</label><input name="tarif" type="number" min="0" max="100000" step="0.01" value="10" required></div>
 <div><label>Alerte après retard</label><select name="alerte"><option value="7">7 jours après l’échéance</option><option value="14">14 jours après l’échéance</option><option value="0">Désactivée</option></select></div>
 </div><button class="action" type="submit">Enregistrer les paramètres</button></form><p class="small-note">Ces paramètres servent au simulateur. En production, les tarifs et modalités devront être définis par contrat pour chaque enfant.</p></div>
-<div class="card"><h3>⏱️ Totaux automatiques des heures</h3><p class="muted">Seules les périodes avec une arrivée <strong>et</strong> un départ confirmés comptent. Une correction « Non arrivé » annule les heures de la journée dans ce simulateur.</p><div id="billingHours"></div></div>
+<div class="card"><h3>⏱️ Totaux automatiques des heures</h3><p class="muted">Les arrivées et les départs confirmés alimentent directement cette fiche des temps. Seules les périodes avec deux pointages valides comptent. Les corrections et les retraits sont recalculés automatiquement, mais une facture déjà créée doit être révisée manuellement.</p><div id="billingHours"></div></div>
 <div class="card"><h3>➕ Préparer une facture fictive</h3><form id="formNewInvoice"><div class="billing-grid">
 <div><label>Enfant fictif</label><select id="billingChild" name="enfant" required><option value="">Choisir</option></select></div>
 <div><label>Début de période</label><input type="date" name="debut" required></div>
@@ -531,6 +566,7 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <p class="muted">Les comptes doivent être approuvés et reliés à une garderie avant de pouvoir échanger des messages. Aucune information concernant un véritable enfant ne doit être saisie dans les modules de démonstration.</p>
 <div class="auth-buttons"><button type="button" class="action secondary" id="showLogin">Se connecter</button><button type="button" class="action secondary" id="showSignup">Créer un compte</button></div>
 <form id="authForm" onsubmit="return false"><div id="fullNameWrap" class="hidden"><label>Nom complet</label><input name="fullName" maxlength="100" autocomplete="name"></div>
+<div id="signupDaycareWrap" class="hidden"><label for="signupDaycareName">Nom de votre garderie (si vous créez une garderie)</label><input id="signupDaycareName" name="daycareName" maxlength="100" placeholder="Ex. : Garderie Faveur Grâce" autocomplete="organization"><p class="muted tiny">Facultatif pour les parents et le personnel. Le nom saisi personnalise l'affichage; il n'accorde aucun rôle ni accès aux dossiers de la garderie.</p></div>
 <label for="authEmail">Courriel</label><input id="authEmail" type="email" name="email" autocomplete="email" required maxlength="255">
 <div id="passwordWrap"><label for="authPassword" id="authPasswordLabel">Mot de passe</label>
 <div class="auth-password-field"><input id="authPassword" type="password" name="password" autocomplete="current-password" minlength="6" required><button id="authTogglePassword" class="auth-eye-btn" type="button" aria-label="Afficher le mot de passe" aria-pressed="false" title="Afficher le mot de passe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="M3 21 21 3"/></svg></button></div>
@@ -541,7 +577,18 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 <div class="card hidden" id="signedCard"><h3>👤 Mon compte</h3><p id="signedIdentity"></p>
 <div class="signed-role-line"><span class="signed-role-label">Mon rôle :</span><span id="signedRoleValue" class="signed-role-pill" data-status="pending" role="status" aria-live="polite">Vérification en cours…</span></div>
 <p id="signedRoleExplanation" class="signed-role-explanation">LOGIKIDS vérifie le rôle attribué à ce compte.</p>
-<p class="signed-role-explanation" id="signedDaycareContext">Garderie affichée dans la démonstration : Faveur Grâce (rattachement du compte à vérifier).</p>
+<p class="signed-role-explanation" id="signedDaycareContext">Le nom de la garderie n'est pas encore rattaché à un compte confirmé.</p>
+<div class="daycare-account-settings hidden" id="daycareNameSettings">
+  <h4>🏠 Nom de ma garderie</h4>
+  <p class="muted">Direction seulement : inscrivez une fois le nom qui doit apparaître en haut de votre logiciel. Il sera enregistré dans le profil de connexion de ce compte, et vous pourrez le modifier plus tard.</p>
+  <form id="daycareNameForm" onsubmit="return false">
+    <label for="daycareNameInput">Nom de votre garderie</label>
+    <input id="daycareNameInput" type="text" maxlength="100" required autocomplete="organization" placeholder="Ex. : Garderie Faveur Grâce">
+    <button class="action" type="submit" id="daycareNameSave">Enregistrer le nom</button>
+    <p id="daycareSaveStatus" role="status" aria-live="polite"></p>
+  </form>
+  <p class="muted tiny">Version prototype : le nom est une information de profil et ne remplace pas le futur rattachement sécurisé des garderies et de leurs membres.</p>
+</div>
 <button class="action secondary" type="button" id="signOut">Se déconnecter</button></div>
 <div class="card hidden" id="recoverCard"><h3>Choisir un nouveau mot de passe</h3><form id="recoverForm" onsubmit="return false">
 <label for="recoverPassword">Nouveau mot de passe (au moins 12 caractères)</label><div class="auth-password-field"><input id="recoverPassword" name="password" type="password" minlength="12" autocomplete="new-password" required><button id="recoverTogglePassword" class="auth-eye-btn" type="button" aria-label="Afficher le nouveau mot de passe" aria-pressed="false" title="Afficher le nouveau mot de passe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="M3 21 21 3"/></svg></button></div>
@@ -683,6 +730,7 @@ let billing=load('logikids_facturation_demo_v1',{reglages:{nom:'Garderie Faveur 
 if(!billing||typeof billing!=='object')billing={};if(!Array.isArray(billing.factures))billing.factures=[];if(!Array.isArray(billing.versements))billing.versements=[];billing.reglages={nom:'Garderie Faveur Grâce',adresse:'',telephone:'',courriel:'',frequence:'deux_semaines',tarification:'horaire',tarif:10,alerte:7,...(billing.reglages||{})};
 let presence=load(presenceCle,{historique:[],demandes:[]});
 if(!presence||!Array.isArray(presence.historique)||!Array.isArray(presence.demandes))presence={historique:[],demandes:[]};
+if(!Array.isArray(presence.audit))presence.audit=[]; // Journal de corrections dans le navigateur (démonstration uniquement).
 function persist(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){alert('Le navigateur ne peut plus enregistrer ces données. Exportez les données dans Paramètres et libérez de la place.');return false}}
 // Icônes harmonisées : mêmes illustrations bleu marine et doré que les tuiles du tableau de bord.
 // Aucun téléchargement supplémentaire et aucune modification des données conservées dans le navigateur.
@@ -699,6 +747,37 @@ $('menu').addEventListener('click',e=>{const b=e.target.closest('button[data-pag
 // Identification du rôle via les réponses vérifiées de Supabase, JAMAIS depuis le courriel.
 // En absence de réponse vérifiable, on refuse l'accès aux modules liés à un compte.
 let roleAccess='demo', roleAccessRequest=0, roleAccessUser=null;
+let daycareNameDisplay=''; // Profil de connexion; jamais une preuve d'autorisation.
+function normalizeDaycareName(v){return String(v||'').replace(/\s+/g,' ').trim().slice(0,100);}
+function updateDaycareNameUI(){
+  const label=$('daycareHeaderName'),context=$('signedDaycareContext');
+  if(!label||!context)return;
+  const nom=normalizeDaycareName(daycareNameDisplay);
+  const role=roleAccess;
+  if(role==='demo'){
+    label.textContent='🏠 Garderie : Faveur Grâce';
+    context.textContent='Mode démonstration : Faveur Grâce est un exemple, pas un rattachement confirmé.';
+  }else if(role==='responsable'){
+    label.textContent='🏠 Garderie : '+(nom||'Faveur Grâce (démo)');
+    context.textContent=nom
+      ?'Nom affiché dans votre profil : '+nom+'. Rattachement sécurisé des membres à une garderie : à mettre en place.'
+      :'Nom de la garderie à configurer. Faveur Grâce reste un exemple de démonstration.';
+  }else if(role==='superadmin'){
+    label.textContent='🏢 Administration LOGIKIDS';
+    context.textContent='Compte administrateur du logiciel. Aucune garderie cliente ne peut être déduite de ce compte.';
+  }else if(role==='verification'){
+    label.textContent='🏠 Garderie : vérification…';
+    context.textContent='Vérification des autorisations et du rattachement à la garderie…';
+  }else{
+    label.textContent='🏠 Garderie : à rattacher';
+    context.textContent='Le rattachement de ce compte à sa garderie reste à configurer et à vérifier côté serveur.';
+  }
+  const pane=$('daycareNameSettings');
+  if(pane)pane.classList.toggle('hidden',role!=='responsable');
+  const input=$('daycareNameInput');
+  if(input&&role==='responsable'&&document.activeElement!==input)input.value=nom;
+}
+
 // Les libellés affichés réutilisent le rôle vérifié pour l'accès aux pages.
 // Un rôle non confirmé n'est jamais présenté comme « Direction ».
 const roleDisplayNames={
@@ -752,6 +831,7 @@ function roleAccessUpdate(role, detail=''){
     'Rôle identifié à partir des autorisations du compte dans Supabase.';
   const roleMenu=$('accountMenuRole');
   if(roleMenu)roleMenu.textContent='Rôle : '+roleLabel;
+  updateDaycareNameUI();
   $('roleTitle').textContent='🛡️ '+(names[role]||names.inconnu);
   $('roleTag').textContent=names[role]||names.inconnu;
   $('roleExplanation').textContent=(explanations[role]||'')+(detail?' '+detail:'');
@@ -997,9 +1077,21 @@ lister('activitesParent',portail.activites.slice().reverse(),a=>itemPortail('act
 }
 
 // Suivi des présences — interface locale fictive, PAS un système de garde sécurisé.
+const presenceActifs=()=>presence.historique.filter(p=>!p.annule);
+// Si un pointage change dans une période déjà facturée, demander une révision plutôt que recalculer silencieusement une facture archivée.
+function presenceReviserFactures(enfant,jours){
+ let change=false;
+ for(const f of billing.factures){
+  if(String(f.enfant)===String(enfant)&&jours.some(j=>j>=f.debut&&j<=f.fin)){
+   f.aReviser=true;change=true;
+  }
+ }
+ if(change&&!persist('logikids_facturation_demo_v1',billing))alert('La mention « Facture à réviser » n’a pas pu être enregistrée.');
+ return change;
+}
 const presenceStatuts={non_arrive:{classe:'non_arrive',icone:'⚪',titre:'Non arrivé'},present:{classe:'present',icone:'🟢',titre:'Présent'},parti:{classe:'parti',icone:'🔴',titre:'Parti'}};
 function presenceEtat(enfant,date=today()){
- const rev=presence.historique.slice().reverse().find(h=>String(h.enfant)===String(enfant)&&h.jour===date);
+ const rev=presenceActifs().slice().reverse().find(h=>String(h.enfant)===String(enfant)&&h.jour===date);
  return rev?rev.statut:'non_arrive';
 }
 function presencePill(statut){const d=presenceStatuts[statut]||presenceStatuts.non_arrive;return `<span class="presence-badge presence-${d.classe}">${d.icone} ${d.titre}</span>`;}
@@ -1012,6 +1104,7 @@ function presenceEnregistrer(enfant,statut,source='Garderie',raison=''){
  const event={id:uid(),enfant:String(enfant),jour:today(),statut,avant:precedent,source,raison,horodate:new Date().toISOString()};
  presence.historique.push(event);
  if(!persist(presenceCle,presence)){presence.historique.pop();return false;}
+ presenceReviserFactures(enfant,[event.jour]);
  afficherPresences();afficherFacturation();afficherPortail();return true;
 }
 function afficherPresences(){
@@ -1020,25 +1113,77 @@ function afficherPresences(){
  $('presenceSummary').innerHTML=`<div class="presence-stat">${presencePill('present')}<strong>${filtres.present}</strong></div><div class="presence-stat">${presencePill('parti')}<strong>${filtres.parti}</strong></div><div class="presence-stat">${presencePill('non_arrive')}<strong>${filtres.non_arrive}</strong></div>`;
  $('presenceDashboard').innerHTML=`<div class="presence-summaries"><div class="presence-stat">${presencePill('present')}<strong>${filtres.present}</strong></div><div class="presence-stat">${presencePill('parti')}<strong>${filtres.parti}</strong></div><div class="presence-stat">${presencePill('non_arrive')}<strong>${filtres.non_arrive}</strong></div></div><p class="muted">Aucune notification en temps réel entre appareils dans cette démonstration.</p>`;
  $('presenceStaffList').innerHTML=data.enfants.length?data.enfants.map(e=>{
-  const st=presenceEtat(e.id),dernier=presence.historique.slice().reverse().find(h=>String(h.enfant)===String(e.id)&&h.jour===today());
+  const st=presenceEtat(e.id),dernier=presenceActifs().slice().reverse().find(h=>String(h.enfant)===String(e.id)&&h.jour===today());
   return `<div class="presence-row"><div><div class="presence-name">👶 ${safe(e.prenom)}</div><div class="muted">${dernier?'Dernière modification : '+safe(presenceHeure(dernier.horodate)):'Aucune arrivée confirmée aujourd’hui'}</div></div><div class="presence-row-right">${presencePill(st)}<div class="presence-btns"><button type="button" class="presence-btn arrivee" data-presence-enfant="${safe(e.id)}" data-presence-statut="present" ${st==='present'?'disabled':''}>🟢 Confirmer l’arrivée</button><button type="button" class="presence-btn depart" data-presence-enfant="${safe(e.id)}" data-presence-statut="parti" ${st!=='present'?'disabled':''}>🔴 Confirmer le départ</button><button type="button" class="presence-btn non-arrive" data-presence-enfant="${safe(e.id)}" data-presence-statut="non_arrive">⚪ Confirmer non arrivé</button></div></div></div>`;
  }).join(''):'<p class="muted">Ajoutez d’abord un enfant fictif dans la rubrique Enfants.</p>';
  const demandes=presence.demandes.slice().reverse();
  $('presenceRequestsStaff').innerHTML=demandes.length?demandes.map(r=>`<div class="${r.etat==='en_attente'?'request-pending':'request-done'}"><strong>${safe(nomEnfant(r.enfant))}</strong> — demande : ${presencePill(r.souhaite)}<div class="muted">${safe(presenceHeure(r.horodate))} · ${safe(r.explication||'Aucune explication')}</div>${r.etat==='en_attente'?`<div class="presence-btns"><button type="button" class="presence-btn arrivee" data-presence-approve="${safe(r.id)}">Approuver et appliquer</button><button type="button" class="presence-btn depart" data-presence-reject="${safe(r.id)}">Refuser</button></div>`:`<small>${r.etat==='approuvee'?'✅ Approuvée par la garderie':'❌ Refusée par la garderie'}${r.traiteeLe?' — '+safe(presenceHeure(r.traiteeLe)):''}</small>`}</div>`).join(''):'<p class="muted">Aucune demande de correction.</p>';
  afficherCumulPresences();
- const hist=presence.historique.slice().reverse().slice(0,35);
- $('presenceHistoryStaff').innerHTML=hist.length?`<ol class="presence-history">${hist.map(h=>`<li>${presencePill(h.statut)} <strong>${safe(nomEnfant(h.enfant))}</strong><br><small>${safe(presenceHeure(h.horodate))} · ${safe(h.source||'Garderie')}${h.raison?' · '+safe(h.raison):''}</small></li>`).join('')}</ol>`:'<p class="muted">Aucun changement de présence enregistré.</p>';
+ const hist=presenceActifs().slice().reverse().slice(0,50);
+ $('presenceHistoryStaff').innerHTML=hist.length?`<ol class="presence-history">${hist.map(h=>`<li class="presence-history-entry"><div class="presence-history-text">${presencePill(h.statut)} <strong>${safe(nomEnfant(h.enfant))}</strong><br><small>${safe(presenceHeure(h.horodate))} · ${safe(h.source||'Garderie')}${h.modifieLe?' · ✏️ Corrigé':''}${h.raison?' · '+safe(h.raison):''}</small></div><div class="presence-history-actions"><button type="button" class="presence-history-action" data-presence-edit="${safe(h.id)}" title="Corriger ce pointage" aria-label="Corriger le pointage de ${safe(nomEnfant(h.enfant))}">✏️</button><button type="button" class="presence-history-action delete" data-presence-delete="${safe(h.id)}" title="Retirer ce pointage" aria-label="Retirer le pointage de ${safe(nomEnfant(h.enfant))}">🗑️</button></div></li>`).join('')}</ol>`:'<p class="muted">Aucun changement de présence enregistré.</p>';
  const choix=$('presenceChildParent'),ancien=choix.value;
  choix.innerHTML='<option value="">Choisir un enfant fictif</option>'+data.enfants.map(e=>`<option value="${safe(e.id)}">${safe(e.prenom)}</option>`).join('');
  if(data.enfants.some(e=>String(e.id)===ancien))choix.value=ancien;
  const enfant=choix.value;
  $('presenceCorrectionForm').classList.toggle('hidden',!enfant);
  if(!enfant){$('presenceParentStatus').innerHTML='<p class="muted">Choisissez un enfant fictif pour voir son statut.</p>';$('presenceParentRequests').innerHTML='<p class="muted">Aucun enfant sélectionné.</p>';return;}
- const st=presenceEtat(enfant),last=presence.historique.slice().reverse().find(h=>String(h.enfant)===enfant&&h.jour===today()),history=presence.historique.filter(h=>String(h.enfant)===enfant&&h.jour===today()).slice().reverse();
+ const st=presenceEtat(enfant),last=presenceActifs().slice().reverse().find(h=>String(h.enfant)===enfant&&h.jour===today()),history=presenceActifs().filter(h=>String(h.enfant)===enfant&&h.jour===today()).slice().reverse();
  $('presenceParentStatus').innerHTML=`<div class="presence-parent-preview"><h4>Statut de ${safe(nomEnfant(enfant))} aujourd’hui</h4>${presencePill(st)}<p class="muted">${last?'Actualisé localement : '+safe(presenceHeure(last.horodate)):'Aucun pointage confirmé aujourd’hui'}</p>${history.length?`<strong>Arrivées, départs et corrections :</strong><ul class="presence-history">${history.map(h=>`<li>${presencePill(h.statut)} — ${safe(presenceHeure(h.horodate))}</li>`).join('')}</ul>`:''}</div>`;
  const prs=presence.demandes.filter(r=>String(r.enfant)===enfant).slice().reverse();
  $('presenceParentRequests').innerHTML=prs.length?prs.map(r=>`<div class="item">${presencePill(r.souhaite)} <span class="muted">${safe(presenceHeure(r.horodate))}</span><div>${r.etat==='en_attente'?'⏳ En attente de la garderie':r.etat==='approuvee'?'✅ Approuvée':'❌ Refusée'}</div>${r.explication?`<p class="muted">${safe(r.explication)}</p>`:''}</div>`).join(''):'<p class="muted">Aucune demande.</p>';
 }
+// Historique : on conserve la trace des changements pour le prototype, mais on retire les entrées annulées des calculs et de l'affichage.
+const presenceFormatLocal=(iso)=>{
+ const d=new Date(iso);
+ if(!Number.isFinite(d.getTime()))return '';
+ const x=n=>String(n).padStart(2,'0');
+ return `${d.getFullYear()}-${x(d.getMonth()+1)}-${x(d.getDate())}T${x(d.getHours())}:${x(d.getMinutes())}`;
+};
+const presenceFermerCorrection=()=>{$('presenceEditPanel').classList.add('hidden');$('presenceEditForm').reset();};
+$('presenceEditCancel').addEventListener('click',presenceFermerCorrection);
+$('presenceHistoryStaff').addEventListener('click',e=>{
+ const ed=e.target.closest('[data-presence-edit]'),del=e.target.closest('[data-presence-delete]');
+ if(!ed&&!del)return;
+ const identifiant=(ed?.dataset.presenceEdit||del?.dataset.presenceDelete);
+ const h=presence.historique.find(x=>String(x.id)===String(identifiant)&&!x.annule);
+ if(!h)return;
+ if(ed){
+  $('presenceEditId').value=h.id;
+  $('presenceEditChild').textContent=nomEnfant(h.enfant);
+  $('presenceEditDateTime').value=presenceFormatLocal(h.horodate);
+  $('presenceEditStatut').value=h.statut;
+  $('presenceEditRaison').value='';
+  $('presenceEditPanel').classList.remove('hidden');
+  $('presenceEditPanel').scrollIntoView({block:'nearest',behavior:'smooth'});
+  return;
+ }
+ if(!confirm(`Retirer le pointage « ${presenceStatuts[h.statut]?.titre||h.statut} » de ${nomEnfant(h.enfant)} du ${presenceHeure(h.horodate)} ?\nIl sera exclu du calcul des heures. Une trace locale sera conservée.`))return;
+ const copie=JSON.parse(JSON.stringify(presence)),quand=new Date().toISOString();
+ h.annule=true;h.annuleLe=quand;h.annuleMotif='Pointage retiré par la garderie (démonstration)';
+ presence.audit.push({id:uid(),action:'retrait',eventId:h.id,enfant:h.enfant,date:quand,avant:{...h,annule:false,annuleLe:undefined},raison:h.annuleMotif});
+ if(!persist(presenceCle,presence)){presence=copie;return;}
+ presenceReviserFactures(h.enfant,[h.jour]);
+ presenceFermerCorrection();afficherPresences();afficherFacturation();afficherPortail();
+});
+$('presenceEditForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const v=get(e.currentTarget),h=presence.historique.find(x=>String(x.id)===String(v.id)&&!x.annule);
+ if(!h||!Object.hasOwn(presenceStatuts,v.statut))return;
+ const raison=String(v.raison||'').trim();
+ const d=new Date(String(v.horodate||''));
+ if(raison.length<3){alert('Indique une raison pour conserver une trace de la correction.');return;}
+ if(!Number.isFinite(d.getTime())){alert('Indique une date et une heure valides.');return;}
+ const newJour=presenceFormatLocal(d.toISOString()).slice(0,10);
+ const nouveau=d.toISOString(),ancienJour=h.jour;
+ if(nouveau===h.horodate&&v.statut===h.statut){presenceFermerCorrection();return;}
+ if(newJour!==ancienJour&&!confirm('Ce pointage sera déplacé à une autre date. Continuer ?'))return;
+ const copie=JSON.parse(JSON.stringify(presence)),avant={...h};
+ h.horodate=nouveau;h.jour=newJour;h.statut=v.statut;h.raison=raison;h.modifieLe=new Date().toISOString();h.source='Correction de la garderie';
+ presence.audit.push({id:uid(),action:'modification',eventId:h.id,enfant:h.enfant,date:h.modifieLe,avant,apres:{...h},raison});
+ if(!persist(presenceCle,presence)){presence=copie;return;}
+ presenceReviserFactures(h.enfant,[ancienJour,newJour]);
+ presenceFermerCorrection();afficherPresences();afficherFacturation();afficherPortail();
+});
 $('presenceStaffList').addEventListener('click',e=>{
  const b=e.target.closest('button[data-presence-enfant]');if(!b)return;
  const id=b.dataset.presenceEnfant,statut=b.dataset.presenceStatut;
@@ -1183,7 +1328,7 @@ else if(b.dataset.deletePortail){const k=b.dataset.deletePortail;if(!Array.isArr
 const sauvegarderBilling=()=>persist('logikids_facturation_demo_v1',billing);
 const dollars=n=>Math.round((Number(n)||0)*100)/100;
 function calculJour(enfant,jour){
- const evenements=presence.historique.filter(h=>String(h.enfant)===String(enfant)&&h.jour===jour).slice().sort((a,b)=>new Date(a.horodate)-new Date(b.horodate));
+ const evenements=presenceActifs().filter(h=>String(h.enfant)===String(enfant)&&h.jour===jour).slice().sort((a,b)=>new Date(a.horodate)-new Date(b.horodate));
  let entree=null,ms=0,passages=0,sorties=[];
  for(const e of evenements){
   const t=new Date(e.horodate).getTime();if(!Number.isFinite(t))continue;
@@ -1195,7 +1340,7 @@ function calculJour(enfant,jour){
 }
 function lignesHeures(enfant,debut,fin){
  if(!debut||!fin||debut>fin)return [];
- const jours=[...new Set(presence.historique.filter(h=>String(h.enfant)===String(enfant)&&h.jour>=debut&&h.jour<=fin).map(h=>h.jour))].sort();
+ const jours=[...new Set(presenceActifs().filter(h=>String(h.enfant)===String(enfant)&&h.jour>=debut&&h.jour<=fin).map(h=>h.jour))].sort();
  return jours.map(j=>calculJour(enfant,j)).filter(x=>x.passages||x.ouvert);
 }
 function totauxHeures(enfant,debut,fin){const jours=lignesHeures(enfant,debut,fin);return {jours,minutes:jours.reduce((x,j)=>x+j.minutes,0),joursFacturables:jours.filter(x=>x.passages>0).length,ouvert:jours.some(j=>j.ouvert)};}
@@ -1228,7 +1373,7 @@ function afficherFacturation(){
  const paiements=$('billingPaymentInvoice'),ancien=paiements.value;paiements.innerHTML='<option value="">Choisir une facture</option>'+billing.factures.filter(f=>soldeFacture(f)>0).map(f=>`<option value="${safe(f.id)}">${safe(f.numero)} — ${safe(f.enfantNom)} : ${money(soldeFacture(f))} à payer</option>`).join('');if([...paiements.options].some(x=>x.value===ancien))paiements.value=ancien;
  const impayes=billing.factures.reduce((x,f)=>x+soldeFacture(f),0),retards=billing.factures.filter(factureEnRetard).length;
  $('billingOverview').innerHTML=`<div class="billing-summary"><div class="stat">Factures fictives<b>${billing.factures.length}</b></div><div class="stat">Solde fictif<b>${money(impayes)}</b></div><div class="stat">Alertes en retard<b>${retards}</b></div></div>`;
- $('billingInvoices').innerHTML=billing.factures.length?billing.factures.slice().reverse().map(f=>`<div class="billing-record ${factureEnRetard(f)?'billing-overdue':''}"><strong>${safe(f.numero)} — ${safe(f.enfantNom)}</strong> <span class="pill">${safe(f.statut==='approuvee'?'Approuvée (simulation)':'Brouillon')}</span><p class="small-note">Du ${safe(f.debut)} au ${safe(f.fin)} · ${f.heures.toFixed(2)} h · ${f.jours} journée(s) · Échéance ${safe(f.echeance)}</p><div><b>Montant : ${money(f.montant)}</b> · Versé : ${money(versementsFacture(f))} · <b>Solde : ${money(soldeFacture(f))}</b></div><p class="small-note">${statFacture(f)}${factureEnRetard(f)?' · 🔔 Rappel à prévoir après le délai choisi (aucun envoi automatique dans le prototype)':''}</p><div class="billing-actions"><button type="button" class="action secondary" data-imprimer-facture="${safe(f.id)}">🖨️ Imprimer / PDF</button>${f.statut!=='approuvee'?`<button type="button" class="action" data-approuver-facture="${safe(f.id)}">Approuver le brouillon (simulation)</button>`:''}</div></div>`).join(''):'<p class="muted">Aucune facture fictive. Les nouvelles factures seront archivées ici et visibles dans la simulation du Portail parents.</p>';
+ $('billingInvoices').innerHTML=billing.factures.length?billing.factures.slice().reverse().map(f=>`<div class="billing-record ${factureEnRetard(f)?'billing-overdue':''}"><strong>${safe(f.numero)} — ${safe(f.enfantNom)}</strong> <span class="pill">${safe(f.statut==='approuvee'?'Approuvée (simulation)':'Brouillon')}</span><p class="small-note">Du ${safe(f.debut)} au ${safe(f.fin)} · ${f.heures.toFixed(2)} h · ${f.jours} journée(s) · Échéance ${safe(f.echeance)}</p><div><b>Montant : ${money(f.montant)}</b> · Versé : ${money(versementsFacture(f))} · <b>Solde : ${money(soldeFacture(f))}</b></div>${f.aReviser?'<p class="presence-revise-note">⚠️ Les présences de cette période ont été modifiées après le calcul. Facture à réviser manuellement.</p>':''}<p class="small-note">${statFacture(f)}${factureEnRetard(f)?' · 🔔 Rappel à prévoir après le délai choisi (aucun envoi automatique dans le prototype)':''}</p><div class="billing-actions"><button type="button" class="action secondary" data-imprimer-facture="${safe(f.id)}">🖨️ Imprimer / PDF</button>${f.statut!=='approuvee'?`<button type="button" class="action" data-approuver-facture="${safe(f.id)}">Approuver le brouillon (simulation)</button>`:''}</div></div>`).join(''):'<p class="muted">Aucune facture fictive. Les nouvelles factures seront archivées ici et visibles dans la simulation du Portail parents.</p>';
  afficherFacturesParents();
 }
 function afficherFacturesParents(){
@@ -1303,7 +1448,8 @@ authPasswordVisibility('recoverPassword','recoverTogglePassword');
 function setAuthMode(mode){
  authMode=mode;
  const signup=mode==='signup',reset=mode==='reset';
- $('fullNameWrap').classList.toggle('hidden',!signup);
+  $('fullNameWrap').classList.toggle('hidden',!signup);
+  $('signupDaycareWrap').classList.toggle('hidden',!signup);
  $('passwordWrap').classList.toggle('hidden',reset);
  $('resetHelp').classList.toggle('hidden',!reset);
  $('forgotPasswordRow').classList.toggle('hidden',signup);
@@ -1340,8 +1486,34 @@ function updateAccountMenu(){
 $('menuLogout').addEventListener('click',()=>{closeAccountMenu();logoutAccount();});
 // La fermeture du menu est également prise en charge par le script indépendant.
 updateAccountMenu();
-// Le bouton Contacts vers la messagerie est gere par le script de navigation autonome.
-const authError=e=>{const m=String(e?.message||'Une erreur est survenue.');return /invalid login credentials/i.test(m)?'Courriel ou mot de passe incorrect.':/email not confirmed/i.test(m)?'Vérifie ton courriel et confirme ton inscription.':/email rate limit/i.test(m)?'Trop de demandes : réessaie plus tard.':m;};
+ // Le bouton Contacts vers la messagerie est gere par le script de navigation autonome.
+ $('daycareNameForm').addEventListener('submit',async event=>{
+   event.preventDefault();
+   const state=$('daycareSaveStatus');
+   const nom=normalizeDaycareName($('daycareNameInput').value);
+   if(!chatUser||roleAccess!=='responsable'){
+     state.dataset.result='error';state.textContent='Seule la direction connectée peut personnaliser ce nom.';return;
+   }
+   if(!nom){state.dataset.result='error';state.textContent='Inscris le nom de ta garderie.';return;}
+   if(!sb){state.dataset.result='error';state.textContent='Service de connexion indisponible.';return;}
+   const originalUserId=chatUser.id;
+   $('daycareNameSave').disabled=true;
+   state.dataset.result='';state.textContent='Enregistrement du nom…';
+   try{
+     const result=await chatTimeout(sb.auth.updateUser({data:{daycare_name:nom}}),12);
+     if(result.error)throw result.error;
+     if(chatUser?.id!==originalUserId)throw new Error('Le compte connecté a changé.');
+     daycareNameDisplay=nom;
+     chatUser={...chatUser,user_metadata:{...(chatUser.user_metadata||{}),daycare_name:nom}};
+     updateDaycareNameUI();
+     state.dataset.result='success';
+     state.textContent='Nom enregistré dans le profil. Il se réaffichera lorsque ce compte se reconnectera.';
+   }catch(error){
+     state.dataset.result='error';
+     state.textContent='Enregistrement non confirmé. Vérifie ta connexion puis réessaie.';
+   }finally{$('daycareNameSave').disabled=false;}
+ });
+ const authError=e=>{const m=String(e?.message||'Une erreur est survenue.');return /invalid login credentials/i.test(m)?'Courriel ou mot de passe incorrect.':/email not confirmed/i.test(m)?'Vérifie ton courriel et confirme ton inscription.':/email rate limit/i.test(m)?'Trop de demandes : réessaie plus tard.':m;};
 $('authForm').addEventListener('submit',async e=>{
  e.preventDefault();if(!sb)return authStatus('Connexion non activée. Il faut d’abord configurer le projet Supabase.');
  const f=e.currentTarget,v=get(f),email=String(v.email||'').trim().toLowerCase(),password=String(v.password||'');
@@ -1351,7 +1523,10 @@ $('authForm').addEventListener('submit',async e=>{
   if(authMode==='signup'){
     if(password.length<12)return authStatus('Choisis un mot de passe de 12 caractères ou plus.');
     if(!String(v.fullName||'').trim())return authStatus('Indique ton nom complet.');
-    r=await sb.auth.signUp({email,password,options:{data:{full_name:String(v.fullName).trim()},emailRedirectTo:location.origin+location.pathname}});
+    const requestedName=normalizeDaycareName(v.daycareName);
+    const metadata={full_name:String(v.fullName).trim()};
+    if(requestedName)metadata.daycare_name=requestedName; // Affichage seulement, jamais autorisation.
+    r=await sb.auth.signUp({email,password,options:{data:metadata,emailRedirectTo:location.origin+location.pathname}});
     if(!r.error)authStatus('Compte demandé. Consulte le courriel de confirmation. Une autorisation de la garderie sera aussi nécessaire avant de communiquer.','good');
   }else if(authMode==='reset'){
     r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
@@ -1399,8 +1574,10 @@ async function refreshAuthUI(){
   if(generation!==authRefreshRun)return;
   const user=error?null:data?.user||null;
   const previousId=chatUser?.id||null;
-  chatUser=user;
-  if(user)void roleAccessResolve(user);
+   chatUser=user;
+   daycareNameDisplay=user?normalizeDaycareName(user.user_metadata?.daycare_name):'';
+   updateDaycareNameUI();
+   if(user)void roleAccessResolve(user);
   else void roleAccessResolve(null);
   $('authCard').classList.toggle('hidden',!!user);
   $('signedCard').classList.toggle('hidden',!user);
