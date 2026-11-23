@@ -276,7 +276,22 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
 .sac-etiquette{display:inline-block;border-radius:15px;padding:3px 9px;margin-left:6px;background:#eaf2fc;color:#234b72;font-size:12px;font-weight:700}
 .sac-etiquette.sac-urgent{background:#fce2db;color:#8d2f27}
 .sac-meta{margin:6px 0 2px;color:#4a617c}
-@media(max-width:600px){.sac-filtres{grid-template-columns:1fr}}
+/* Bibliothèque compacte, accessible et adaptée au téléphone. */
+.sac-bibliotheque{border:1px solid #d2deed;background:#f7fafe;border-radius:12px;padding:12px 14px;margin:10px 0 16px}
+.sac-bibliotheque>summary{cursor:pointer;color:#153963;font-weight:750;line-height:1.5}
+.sac-bibliotheque[open]>summary{margin-bottom:12px}
+.sac-outils{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 8px}
+.sac-outils label{display:block;margin:0 0 5px}
+.sac-outils input,.sac-outils select{width:100%;min-width:0}
+.sac-suggestions button.sac-personnalise{background:#fff8e8;border-color:#dab873}
+.sac-suggestions button{font-size:14px}
+.sac-tous-articles{max-height:300px;overflow:auto;padding:4px 2px;margin-bottom:0}
+.sac-saison[hidden],#sacCatalogueVide[hidden],#sacAnnulerPerso[hidden]{display:none}
+.sac-gestion-ligne{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid #e0e6ed;padding:9px 0}
+.sac-gestion-ligne .sac-gestion-nom{flex:1 1 140px;color:#173a6e}
+.sac-gestion-ligne button{border-radius:8px;border:1px solid #c7d5e7;padding:5px 9px;background:#fff;color:#123360;cursor:pointer}
+.sac-gestion-ligne button:hover{background:#fff4df}
+@media(max-width:600px){.sac-filtres,.sac-outils{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div class="app-shell">
@@ -444,18 +459,35 @@ main h2{font-weight:850;color:#0b2d60;border-color:#d9a94c!important}
   <h3 class="module-title">🎒 Sac à dos intelligent et rappels</h3>
   <p class="muted">Préparez les articles de chaque enfant, indiquez les quantités et voyez les rappels prioritaires. Cette version fonctionne localement dans ce navigateur : elle n'envoie pas encore de notifications et ne se synchronise pas avec Supabase.</p>
   <h4>Ajout rapide d'un article</h4>
-  <div class="sac-suggestions" aria-label="Articles courants">
-    <button type="button" data-sac-suggestion="Couches" data-sac-category="Hygiène">🧷 Couches</button>
-    <button type="button" data-sac-suggestion="Lingettes" data-sac-category="Hygiène">🧻 Lingettes</button>
-    <button type="button" data-sac-suggestion="Vêtements de rechange" data-sac-category="Vêtements">👕 Rechange</button>
-    <button type="button" data-sac-suggestion="Crème solaire" data-sac-category="Extérieur">☀️ Crème solaire</button>
-    <button type="button" data-sac-suggestion="Bottes" data-sac-category="Extérieur">🥾 Bottes</button>
-    <button type="button" data-sac-suggestion="Mitaines" data-sac-category="Extérieur">🧤 Mitaines</button>
-  </div>
+  <div class="sac-suggestions" id="sacRaccourcis" aria-label="Articles courants et personnalisés"></div>
+  <details class="sac-bibliotheque" id="sacBibliotheque">
+    <summary>📚 Voir tous les articles disponibles (<span id="sacNombreArticles">0</span>)</summary>
+    <div class="sac-outils">
+      <div><label for="sacRecherche">Rechercher un article</label><input id="sacRecherche" type="search" maxlength="100" placeholder="Ex. : pantalon, tuque, biberon"></div>
+      <div><label for="sacCategorieRecherche">Catégorie</label><select id="sacCategorieRecherche"><option value="">Toutes les catégories</option><option>Hygiène</option><option>Vêtements</option><option>Extérieur</option><option>Repas</option><option>Sommeil</option><option>Activités</option><option>Autres</option></select></div>
+    </div>
+    <div id="sacCatalogue" class="sac-suggestions sac-tous-articles" aria-label="Bibliothèque d'articles"></div>
+    <p id="sacCatalogueVide" class="muted" hidden>Aucun article trouvé. Vous pouvez en créer un ci-dessous.</p>
+  </details>
+  <details class="sac-bibliotheque sac-personnalisation" id="sacPersonnalisation">
+    <summary>➕ Créer un article personnalisé</summary>
+    <p class="muted">Créez votre article une seule fois. Il restera dans la bibliothèque de cette démonstration pour être sélectionné plus tard.</p>
+    <form id="formSacPersonnalise">
+      <input id="sacArticlePersoId" type="hidden" name="id" value="">
+      <label for="sacNomPerso">Nom de l'article</label><input id="sacNomPerso" name="nom" required maxlength="60" placeholder="Ex. : Cache-cou">
+      <label for="sacIconePerso">Icône</label>
+      <select id="sacIconePerso" name="icone"><option value="📦">📦 Article</option><option value="👕">👕 Vêtement</option><option value="👖">👖 Pantalon</option><option value="🧥">🧥 Manteau</option><option value="🧤">🧤 Mitaines</option><option value="🧢">🧢 Tuque / chapeau</option><option value="🥾">🥾 Bottes</option><option value="🧦">🧦 Bas</option><option value="👟">👟 Souliers</option><option value="🧷">🧷 Couches</option><option value="🧻">🧻 Lingettes</option><option value="🍼">🍼 Biberon</option><option value="🥤">🥤 Gourde</option><option value="🍎">🍎 Alimentation</option><option value="🧸">🧸 Doudou</option><option value="📚">📚 Livre</option><option value="🎨">🎨 Activité</option><option value="☀️">☀️ Soleil</option><option value="❄️">❄️ Hiver</option><option value="🧴">🧴 Hygiène</option></select>
+      <label for="sacCatPerso">Catégorie</label><select id="sacCatPerso" name="categorie"><option>Hygiène</option><option selected>Vêtements</option><option>Extérieur</option><option>Repas</option><option>Sommeil</option><option>Activités</option><option>Autres</option></select>
+      <button class="action" id="sacEnregistrerPerso" type="submit">Enregistrer dans ma bibliothèque</button>
+      <button class="action secondary" id="sacAnnulerPerso" type="button" hidden>Annuler la modification</button>
+    </form>
+    <div id="sacGestionPersonnalises" aria-live="polite"></div>
+  </details>
   <form id="formSac">
     <label for="sacEnfant">Enfant fictif</label><select id="sacEnfant" name="enfant" class="selectEnfantObligatoire" required></select>
     <label for="sacArticle">Article à apporter</label><input id="sacArticle" name="article" required maxlength="100" placeholder="Ex. : Vêtements de rechange">
-    <label for="sacCategorie">Catégorie</label><select id="sacCategorie" name="categorie"><option>Hygiène</option><option>Vêtements</option><option>Extérieur</option><option>Repas</option><option selected>Autres</option></select>
+    <label for="sacCategorie">Catégorie</label><select id="sacCategorie" name="categorie"><option>Hygiène</option><option>Vêtements</option><option>Extérieur</option><option>Repas</option><option>Sommeil</option><option>Activités</option><option selected>Autres</option></select>
+    <div class="sac-saison" id="sacSaisonZone" hidden><label for="sacSaison">Saison (facultatif)</label><select id="sacSaison" name="saison" disabled><option value="">Sans précision</option><option>Hiver</option><option>Printemps</option><option>Été</option><option>Automne</option></select></div>
     <label for="sacQuantite">Quantité demandée</label><input id="sacQuantite" type="number" name="quantite" min="1" max="999" value="1" required>
     <label for="sacDate">À apporter au plus tard le</label><input id="sacDate" type="date" name="date" required>
     <label for="sacNotes">Précisions (facultatif)</label><input id="sacNotes" name="notes" maxlength="150" placeholder="Ex. : Taille 4 ou bottes imperméables">
@@ -632,7 +664,7 @@ let data=base();const saved=load(cle,{});for(const k of Object.keys(data))if(Arr
 let absences=load(absenceCle,[]);if(!Array.isArray(absences))absences=[];
 let contact={telephone:'',whatsapp:'',messenger:'',courriel:''};const c=load(contactCle,{});for(const k of Object.keys(contact))if(typeof c[k]==='string')contact[k]=c[k];
 let mess=load(messCle,{parents:[],messages:[]});if(!Array.isArray(mess.parents))mess.parents=[];if(!Array.isArray(mess.messages))mess.messages=[];
-let portail=load(portailCle,{});for(const k of ['photos','documents','paiements','sac','victoires','activites'])if(!Array.isArray(portail[k]))portail[k]=[];
+let portail=load(portailCle,{});for(const k of ['photos','documents','paiements','sac','sacArticles','victoires','activites'])if(!Array.isArray(portail[k]))portail[k]=[];
 let billing=load('logikids_facturation_demo_v1',{reglages:{nom:'Garderie Faveur Grâce',adresse:'',telephone:'',courriel:'',frequence:'deux_semaines',tarification:'horaire',tarif:10,alerte:7},factures:[],versements:[]});
 if(!billing||typeof billing!=='object')billing={};if(!Array.isArray(billing.factures))billing.factures=[];if(!Array.isArray(billing.versements))billing.versements=[];billing.reglages={nom:'Garderie Faveur Grâce',adresse:'',telephone:'',courriel:'',frequence:'deux_semaines',tarification:'horaire',tarif:10,alerte:7,...(billing.reglages||{})};
 let presence=load(presenceCle,{historique:[],demandes:[]});
@@ -811,6 +843,69 @@ $('apercuParents').innerHTML=parentModules.map(([id,title])=>`<div class="card p
 $('apercuParents').addEventListener('click',e=>{const b=e.target.closest('button[data-module]');if(!b)return;document.querySelectorAll('.module-parent').forEach(m=>m.classList.remove('active'));const target=$('module-'+b.dataset.module);if(target){target.classList.add('active');afficherPortail();target.scrollIntoView({behavior:'smooth',block:'start'})}});
 document.addEventListener('click',e=>{const b=e.target.closest('button[data-go]');if(b)ouvrir(b.dataset.go)});
 function itemPortail(type,x,body){return `<div class="item"><div class="item-head"><div>${body}</div><button type="button" class="delete-btn" data-delete-portail="${type}" data-id="${safe(x.id)}">🗑️ Supprimer</button></div></div>`}
+// Bibliothèque de départ, enrichissable localement par chaque garderie dans le prototype.
+// Les catégories constituent une aide au choix, pas une recommandation de sécurité ou un avis médical.
+const sacArticlesBase=[
+ ['🧷','Couches','Hygiène'],['🧻','Lingettes','Hygiène'],['🧴','Crème pour le change','Hygiène'],
+ ['🤧','Mouchoirs','Hygiène'],['🪥','Brosse à dents','Hygiène'],['🦷','Dentifrice','Hygiène'],
+ ['🪮','Brosse à cheveux','Hygiène'],['🎀','Élastiques à cheveux','Hygiène'],
+ ['👕','Vêtements de rechange','Vêtements'],['👖','Pantalon','Vêtements'],['🩳','Short','Vêtements'],
+ ['👖','Legging','Vêtements'],['👚','Chandail','Vêtements'],['👕','T-shirt','Vêtements'],
+ ['🩱','Cache-couche','Vêtements'],['🩲','Sous-vêtements','Vêtements'],['🧦','Bas','Vêtements'],
+ ['🌙','Pyjama','Vêtements'],['🧢','Tuque','Vêtements'],['👒','Chapeau','Vêtements'],
+ ['🧢','Casquette','Vêtements'],['🧤','Mitaines','Vêtements'],['🧤','Gants','Vêtements'],
+ ['🧣','Cache-cou','Vêtements'],['🧥','Manteau','Vêtements'],['❄️','Habit de neige','Vêtements'],
+ ['❄️','Pantalon de neige','Vêtements'],['🌧️','Imperméable','Vêtements'],['🌧️','Pantalon de pluie','Vêtements'],
+ ['🥾','Bottes','Extérieur'],['🥾','Bottes de pluie','Extérieur'],['👟','Souliers','Extérieur'],['🩴','Sandales','Extérieur'],
+ ['🥿','Pantoufles','Extérieur'],['🩱','Maillot de bain','Extérieur'],
+ ['☀️','Crème solaire','Extérieur'],['🕶️','Lunettes de soleil','Extérieur'],
+ ['🎒','Sac à dos','Extérieur'],['🧺','Sac pour vêtements souillés','Extérieur'],['🧴','Chasse-moustiques','Extérieur'],
+ ['🍼','Biberon','Repas'],['🍼','Tétine de biberon','Repas'],['🥛','Préparation pour nourrisson','Repas'],
+ ['🥤','Gourde','Repas'],['🥪','Boîte à lunch','Repas'],['🍱','Contenant pour repas','Repas'],
+ ['🍽️','Bavette','Repas'],['🥄','Cuillère','Repas'],['🥛','Gobelet','Repas'],['🍎','Collation','Repas'],
+ ['🧸','Doudou','Sommeil'],['🛏️','Drap de repos','Sommeil'],['🧺','Couverture','Sommeil'],
+ ['🍼','Sucette','Sommeil'],['🧸','Toutou','Sommeil'],
+ ['📓','Cahier de communication','Activités'],['📚','Livre','Activités'],
+ ['🖼️','Photo familiale','Activités'],['🎨','Matériel de bricolage','Activités'],
+ ['🎭','Déguisement','Activités']
+];
+const sacRaccourcisBase=['Couches','Lingettes','Vêtements de rechange','Crème solaire','Bottes','Mitaines'];
+const nomSacNormalise=nom=>String(nom||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr-CA');
+function catalogueSac(){
+ const bases=sacArticlesBase.map(([icone,nom,categorie])=>({icone,nom,categorie,personnalise:false}));
+ const noms=new Set(bases.map(x=>nomSacNormalise(x.nom)));
+ for(const x of portail.sacArticles){
+  if(!x||typeof x.nom!=='string'||!x.nom.trim())continue;
+  const norm=nomSacNormalise(x.nom);
+  if(noms.has(norm))continue;
+  noms.add(norm);
+  bases.push({id:String(x.id||''),icone:String(x.icone||'📦'),nom:x.nom.slice(0,60),categorie:String(x.categorie||'Autres'),personnalise:true});
+ }
+ return bases;
+}
+function boutonSac(x){return `<button type="button" class="${x.personnalise?'sac-personnalise':''}" data-sac-suggestion="${safe(x.nom)}" data-sac-category="${safe(x.categorie)}">${safe(x.icone)} ${safe(x.nom)}</button>`;}
+function afficherCatalogueSac(){
+ const tous=catalogueSac();
+ $('sacNombreArticles').textContent=String(tous.length);
+ const favoris=sacRaccourcisBase.map(n=>tous.find(x=>x.nom===n)).filter(Boolean);
+ const ajoutes=tous.filter(x=>x.personnalise).slice(-6).reverse();
+ $('sacRaccourcis').innerHTML=[...favoris,...ajoutes].map(boutonSac).join('');
+ const recherche=nomSacNormalise($('sacRecherche').value),cat=$('sacCategorieRecherche').value;
+ const visibles=tous.filter(x=>(!recherche||nomSacNormalise(x.nom).includes(recherche))&&(!cat||cat===x.categorie));
+ $('sacCatalogue').innerHTML=visibles.map(boutonSac).join('');
+ $('sacCatalogueVide').hidden=!!visibles.length;
+ $('sacGestionPersonnalises').innerHTML=portail.sacArticles.length?`<h4>Mes articles ajoutés (${portail.sacArticles.length})</h4>`+portail.sacArticles.map(x=>`<div class="sac-gestion-ligne"><span class="sac-gestion-nom">${safe(x.icone||'📦')} ${safe(x.nom)}</span><button type="button" data-sac-modifier="${safe(x.id)}">✏️ Modifier</button><button type="button" data-sac-supprimer="${safe(x.id)}">🗑️ Supprimer</button></div>`).join(''):'<p class="muted">Aucun article personnalisé pour le moment.</p>';
+}
+function majSaisonSac(){
+ const besoin=['Vêtements','Extérieur'].includes($('sacCategorie').value),choix=$('sacSaison');
+ $('sacSaisonZone').hidden=!besoin;choix.disabled=!besoin;
+ if(!besoin)choix.value='';
+}
+function reinitialiserArticlePerso(){
+ $('formSacPersonnalise').reset();$('sacArticlePersoId').value='';
+ $('sacEnregistrerPerso').textContent='Enregistrer dans ma bibliothèque';
+ $('sacAnnulerPerso').hidden=true;
+}
 // Sac à dos local : compatible avec les anciens articles (sans catégorie ou quantité).
 function afficherSacIntelligent(){
  const liste=Array.isArray(portail.sac)?portail.sac:[];
@@ -837,7 +932,7 @@ function afficherSacIntelligent(){
    <div class="row-controls"><input class="inline-check" type="checkbox" data-toggle-sac="${safe(s.id)}" ${s.pret?'checked':''} aria-label="Article préparé : ${safe(s.article)} pour ${safe(nomEnfant(s.enfant))}">
    <span><strong>${safe(nomEnfant(s.enfant))} — ${safe(s.article)}</strong><span class="sac-etiquette ${urgent?'sac-urgent':''}">${safe(etatLabel)}</span></span>
    <button type="button" class="delete-btn" data-delete-portail="sac" data-id="${safe(s.id)}">🗑️ Supprimer</button></div>
-   <p class="sac-meta">Quantité : <strong>${quantite}</strong> · Catégorie : ${safe(s.categorie||'Autres')} · Date : ${safe(date||'À préciser')}</p>
+   <p class="sac-meta">Quantité : <strong>${quantite}</strong> · Catégorie : ${safe(s.categorie||'Autres')}${s.saison?' · Saison : '+safe(s.saison):''} · Date : ${safe(date||'À préciser')}</p>
    ${s.notes?`<p class="notes">${safe(s.notes)}</p>`:''}
    </div>`;
  }).join(''):'<p class="muted">Aucun article correspondant à ce filtre.</p>';
@@ -855,6 +950,7 @@ const somme=portail.paiements.reduce((s,p)=>s+Number(p.montant||0),0);$('paiemen
 $('paiementsParent').innerHTML+=portail.paiements.slice().reverse().map(p=>itemPortail('paiements',p,`<strong>${safe(nomEnfant(p.enfant))} — ${money(p.montant)}</strong><p>${safe(p.date)} · ${safe(p.description)} · ${safe(p.statut)}</p>${p.statut.startsWith('Payé')?`<button type="button" class="action secondary" data-recu="${safe(p.id)}">Télécharger un reçu fictif</button>`:''}`)).join('')||'<p class="muted">Aucun montant enregistré.</p>';
 lister('calendrierParent',data.evenements.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))),e=>`<div class="item">📅 <strong>${safe(e.date)}</strong> — ${safe(e.titre)}</div>`);
 afficherSacIntelligent();
+afficherCatalogueSac();
 lister('victoiresParent',portail.victoires.slice().reverse(),v=>itemPortail('victoires',v,`<strong>🏅 ${safe(nomEnfant(v.enfant))} — ${safe(v.titre)}</strong><p class="muted">${safe(v.date)}</p><p class="notes">${safe(v.notes||'')}</p>`));
 $('repasParent').innerHTML='<h4>🍽️ Ce que les enfants ont mangé (aperçu local)</h4>'+
  ((data.alimentation||[]).length?data.alimentation.slice().reverse().map(formatAliments).join(''):'<p class="muted">Aucun repas consommé enregistré.</p>')+
@@ -935,14 +1031,62 @@ $('presenceRequestsStaff').addEventListener('click',e=>{
 
 function portailForm(id,key,transform){$(id).addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,v=get(f),val=transform?transform(v):v;if(!val)return;portail[key].push({id:uid(),...val});if(savePortail()){f.reset();document.querySelectorAll('#parents input[type="date"]').forEach(i=>{if(!i.value)i.value=today()})}})}
 
-// Choix rapides et filtres — n'interviennent pas dans les autres écrans.
-$('module-sac').addEventListener('click',e=>{
- const b=e.target.closest('button[data-sac-suggestion]');if(!b)return;
- $('sacArticle').value=b.dataset.sacSuggestion;
- $('sacCategorie').value=b.dataset.sacCategory||'Autres';
- $('sacArticle').focus({preventScroll:true});
-});
-$('sacFiltreEnfant').addEventListener('change',afficherSacIntelligent);
+// Bibliothèque et personnalisation du Sac à dos — sans modifier les autres modules.
+ $('module-sac').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-sac-suggestion]');
+  if(b){
+   $('sacArticle').value=b.dataset.sacSuggestion;
+   $('sacCategorie').value=b.dataset.sacCategory||'Autres';
+   $('sacSaison').value='';majSaisonSac();
+   $('sacArticle').focus({preventScroll:true});
+   return;
+  }
+  const mod=e.target.closest('button[data-sac-modifier]');
+  if(mod){
+   const item=portail.sacArticles.find(x=>String(x.id)===mod.dataset.sacModifier);
+   if(!item)return;
+   $('sacPersonnalisation').open=true;
+   $('sacArticlePersoId').value=item.id;
+   $('sacNomPerso').value=item.nom;
+   $('sacIconePerso').value=[...$('sacIconePerso').options].some(x=>x.value===item.icone)?item.icone:'📦';
+   $('sacCatPerso').value=item.categorie;
+   $('sacEnregistrerPerso').textContent='Enregistrer la modification';
+   $('sacAnnulerPerso').hidden=false;
+   $('sacNomPerso').focus({preventScroll:true});
+   return;
+  }
+  const del=e.target.closest('button[data-sac-supprimer]');
+  if(del){
+   const item=portail.sacArticles.find(x=>String(x.id)===del.dataset.sacSupprimer);
+   if(!item||!confirm('Supprimer « '+item.nom+' » de votre bibliothèque ? Les demandes déjà enregistrées resteront intactes.'))return;
+   const avant=portail.sacArticles.slice();
+   portail.sacArticles=portail.sacArticles.filter(x=>String(x.id)!==del.dataset.sacSupprimer);
+   if(!savePortail())portail.sacArticles=avant;
+   if($('sacArticlePersoId').value===String(item.id))reinitialiserArticlePerso();
+  }
+ });
+ $('sacRecherche').addEventListener('input',afficherCatalogueSac);
+ $('sacCategorieRecherche').addEventListener('change',afficherCatalogueSac);
+ $('sacCategorie').addEventListener('change',majSaisonSac);
+ $('formSac').addEventListener('reset',()=>queueMicrotask(majSaisonSac));
+ $('sacAnnulerPerso').addEventListener('click',reinitialiserArticlePerso);
+ $('formSacPersonnalise').addEventListener('submit',e=>{
+  e.preventDefault();
+  const form=e.currentTarget,v=get(form),nom=String(v.nom||'').trim().replace(/\s+/g,' '),id=String(v.id||'');
+  if(nom.length<2||nom.length>60)return alert('Le nom doit contenir entre 2 et 60 caractères.');
+  if(catalogueSac().some(x=>nomSacNormalise(x.nom)===nomSacNormalise(nom)&&String(x.id||'')!==id))return alert('Cet article existe déjà. Vous pouvez le sélectionner directement.');
+  const avant=portail.sacArticles.slice();
+  const objet={id:id||uid(),nom,icone:String(v.icone||'📦'),categorie:String(v.categorie||'Autres')};
+  if(id){const i=portail.sacArticles.findIndex(x=>String(x.id)===id);if(i<0)return alert('Cet article n’existe plus.');portail.sacArticles[i]=objet;}
+  else portail.sacArticles.push(objet);
+  if(savePortail()){
+   reinitialiserArticlePerso();
+   $('sacArticle').value=objet.nom;$('sacCategorie').value=objet.categorie;
+   majSaisonSac();
+  }else portail.sacArticles=avant;
+ });
+ majSaisonSac();
+ $('sacFiltreEnfant').addEventListener('change',afficherSacIntelligent);
 $('sacFiltreEtat').addEventListener('change',afficherSacIntelligent);
 portailForm('formDocument','documents');portailForm('formPaiement','paiements',v=>({...v,montant:Number(v.montant)}));portailForm('formSac','sac',v=>{const n=Number(v.quantite);if(!Number.isInteger(n)||n<1||n>999){alert('Indique une quantité entre 1 et 999.');return null;}if(!data.enfants.some(e=>String(e.id)===String(v.enfant))){alert('Choisis un enfant fictif avant d’ajouter un article.');return null;}return {...v,quantite:n,pret:false,creeLe:new Date().toISOString()};});portailForm('formVictoire','victoires');portailForm('formActiviteMaison','activites');
 $('formPhoto').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,file=$('photoFichier').files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024)return alert('Choisissez une image JPEG, PNG ou WebP de moins de 8 Mo.');
